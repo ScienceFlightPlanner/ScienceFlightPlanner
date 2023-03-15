@@ -1,0 +1,24 @@
+<RCC>
+    <qresource>
+        <file>resources/icon_distance.png</file>
+        <file>resources/icon_duration.png</file>
+        <file>resources/icon_file.png</file>
+        <file>resources/icon_labels.png</file>
+        <file>resources/icon_reverse.png</file>
+        <file>resources/icon_highlight.png</file>
+        <file>resources/icon_help.png</file>
+        <file>resources/icon_coverage_lines.png</file>
+        <file>resources/complete_manual.html</file>
+        <file>resources/compute_optimal_coverage_lines.html</file>
+        <file>resources/display_expected_flight_duration.html</file>
+        <file>resources/display_flight_distance.html</file>
+        <file>resources/faq.html</file>
+        <file>resources/generate_reduced_flightplan_from_significant_waypoints.html</file>
+        <file>resources/generate_waypoints_for_flightplan.html</file>
+        <file>resources/mark_selected_waypoints_as_significant.html</file>
+        <file>resources/reverse_waypoints.html</file>
+        <file>resources/select_sensor.html</file>
+        <file>resources/overlap_0_percent.png</file>
+        <file>resources/overlap_50_percent.png</file>
+    </qresource>
+</RCC>
