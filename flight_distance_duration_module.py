@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 from qgis.core import (
     Qgis,
@@ -281,7 +281,7 @@ class FlightDistanceDurationModule:
         QTimer().singleShot(0, deferred)
 
     def handle_selection_changed(
-        self, selected: list[int], deselected: list[int], clear_and_select: bool
+        self, selected: List[int], deselected: List[int], clear_and_select: bool
     ):
         """
         Handler for the QgsVectorLayer.selectionChanged signal.
