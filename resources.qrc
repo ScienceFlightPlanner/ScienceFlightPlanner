@@ -21,5 +21,6 @@
         <file>resources/select_sensor.html</file>
         <file>resources/overlap_0_percent.png</file>
         <file>resources/overlap_50_percent.png</file>
+        <file>resources/icon_smiley.png</file>
     </qresource>
 </RCC>
