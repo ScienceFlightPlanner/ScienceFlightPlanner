@@ -182,6 +182,7 @@ class HelpWidget(QDockWidget):
     def get_corresponding_action_fct(self, action: QAction):
         """returns the corresponding trigger function for the action"""
         return {
+            self.action_module.smiley: self.fct_smiley,
             self.action_module.distance: self.fct_distance,
             self.action_module.duration: self.fct_duration,
             self.action_module.waypoint_generation: self.fct_generate_waypoints,
@@ -251,6 +252,10 @@ class HelpWidget(QDockWidget):
     def fct_complete_manual(self):
         """trigger function for 'complete manual'"""
         self.fct_action(complete_manual_txt)
+
+    def fct_smiley(self):
+        """trigger function for 'smiley'"""
+        self.fct_action(self.action_module.smiley)
 
     def fct_distance(self):
         """trigger function for 'display flight distance'"""

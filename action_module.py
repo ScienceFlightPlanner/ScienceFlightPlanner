@@ -10,6 +10,7 @@ class ActionModule:
     iface: QgisInterface
     toolbar_items: Union[List[QObject], None]
 
+    smiley = "Funny Button"
     distance = "Display Flight Distance"
     duration = "Display Expected Flight Duration"
     waypoint_generation = "Generate Waypoints for Flightplan"
@@ -25,6 +26,11 @@ class ActionModule:
     sensor_coverage = "Select Sensor"
 
     geometry_type_for_action = {
+        smiley: [
+            QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
+            QgsWkbTypes.GeometryType.PolygonGeometry,
+        ],
         distance: [QgsWkbTypes.GeometryType.LineGeometry],
         duration: [QgsWkbTypes.GeometryType.LineGeometry],
         waypoint_generation: [QgsWkbTypes.GeometryType.LineGeometry],

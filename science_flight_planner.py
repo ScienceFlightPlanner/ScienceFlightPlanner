@@ -21,6 +21,10 @@ import os.path
 import typing
 from typing import List
 
+# Funny Button
+import random
+from PyQt5.QtWidgets import QMessageBox
+
 # Initialize Qt resources from file resources.py
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
@@ -90,6 +94,31 @@ class ScienceFlightPlanner:
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
         )
         self.iface.pluginMenu().triggered.connect(self.help_module.close)
+
+    def show_joke(self):
+        """Show a pop-up with a programmer dad joke."""
+        jokes = [
+            "Why did the two Java methods get a divorce? Because they had constant arguments.",
+            "Why did the programmer go broke? Because he used up all his cache!",
+            "Why did the Java developer teach his young kids about single quotes? Because they build character.",
+            "Why do most Java programmers wear glasses? Because they don’t see sharp.",
+            "Why did the Java developer quit his job? Because he didn’t get arrays.",
+            "Why do programmers hate nature? It has too many bugs.",
+            "Why was the developer always at the gym? Because he liked to work on his core.",
+            "What’s a programmer’s favorite type of music? Algo-rhythm.",
+            "Why did the variable go to therapy? It had too many unresolved references.",
+            "Why was the computer tired when it got home? It had a hard drive.",
+            "What’s a programmer’s favorite hangout place? The local host.",
+            "Why did the Git repository get in trouble? It couldn’t keep track of its commits.",
+            "Why do programmers love tea? Because they love to process leaves.",
+            "Why did the computer go to the doctor? It had a virus!",
+        ]
+        joke = random.choice(jokes)
+        QMessageBox.information(
+            self.iface.mainWindow(),
+            "Here's something funny! (I think)",
+            joke
+        )
 
     def add_action(
         self,
@@ -164,6 +193,12 @@ class ScienceFlightPlanner:
         icon_path = ":resources"
 
         """Add toolbar buttons"""
+        self.add_action(
+            os.path.join(icon_path, "icon_smiley.png"),
+            text=self.action_module.smiley,
+            callback=self.show_joke,
+            parent=self.iface.mainWindow()
+        )
         self.add_action(
             os.path.join(icon_path, "icon_distance.png"),
             text=self.action_module.distance,
