@@ -1,5 +1,7 @@
 from typing import List
+import os
 
+from PyQt5.QtWidgets import QFileDialog
 from qgis.core import Qgis, QgsPointXY, QgsVectorLayer, QgsWkbTypes
 from qgis.gui import QgisInterface
 
@@ -39,12 +41,35 @@ class ExportModule:
         selected_layer = self.layer_utils.get_valid_selected_layer(
             [QgsWkbTypes.GeometryType.PointGeometry]
         )
-        for f in selected_layer.getFeatures():
-            geometry = f.geometry()
-            geometry_single_type = QgsWkbTypes.isSingleType(geometry.wkbType())
-            print(geometry.asPoint())
-            print(f.attributes())
-            f.setAttribute("id", "1 || '\n' || up")
-            print(f.attributes())
-            break
+        shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
 
+        file_dialog = QFileDialog()
+        title = "Save Waypoint Layer As"
+        suggested_path, _ = os.path.splitext(shapefile_path)
+        suggested_path += "_user"
+        filter = "Garmin Waypoint File (*.wpt)"
+        file_path, _ = QFileDialog.getSaveFileName(
+            file_dialog, title, suggested_path, filter
+        )
+
+        if not file_path:
+            return
+
+        if not file_path.lower().endswith(".wpt"):
+            file_path += ".wpt"
+
+        if os.path.exists(file_path):
+            self.iface.messageBar().pushMessage(
+                "Please select a file path that does not already exist",
+                level=Qgis.Warning,
+                duration=4,
+            )
+            return
+
+        with open(file_path, "w") as file:
+            for f in selected_layer.getFeatures():
+                id = f.attribute("id")
+                comment = ""
+                point = f.geometry().asPoint()
+                print(f"{id},{comment},{point.x()},{point.y()}\n")
+                file.write(f"{id},{comment},{point.x()},{point.y()}\n")
