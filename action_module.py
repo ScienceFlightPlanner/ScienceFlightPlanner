@@ -13,6 +13,7 @@ class ActionModule:
     distance = "Display Flight Distance"
     duration = "Display Expected Flight Duration"
     waypoint_generation = "Generate Waypoints for Flightplan"
+    export = "Export as wpt file"
     reduced_waypoint_selection = "Mark Selected Waypoints as Significant"
     reduced_waypoint_generation = (
         "Generate Reduced Flightplan from Significant Waypoints"
@@ -28,6 +29,7 @@ class ActionModule:
         distance: [QgsWkbTypes.GeometryType.LineGeometry],
         duration: [QgsWkbTypes.GeometryType.LineGeometry],
         waypoint_generation: [QgsWkbTypes.GeometryType.LineGeometry],
+        export: [QgsWkbTypes.GeometryType.PointGeometry],
         reduced_waypoint_selection: [QgsWkbTypes.GeometryType.PointGeometry],
         reduced_waypoint_generation: [QgsWkbTypes.GeometryType.PointGeometry],
         reversal: [

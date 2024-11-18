@@ -36,6 +36,7 @@ from .options_widget import SfpOptionsFactory
 from .resources import *
 from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
+from .export_module import ExportModule
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
@@ -52,6 +53,7 @@ class ScienceFlightPlanner:
     layer_utils: LayerUtils
     flight_distance_duration_module: FlightDistanceDurationModule
     waypoint_generation_module: WaypointGenerationModule
+    export_module: ExportModule
     waypoint_reduction_module: WaypointReductionModule
     waypoint_reversal_module: WaypointReversalModule
     coverage_module: CoverageModule
@@ -73,6 +75,7 @@ class ScienceFlightPlanner:
         # Declare instance attributes
         self.actions = []
         self.menu = "&ScienceFlightPlanner"
+        #self.menu = self.iface.pluginMenu().addMenu(QIcon("icon.png"), "&ScienceFlightPlanner")
         self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
@@ -82,6 +85,7 @@ class ScienceFlightPlanner:
         self.layer_utils = LayerUtils(iface)
         self.flight_distance_duration_module = FlightDistanceDurationModule(iface)
         self.waypoint_generation_module = WaypointGenerationModule(iface)
+        self.export_module = ExportModule(iface)
         self.waypoint_reduction_module = WaypointReductionModule(iface)
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
@@ -153,6 +157,7 @@ class ScienceFlightPlanner:
 
         if add_to_menu:
             self.iface.addPluginToMenu(self.menu, action)
+            #self.menu.addAction(action)
 
         self.actions.append(action)
 
@@ -182,6 +187,12 @@ class ScienceFlightPlanner:
             os.path.join(icon_path, "icon_file.png"),
             text=self.action_module.waypoint_generation,
             callback=self.waypoint_generation_module.generate_waypoints_shp_file_action,
+            parent=self.iface.mainWindow(),
+        )
+        self.add_action(
+            os.path.join(icon_path, "icon_export.png"),
+            text=self.action_module.export,
+            callback=self.export_module.shapefile_to_wpt,
             parent=self.iface.mainWindow(),
         )
         self.add_action(

@@ -185,6 +185,7 @@ class HelpWidget(QDockWidget):
             self.action_module.distance: self.fct_distance,
             self.action_module.duration: self.fct_duration,
             self.action_module.waypoint_generation: self.fct_generate_waypoints,
+            self.action_module.export: self.fct_export,
             self.action_module.reduced_waypoint_selection: self.fct_mark_significant_waypoints,
             self.action_module.reduced_waypoint_generation: self.fct_generate_reduced_waypoints,
             self.action_module.reversal: self.fct_reverse_waypoints,
@@ -275,12 +276,16 @@ class HelpWidget(QDockWidget):
         """trigger function for 'generate waypoints for flightplan'"""
         self.fct_action(self.action_module.waypoint_generation)
 
+    def fct_export(self):
+        """trigger function for 'export as wpt file'"""
+        self.fct_action(self.action_module.waypoint_generation)
+
     def fct_mark_significant_waypoints(self):
         """trigger function for 'mark selected waypoints as significant'"""
         self.fct_action(self.action_module.reduced_waypoint_selection)
 
     def fct_generate_reduced_waypoints(self):
-        "trigger function for 'generate reduced flightplan from significant waypoints'"
+        """trigger function for 'generate reduced flightplan from significant waypoints'"""
         self.fct_action(self.action_module.reduced_waypoint_generation)
 
     def fct_reverse_waypoints(self):
