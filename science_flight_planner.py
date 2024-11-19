@@ -21,6 +21,7 @@ import os.path
 import typing
 from typing import List
 
+from PyQt5.QtWidgets import QMenu
 # Initialize Qt resources from file resources.py
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
@@ -48,7 +49,7 @@ class ScienceFlightPlanner:
     iface: QgisInterface
     plugin_dir: str
     actions: List[QAction]
-    menu: str
+    menu: QMenu
     toolbar: QToolBar
     pluginIsActive: bool
     layer_utils: LayerUtils
@@ -76,8 +77,7 @@ class ScienceFlightPlanner:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = "&ScienceFlightPlanner"
-        #self.menu = self.iface.pluginMenu().addMenu(QIcon("icon.png"), "&ScienceFlightPlanner")
+        self.menu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
         self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
@@ -96,7 +96,7 @@ class ScienceFlightPlanner:
         self.help_module = HelpManualModule(
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
         )
-        self.iface.pluginMenu().triggered.connect(self.help_module.close)
+        #self.iface.pluginMenu().triggered.connect(self.help_module.close)
 
     def add_action(
         self,
@@ -159,8 +159,7 @@ class ScienceFlightPlanner:
             self.toolbar.addAction(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(self.menu, action)
-            #self.menu.addAction(action)
+            self.menu.addAction(action)
 
         self.actions.append(action)
 
@@ -262,12 +261,13 @@ class ScienceFlightPlanner:
         self.help_module.set_actions(self.actions)
 
     # --------------------------------------------------------------------------
-
+    #this function is probably dead code
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin is closed"""
         # disconnects
+        print("test")
         self.help_module.close()
-        self.iface.pluginMenu().triggered.disconnect(self.help_module.close)
+        #self.iface.pluginMenu().triggered.disconnect(self.help_module.close)
         self.coverage_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
@@ -277,9 +277,9 @@ class ScienceFlightPlanner:
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
+        self.iface.pluginMenu().removeAction(self.menu.menuAction())
 
         for action in self.actions:
-            self.iface.removePluginMenu("&ScienceFlightPlanner", action)
             self.iface.removeToolBarIcon(action)
 
         # remove the toolbar
