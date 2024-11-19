@@ -37,6 +37,7 @@ from .resources import *
 from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
 from .export_module import ExportModule
+from .waypoint_tag_module import WaypointTagModule
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
@@ -54,6 +55,7 @@ class ScienceFlightPlanner:
     flight_distance_duration_module: FlightDistanceDurationModule
     waypoint_generation_module: WaypointGenerationModule
     export_module: ExportModule
+    waypoint_tag_module: WaypointTagModule
     waypoint_reduction_module: WaypointReductionModule
     waypoint_reversal_module: WaypointReversalModule
     coverage_module: CoverageModule
@@ -86,6 +88,7 @@ class ScienceFlightPlanner:
         self.flight_distance_duration_module = FlightDistanceDurationModule(iface)
         self.waypoint_generation_module = WaypointGenerationModule(iface)
         self.export_module = ExportModule(iface)
+        self.waypoint_tag_module = WaypointTagModule(iface)
         self.waypoint_reduction_module = WaypointReductionModule(iface)
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
@@ -193,6 +196,12 @@ class ScienceFlightPlanner:
             os.path.join(icon_path, "icon_export.png"),
             text=self.action_module.export,
             callback=self.export_module.shapefile_to_wpt,
+            parent=self.iface.mainWindow(),
+        )
+        self.add_action(
+            os.path.join(icon_path, "icon_tag.png"),
+            text=self.action_module.tag,
+            callback=self.waypoint_tag_module.tag,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
