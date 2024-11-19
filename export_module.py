@@ -2,6 +2,7 @@ from typing import List
 import os
 
 from PyQt5.QtWidgets import QFileDialog
+from qgis._core import QgsProject, QgsCoordinateTransform, QgsCoordinateReferenceSystem
 from qgis.core import Qgis, QgsPointXY, QgsVectorLayer, QgsWkbTypes
 from qgis.gui import QgisInterface
 
@@ -66,10 +67,20 @@ class ExportModule:
             )
             return
 
+        #source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+        #destination_crs = QgsCoordinateReferenceSystem("EPSG:3413")
+        #crs_translator = QgsCoordinateTransform(
+        #    source_crs, destination_crs, QgsProject.instance()
+        #)
+
         with open(file_path, "w") as file:
             for f in selected_layer.getFeatures():
                 id = f.attribute("id")
-                comment = ""
+                comment = "" # this functionality will be added later
                 point = f.geometry().asPoint()
-                print(f"{id},{comment},{point.x()},{point.y()}\n")
-                file.write(f"{id},{comment},{point.x()},{point.y()}\n")
+                latitude = round(point.y(), 9)
+                longitude = round(point.x(), 8)
+                print(f"{id},{comment},{latitude},{longitude}\n")
+                file.write(f"{id},{comment},{latitude},{longitude}\n")
+
+
