@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
+        <file>icon.png</file>
         <file>resources/icon_distance.png</file>
         <file>resources/icon_duration.png</file>
         <file>resources/icon_file.png</file>

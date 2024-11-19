@@ -239,7 +239,6 @@ class ScienceFlightPlanner:
         self.options_factory = SfpOptionsFactory(
             self.flight_distance_duration_module, self.coverage_module
         )
-        self.options_factory.setTitle("ScienceFlightPlanner")
         self.iface.registerOptionsWidgetFactory(self.options_factory)
 
         self.flight_distance_duration_module.init_gui(self.toolbar)
