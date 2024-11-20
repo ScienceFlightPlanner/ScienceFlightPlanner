@@ -8,8 +8,6 @@ from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
 
-import geopandas as gpd
-
 
 class ExportModule:
     iface: QgisInterface
@@ -18,25 +16,6 @@ class ExportModule:
     def __init__(self, iface) -> None:
         self.iface = iface
         self.layer_utils = LayerUtils(iface)
-
-    def shapefile_to_geojson(self):
-        selected_layer = self.layer_utils.get_valid_selected_layer(
-            [QgsWkbTypes.GeometryType.PointGeometry]
-        )
-
-        if selected_layer is None:
-            return
-
-        shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
-        print(shapefile_path)
-        print(selected_layer.dataProvider().dataSourceUri())
-        print(selected_layer.dataProvider().dataSourceUri().split('|'))
-
-        gdf = gpd.read_file(shapefile_path)
-        path_as_array = selected_layer.dataProvider().dataSourceUri().split('/')
-        shapefile_name = path_as_array[-1]
-        output_file_path = shapefile_path.replace(shapefile_name, "tmp.geojson")
-        gdf.to_file(output_file_path, driver='GeoJSON')
 
     def shapefile_to_wpt(self):
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -83,4 +62,5 @@ class ExportModule:
                 print(f"{id},{comment},{latitude},{longitude}\n")
                 file.write(f"{id},{comment},{latitude},{longitude}\n")
 
-
+    def wpt_to_gfp(self):
+        return
