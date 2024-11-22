@@ -22,6 +22,7 @@ class ActionModule:
     reversal = "Reverse Waypoints"
     coverage_lines = "Compute Optimal Coverage Lines"
     help_manual = "Help"
+    disco = "Disco Button"
 
     flight_altitude = "Set Flight Altitude"
     sensor_coverage = "Select Sensor"
@@ -47,9 +48,19 @@ class ActionModule:
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
+        disco: [QgsWkbTypes.GeometryType.PointGeometry],
     }
 
+    def fct_disco(self):
+        """trigger function for disco action"""
+        self.fct_disco()
+
+    def do_nothing(self):
+        """Placeholder action."""
+
     def __init__(self, iface: QgisInterface):
+        self.do_nothing = self.do_nothing
+        self.disco_action = None
         self.iface = iface
         self.current_layer = None
         self.proj = QgsProject.instance()

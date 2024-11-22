@@ -192,6 +192,7 @@ class HelpWidget(QDockWidget):
             self.action_module.reversal: self.fct_reverse_waypoints,
             self.action_module.coverage_lines: self.fct_optimal_coverage_lines,
             complete_manual_txt: self.fct_complete_manual,
+            self.action_module.disco: self.fct_disco_button(),
         }[action.text()]
 
     def fct_action(self, action_name: str):
@@ -296,6 +297,10 @@ class HelpWidget(QDockWidget):
     def fct_reverse_waypoints(self):
         """trigger function for 'reverse waypoints'"""
         self.fct_action(self.action_module.reversal)
+
+    def fct_disco_button(self):
+        """trigger function for 'disco button'"""
+        self.fct_action(self.action_module.disco)
 
 
 class HelpManualModule:

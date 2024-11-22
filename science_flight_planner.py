@@ -70,7 +70,12 @@ class ScienceFlightPlanner:
             application at run time.
         """
         # Save reference to the QGIS interface
+
         self.iface = iface
+
+        def do_nothing(self):
+            """Placeholder function for testing the action."""
+            print("Disco action triggered (placeholder).")
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
@@ -234,6 +239,13 @@ class ScienceFlightPlanner:
             parent=self.iface.mainWindow(),
             is_checkable=True,
         )
+        self.add_action(
+            os.path.join(icon_path, "icon_disco.png"),
+            text=self.action_module.disco,
+            callback=self.action_module.do_nothing,
+            parent=self.iface.mainWindow(),
+        )
+
 
         self.options_factory = SfpOptionsFactory(
             self.flight_distance_duration_module, self.coverage_module
