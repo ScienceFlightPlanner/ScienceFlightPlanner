@@ -21,7 +21,8 @@ import os.path
 import typing
 from typing import List
 
-from PyQt5.QtWidgets import QMenu
+from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtWidgets import QToolButton, QMenu
 # Initialize Qt resources from file resources.py
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
@@ -39,17 +40,22 @@ from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
 from .export_module import ExportModule
 from .waypoint_tag_module import WaypointTagModule
+from functools import partial
+
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
+icon_folder_path = ":resources"
 
 class ScienceFlightPlanner:
     """QGIS Plugin Implementation."""
-
+    popupMenu: QMenu
+    toolButton: QToolButton
     iface: QgisInterface
     plugin_dir: str
     actions: List[QAction]
-    menu: QMenu
+    tag_actions: List[QAction]
+    pluginMenu: QMenu
     toolbar: QToolBar
     pluginIsActive: bool
     layer_utils: LayerUtils
@@ -70,14 +76,18 @@ class ScienceFlightPlanner:
             application at run time.
         """
         # Save reference to the QGIS interface
+        self.help_action = None
         self.iface = iface
+        #self.iface.mainWindow().setAttribute(Qt.WA_AlwaysShowToolTips, True)
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
+        self.tag_actions = []
+        self.options_factory = None
+        self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
         self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
@@ -102,14 +112,16 @@ class ScienceFlightPlanner:
         self,
         icon_path: str,
         text: str,
-        callback: typing.Callable,
+        callback: typing.Callable[..., None],
         enabled_flag: bool = True,
         add_to_menu: bool = True,
         add_to_toolbar: bool = True,
         status_tip: typing.Union[None, str] = None,
         whats_this: typing.Union[None, str] = None,
-        parent: typing.Union[None, QWidget] = None,
+        parent: typing.Union[None, QWidget] =None,
         is_checkable: bool = False,
+        connect: bool = True,
+        append: bool = True,
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
 
@@ -142,98 +154,144 @@ class ScienceFlightPlanner:
         :returns: The action that was created. Note that the action is also
             added to self.actions list.
         """
+        if parent is None:
+            parent = self.toolbar
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
+        if connect:
+            action.triggered.connect(callback)
+
         action.setEnabled(enabled_flag)
         action.setCheckable(is_checkable)
 
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
+        #if status_tip is not None:
+            #action.setStatusTip(status_tip)
 
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
+        #if whats_this is not None:
+            #action.setWhatsThis(whats_this)
+        print(action.toolTip() + " " + action.statusTip() + " " + action.whatsThis())
 
         if add_to_toolbar and self.toolbar:
             self.toolbar.addAction(action)
 
         if add_to_menu:
-            self.menu.addAction(action)
+            self.pluginMenu.addAction(action)
 
-        self.actions.append(action)
+        if append:
+            self.actions.append(action)
 
         return action
+
+    def add_popup_menu_button(self):
+        self.popupMenu = QMenu()
+        tag_list = self.waypoint_tag_module.tags
+        for tag in tag_list[0:len(tag_list) - 1]:
+            action = self.add_action(
+                        os.path.join(icon_folder_path, "icon_tag.png"),
+                        text=tag,
+                        callback=partial(self.waypoint_tag_module.tag, tag),
+                        add_to_toolbar=False,
+                        parent=self.popupMenu,
+                        connect=True,
+                        append=False
+                    )
+            self.popupMenu.addAction(action)
+            len(tag_list) - 1
+
+        self.popupMenu.addSeparator()
+
+        action = self.add_action(
+            os.path.join(icon_folder_path, "icon_custom_tag.png"),
+            text=tag_list[len(tag_list) - 1],
+            callback=partial(self.waypoint_tag_module.new_tag, self.popupMenu),
+            add_to_toolbar=False,
+            parent=self.popupMenu,
+            connect=True,
+            append=False
+        )
+
+        self.popupMenu.addAction(action)
+        self.toolButton = QToolButton(self.iface.mainWindow())
+        self.toolButton.setText("tag")
+        self.toolButton.setMenu(self.popupMenu)
+        self.toolButton.setToolTip("Add tag to selected waypoints")
+        self.toolButton.installEventFilter(self.toolbar)
+        self.toolButton.setPopupMode(QToolButton.InstantPopup)
+        self.toolButton.setIcon(QIcon(":resources/icon_tag.png"))
+        self.actions.append(self.toolButton)
+        self.toolbar.addWidget(self.toolButton)
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ":resources"
-
         """Add toolbar buttons"""
         self.add_action(
-            os.path.join(icon_path, "icon_distance.png"),
+            os.path.join(icon_folder_path, "icon_distance.png"),
             text=self.action_module.distance,
             callback=self.flight_distance_duration_module.toggle_display_flight_distance,
             parent=self.iface.mainWindow(),
             is_checkable=True,
         )
         self.add_action(
-            os.path.join(icon_path, "icon_duration.png"),
+            os.path.join(icon_folder_path, "icon_duration.png"),
             text=self.action_module.duration,
             callback=self.flight_distance_duration_module.toggle_display_flight_duration,
             parent=self.iface.mainWindow(),
             is_checkable=True,
         )
         self.add_action(
-            os.path.join(icon_path, "icon_file.png"),
+            os.path.join(icon_folder_path, "icon_file.png"),
             text=self.action_module.waypoint_generation,
             callback=self.waypoint_generation_module.generate_waypoints_shp_file_action,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
-            os.path.join(icon_path, "icon_export.png"),
+            os.path.join(icon_folder_path, "icon_export.png"),
             text=self.action_module.export,
             callback=self.export_module.shapefile_to_wpt,
             parent=self.iface.mainWindow(),
         )
+        self.add_popup_menu_button()
         self.add_action(
-            os.path.join(icon_path, "icon_tag.png"),
-            text=self.action_module.tag,
-            callback=self.waypoint_tag_module.tag,
-            parent=self.iface.mainWindow(),
-        )
-        self.add_action(
-            os.path.join(icon_path, "icon_highlight.png"),
+            os.path.join(icon_folder_path, "icon_highlight.png"),
             text=self.action_module.reduced_waypoint_selection,
             callback=self.waypoint_reduction_module.highlight_selected_waypoints,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
-            os.path.join(icon_path, "icon_labels.png"),
+            os.path.join(icon_folder_path, "icon_labels.png"),
             text=self.action_module.reduced_waypoint_generation,
             callback=self.waypoint_reduction_module.generate_significant_waypoints_shp_file_action,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
-            os.path.join(icon_path, "icon_reverse.png"),
+            os.path.join(icon_folder_path, "icon_reverse.png"),
             text=self.action_module.reversal,
             callback=self.waypoint_reversal_module.reverse_waypoints_action,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
-            os.path.join(icon_path, "icon_coverage_lines.png"),
+            os.path.join(icon_folder_path, "icon_coverage_lines.png"),
             text=self.action_module.coverage_lines,
             callback=self.coverage_module.compute_optimal_coverage_lines,
             parent=self.iface.mainWindow(),
         )
         self.add_action(
-            os.path.join(icon_path, "icon_help.png"),
+            os.path.join(icon_folder_path, "icon_help.png"),
             text=self.action_module.help_manual,
             callback=self.help_module.open_help_manual,
             parent=self.iface.mainWindow(),
             is_checkable=True,
         )
+
+        self.help_action = QAction(
+            QIcon(os.path.join(":icon.png")),
+            "Science Flight Planner",
+            self.iface.mainWindow()
+        )
+        self.iface.pluginHelpMenu().addAction(self.help_action)
+        self.help_action.triggered.connect(self.help_module.open_help_manual)
 
         self.options_factory = SfpOptionsFactory(
             self.flight_distance_duration_module, self.coverage_module
@@ -275,12 +333,19 @@ class ScienceFlightPlanner:
         self.pluginIsActive = False
 
     def unload(self):
+        #TODO
         """Removes the plugin menu item and icon from QGIS GUI."""
+        self.help_module.close()
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
-        self.iface.pluginMenu().removeAction(self.menu.menuAction())
+        self.iface.pluginMenu().removeAction(self.pluginMenu.menuAction())
+
+        self.iface.pluginHelpMenu().removeAction(self.help_action)
+        del self.help_action
 
         for action in self.actions:
-            self.iface.removeToolBarIcon(action)
+            #self.toolbar.removeAction(action)
+            if isinstance(action, QAction):
+                self.iface.removeToolBarIcon(action)
 
         # remove the toolbar
         del self.toolbar

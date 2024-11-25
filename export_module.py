@@ -1,9 +1,8 @@
-from typing import List
 import os
 
 from PyQt5.QtWidgets import QFileDialog
-from qgis._core import QgsProject, QgsCoordinateTransform, QgsCoordinateReferenceSystem
-from qgis.core import Qgis, QgsPointXY, QgsVectorLayer, QgsWkbTypes
+
+from qgis.core import Qgis, QgsWkbTypes
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
@@ -55,7 +54,7 @@ class ExportModule:
         with open(file_path, "w") as file:
             for f in selected_layer.getFeatures():
                 id = f.attribute("id")
-                comment = "" # this functionality will be added later
+                comment = f.attribute("tag")
                 point = f.geometry().asPoint()
                 latitude = round(point.y(), 9)
                 longitude = round(point.x(), 8)

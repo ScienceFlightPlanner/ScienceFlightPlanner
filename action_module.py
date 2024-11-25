@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from PyQt5.QtWidgets import QToolButton
 from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QObject, QTimer
@@ -14,7 +15,7 @@ class ActionModule:
     duration = "Display Expected Flight Duration"
     waypoint_generation = "Generate Waypoints for Flightplan"
     export = "Export as wpt file"
-    tag = "Tag Waypoint"
+    tag = "tag"
     reduced_waypoint_selection = "Mark Selected Waypoints as Significant"
     reduced_waypoint_generation = (
         "Generate Reduced Flightplan from Significant Waypoints"
@@ -103,7 +104,7 @@ class ActionModule:
                 action.setDisabled(False)
                 text = (
                     action.toolTip()
-                    if not isinstance(action, QAction)
+                    if not isinstance(action, QAction) and not isinstance(action, QToolButton)
                     else action.text()
                 )
                 if geometry_type not in self.geometry_type_for_action[text]:
