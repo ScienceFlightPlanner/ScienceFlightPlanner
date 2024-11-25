@@ -249,7 +249,7 @@ class ScienceFlightPlanner:
         self.add_action(
             os.path.join(icon_folder_path, "icon_export.png"),
             text=self.action_module.export,
-            callback=self.export_module.shapefile_to_wpt,
+            callback=self.export_module.shapefile_to_wpt_and_gfp,
             parent=self.iface.mainWindow(),
         )
         self.add_popup_menu_button()
