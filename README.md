@@ -115,3 +115,19 @@ The plugin setting can be found under: \"Settings ▶ Options\... ▶ ScienceFli
 #### I\'ve activated the flight duration/distance display, how is it updated?
 
 When the flight duration/distance display is activated (indicated by a toggled button of the corresponding feature) the distance/duration is updated in accordance to the current layer/feature selection. This means that when for example changing the layer to a different line layer, the distance/duration is updated to match the new layer. If the layer contains multiple features, it is required to explicitly select one feature for which the distance/duration is to be shown. Similarly, as for a new layer selection, a new feature selection within the current layer results in an update of the distance/duration. When a layer of a geometry other than line is selected, the display is toggled until a layer of type line is selected again.
+
+## Third-Party Licenses
+
+This plugin includes the following third-party components:
+
+1. **grd2stream**:
+   - A tool for computing flowlines from gridded velocity fields.
+   - Licensed under the BSD 3-Clause License.
+   - See the full [LICENSE](./grd2stream/LICENSE.txt) text for details.
+
+2. **garmin_fpl**:
+   - A library for creating flight plans compatible with the Garmin GTN750-series
+   - Licensed under the GNU General Public License v3.0 (GPLv3).
+   - See the full [LICENSE](LICENSE) text for details.
+
+The ScienceFlightPlanner project itself is licensed under the GNU General Public License v3.0 (GPLv3). For more information, refer to the [LICENSE](LICENSE).
