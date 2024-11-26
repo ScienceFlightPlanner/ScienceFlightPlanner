@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ScienceFlightPlanner - A QGIS plugin to create flight plans based on existing waypoints and paths.
-Copyright (C) 2023 Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm <scienceflightplanner@gmail.com>
+Copyright (C) 2023-2025
+Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm
+klairvoyage, MaximPLV, monkv, SGESissyphus, Taapirrr
+<scienceflightplanner@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -12,6 +15,14 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
+This plugin includes third-party components:
+1. `grd2stream`:
+   - Copyright (c) 2013-2024, Thomas Kleiner.
+   - Licensed under the BSD 3-Clause License.
+
+2. `garmin_fpl`:
+   - Licensed under the GNU General Public License v3.0 (GPLv3).
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
