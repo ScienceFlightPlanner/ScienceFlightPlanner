@@ -1,14 +1,17 @@
 <RCC>
     <qresource>
+        <file>icon.png</file>
         <file>resources/icon_distance.png</file>
         <file>resources/icon_duration.png</file>
         <file>resources/icon_file.png</file>
         <file>resources/icon_export.png</file>
+        <file>resources/icon_tag.png</file>
         <file>resources/icon_labels.png</file>
         <file>resources/icon_reverse.png</file>
         <file>resources/icon_highlight.png</file>
         <file>resources/icon_help.png</file>
         <file>resources/icon_coverage_lines.png</file>
+        <file>resources/icon_disco.png</file>
         <file>resources/complete_manual.html</file>
         <file>resources/compute_optimal_coverage_lines.html</file>
         <file>resources/display_expected_flight_duration.html</file>

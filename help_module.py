@@ -186,11 +186,14 @@ class HelpWidget(QDockWidget):
             self.action_module.distance: self.fct_distance,
             self.action_module.duration: self.fct_duration,
             self.action_module.waypoint_generation: self.fct_generate_waypoints,
+            self.action_module.export: self.fct_export,
+            self.action_module.tag: self.fct_tag,
             self.action_module.reduced_waypoint_selection: self.fct_mark_significant_waypoints,
             self.action_module.reduced_waypoint_generation: self.fct_generate_reduced_waypoints,
             self.action_module.reversal: self.fct_reverse_waypoints,
             self.action_module.coverage_lines: self.fct_optimal_coverage_lines,
             complete_manual_txt: self.fct_complete_manual,
+            self.action_module.disco: self.fct_disco_button(),
         }[action.text()]
 
     def fct_action(self, action_name: str):
@@ -280,17 +283,29 @@ class HelpWidget(QDockWidget):
         """trigger function for 'generate waypoints for flightplan'"""
         self.fct_action(self.action_module.waypoint_generation)
 
+    def fct_export(self):
+        """trigger function for 'export as wpt file'"""
+        self.fct_action(self.action_module.waypoint_generation)
+
+    def fct_tag(self):
+        """trigger function for 'tag waypoint'"""
+        self.fct_action(self.action_module.export)
+
     def fct_mark_significant_waypoints(self):
         """trigger function for 'mark selected waypoints as significant'"""
         self.fct_action(self.action_module.reduced_waypoint_selection)
 
     def fct_generate_reduced_waypoints(self):
-        "trigger function for 'generate reduced flightplan from significant waypoints'"
+        """trigger function for 'generate reduced flightplan from significant waypoints'"""
         self.fct_action(self.action_module.reduced_waypoint_generation)
 
     def fct_reverse_waypoints(self):
         """trigger function for 'reverse waypoints'"""
         self.fct_action(self.action_module.reversal)
+
+    def fct_disco_button(self):
+        """trigger function for 'disco button'"""
+        self.fct_action(self.action_module.disco)
 
 
 class HelpManualModule:

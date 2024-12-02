@@ -17,14 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import random
 import os.path
 import typing
 from typing import List
 
-# Funny Button
-import random
-from PyQt5.QtWidgets import QMessageBox
-
+from PyQt5.QtWidgets import QMenu, QMessageBox
 # Initialize Qt resources from file resources.py
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
@@ -40,6 +38,8 @@ from .options_widget import SfpOptionsFactory
 from .resources import *
 from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
+from .export_module import ExportModule
+from .waypoint_tag_module import WaypointTagModule
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
@@ -50,12 +50,14 @@ class ScienceFlightPlanner:
     iface: QgisInterface
     plugin_dir: str
     actions: List[QAction]
-    menu: str
+    menu: QMenu
     toolbar: QToolBar
     pluginIsActive: bool
     layer_utils: LayerUtils
     flight_distance_duration_module: FlightDistanceDurationModule
     waypoint_generation_module: WaypointGenerationModule
+    export_module: ExportModule
+    waypoint_tag_module: WaypointTagModule
     waypoint_reduction_module: WaypointReductionModule
     waypoint_reversal_module: WaypointReversalModule
     coverage_module: CoverageModule
@@ -69,14 +71,19 @@ class ScienceFlightPlanner:
             application at run time.
         """
         # Save reference to the QGIS interface
+
         self.iface = iface
+
+        def do_nothing(self):
+            """Placeholder function for testing the action."""
+            print("Disco action triggered (placeholder).")
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
         # Declare instance attributes
         self.actions = []
-        self.menu = "&ScienceFlightPlanner"
+        self.menu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
         self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
@@ -86,6 +93,8 @@ class ScienceFlightPlanner:
         self.layer_utils = LayerUtils(iface)
         self.flight_distance_duration_module = FlightDistanceDurationModule(iface)
         self.waypoint_generation_module = WaypointGenerationModule(iface)
+        self.export_module = ExportModule(iface)
+        self.waypoint_tag_module = WaypointTagModule(iface)
         self.waypoint_reduction_module = WaypointReductionModule(iface)
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
@@ -93,7 +102,7 @@ class ScienceFlightPlanner:
         self.help_module = HelpManualModule(
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
         )
-        self.iface.pluginMenu().triggered.connect(self.help_module.close)
+        #self.iface.pluginMenu().triggered.connect(self.help_module.close)
 
     def show_joke(self):
         """Show a pop-up with a programmer dad joke."""
@@ -181,7 +190,7 @@ class ScienceFlightPlanner:
             self.toolbar.addAction(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(self.menu, action)
+            self.menu.addAction(action)
 
         self.actions.append(action)
 
@@ -220,6 +229,18 @@ class ScienceFlightPlanner:
             parent=self.iface.mainWindow(),
         )
         self.add_action(
+            os.path.join(icon_path, "icon_export.png"),
+            text=self.action_module.export,
+            callback=self.export_module.shapefile_to_wpt,
+            parent=self.iface.mainWindow(),
+        )
+        self.add_action(
+            os.path.join(icon_path, "icon_tag.png"),
+            text=self.action_module.tag,
+            callback=self.waypoint_tag_module.tag,
+            parent=self.iface.mainWindow(),
+        )
+        self.add_action(
             os.path.join(icon_path, "icon_highlight.png"),
             text=self.action_module.reduced_waypoint_selection,
             callback=self.waypoint_reduction_module.highlight_selected_waypoints,
@@ -250,11 +271,17 @@ class ScienceFlightPlanner:
             parent=self.iface.mainWindow(),
             is_checkable=True,
         )
+        self.add_action(
+            os.path.join(icon_path, "icon_disco.png"),
+            text=self.action_module.disco,
+            callback=self.action_module.do_nothing,
+            parent=self.iface.mainWindow(),
+        )
+
 
         self.options_factory = SfpOptionsFactory(
             self.flight_distance_duration_module, self.coverage_module
         )
-        self.options_factory.setTitle("ScienceFlightPlanner")
         self.iface.registerOptionsWidgetFactory(self.options_factory)
 
         self.flight_distance_duration_module.init_gui(self.toolbar)
@@ -278,12 +305,13 @@ class ScienceFlightPlanner:
         self.help_module.set_actions(self.actions)
 
     # --------------------------------------------------------------------------
-
+    #this function is probably dead code
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin is closed"""
         # disconnects
+        print("test")
         self.help_module.close()
-        self.iface.pluginMenu().triggered.disconnect(self.help_module.close)
+        #self.iface.pluginMenu().triggered.disconnect(self.help_module.close)
         self.coverage_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
@@ -293,9 +321,9 @@ class ScienceFlightPlanner:
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
+        self.iface.pluginMenu().removeAction(self.menu.menuAction())
 
         for action in self.actions:
-            self.iface.removePluginMenu("&ScienceFlightPlanner", action)
             self.iface.removeToolBarIcon(action)
 
         # remove the toolbar

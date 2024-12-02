@@ -23,14 +23,11 @@ class SfpOptionsFactory(QgsOptionsWidgetFactory):
         flight_distance_duration_module: FlightDistanceDurationModule,
         coverage_module: CoverageModule,
     ):
-        super().__init__()
+        super().__init__("ScienceFlightPlanner", QIcon(":icon.png"))
         self.flight_distance_duration_module = flight_distance_duration_module
         self.coverage_module = coverage_module
 
-    def icon(self):
-        return QIcon(":/plugins/science_flight_planner/icon.png")
-
-    def createWidget(self, parent):
+    def createWidget(self, parent: None = None):
         return SfpConfigOptionsPage(
             parent, self.flight_distance_duration_module, self.coverage_module
         )

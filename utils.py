@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from typing import List, Tuple, Union
 
 from qgis.core import (
@@ -315,3 +317,26 @@ def show_checkable_info_message_box(
         if check_box.checkState() == Qt.Checked:
             proj.writeEntryBool("ScienceFlightPlanner", settings_name, False)
     return show_info
+
+"""Methods for automatic external library installation"""
+# Not needed for now as qgis already comes with the geopandas package, but may be useful later
+def install_package(package_name):
+    """Tries to install a library"""
+    try:
+        subprocess.run([sys.executable, "-m", "pip", "install", package_name], check=True)
+    except subprocess.CalledProcessError:
+        QMessageBox.critical(None, "Fehler", f"Das Paket '{package_name}' konnte nicht installiert werden.")
+
+def ensure_dependencies():
+    """Überprüft und installiert fehlende Abhängigkeiten."""
+    try:
+        import geopandas
+    except ImportError:
+        reply = QMessageBox.question(
+            None,
+            "Abhängigkeiten installieren",
+            "Das Paket 'geopandas' wird benötigt. Möchtest du es jetzt installieren?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            install_package("geopandas")
