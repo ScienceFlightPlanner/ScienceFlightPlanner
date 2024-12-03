@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "garmin_fpl: Creation and conversion scripts for Garmin flightplans for scientific flight campaigns"
+version: "0.5"
+date-released: "2024-11-25"
+authors:
+  - family-names: "Rettelbach"
+    given-names: "Tabea"
+    orcid: "https://orcid.org/0000-0002-4187-4113" # Tabea's ORCID
+  - family-names: "Döpper"
+    given-names: "Veronika"
+    orcid: "https://orcid.org/0000-0002-2927-7279" # Veronika's ORCID
+  - family-names: "Nitze"
+    given-names: "Ingmar"
+    orcid: "https://orcid.org/0000-0002-1165-6852" # Ingmar's ORCID
+repository-code: "https://github.com/awi-response/garmin_fpl"
+license: "GPL-3.0"
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Rettelbach"
+      given-names: "Tabea"
+    - family-names: "Döpper"
+      given-names: "Veronika"
+    - family-names: "Nitze"
+      given-names: "Ingmar"
+  title: "garmin_fpl: Creation and conversion scripts for Garmin flightplans for scientific flight campaigns"
+  year: 2024
