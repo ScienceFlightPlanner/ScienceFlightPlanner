@@ -8,7 +8,7 @@ folder = sys.argv[1]
 '''
 folder: folder which contains all iii_siteName_user.wpt files of single targets of one day 
 output: 
-20230704_WPnameChanger.py: changes the names output depending on:
+WPnameChanger_20230704.py: changes the names output depending on:
     - route type (grid or transect)
     - choosen filename
     to iiillo (i: ID code,l: linenumber such as 01,o:order such as A/B) for grids (e.g. 00401A: Target 004, line 01, point A)
@@ -21,11 +21,11 @@ output:
     iii_sitename_user_renamed.wpt file:
     file has identical columns as the iii_sitename_user.wpt file but changed waypoint and waypoint comment names
     
-20230704_DEC2DMM.py: Converts Decimal degree coordinates to Degree Decimal Minutes coordinates
+DEC2DMM_20230704.py: Converts Decimal degree coordinates to Degree Decimal Minutes coordinates
     - input: the output file of 20230704_WPnameChange.py:  iii_sitename_user_renamed.wpt
     - output: iii_sitename_user_renamed_DMM.wpt: coordinates are changed to DDM format
 
-20230704_wpt_to_gfp.py: Converts the information to a flightplan which is readable by Garmin
+wpt_to_gfp_20230704.py: Converts the information to a flightplan which is readable by Garmin
     - input: iii_sitename_user_renamed_DMM.wpt
     - output: returns a iii_sitename_flp.gfp file which can be imported to the Garmin
 '''
@@ -39,14 +39,14 @@ for file in glob.glob(f"{folder}\*_user.wpt"):
 
     
     # Script 1: rename waypoints
-    os.system(f'python 20230704_WPnameChanger.py {target}_user.wpt')
+    os.system(f'python WPnameChanger_20230704.py {target}_user.wpt')
     
     # Script 2: change coordinate format
     renamed_user_wpt = f'{target}_user_renamed.wpt'
-    os.system(f'python 20230704_DEC2DMM.py {renamed_user_wpt}')
+    os.system(f'python DEC2DMM_20230704.py {renamed_user_wpt}')
     
     # Script 3: create flightplans
     fpl_dir = Path(folder) / 'FPL'
     os.makedirs(fpl_dir, exist_ok=True)
     outfile = fpl_dir / f'{target_name}_fpl.gfp'
-    os.system(f'python 20230704_wpt_to_gfp.py {target}_user_renamed_DDM.wpt {outfile}')
+    os.system(f'python wpt_to_gfp_20230704.py {target}_user_renamed_DDM.wpt {outfile}')
