@@ -28,40 +28,31 @@ class ExportModule:
 
         gfp_file_path = create_file_dialog(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
 
-        self.shapefile_to_wpt(selected_layer, wpt_file_path)
+        shapefile_to_wpt(selected_layer, wpt_file_path)
 
-        self.wpt_to_gfp(wpt_file_path, gfp_file_path)
+        wpt_to_gfp(wpt_file_path, gfp_file_path)
 
-    def shapefile_to_wpt(self, selected_layer, file_path):
-        file_path = self.validate_file_path(file_path, ".wpt")
-        if file_path is None:
-            return
+def shapefile_to_wpt(selected_layer, file_path):
+    file_path = validate_file_path(file_path, ".wpt")
+    if file_path is None:
+        return
 
-        with open(file_path, "w") as file:
-            for f in selected_layer.getFeatures():
-                id = f.attribute("id")
-                comment = f.attribute("tag")
-                point = f.geometry().asPoint()
-                latitude = round(point.y(), 9)
-                longitude = round(point.x(), 8)
-                file.write(f"{id},{comment},{latitude},{longitude}\n")
+    with open(file_path, "w") as file:
+        for f in selected_layer.getFeatures():
+            id = f.attribute("id")
+            comment = f.attribute("tag")
+            point = f.geometry().asPoint()
+            latitude = round(point.y(), 9)
+            longitude = round(point.x(), 8)
+            file.write(f"{id},{comment},{latitude},{longitude}\n")
 
-    def wpt_to_gfp(self, input_file_path, output_file_path):
-        output_file_path = self.validate_file_path(output_file_path, ".gfp")
-        if output_file_path is None:
-            return
+def wpt_to_gfp(input_file_path, output_file_path):
+    output_file_path = validate_file_path(output_file_path, ".gfp")
+    if output_file_path is None:
+        return
 
-        wpt_to_gfp_20230704.convert_wpt_to_gfp(input_file_path, output_file_path)
+    wpt_to_gfp_20230704.convert_wpt_to_gfp(input_file_path, output_file_path)
 
-
-    def validate_file_path(self, file_path, file_type):
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(file_type):
-            file_path += file_type
-
-        return file_path
 
 def create_file_dialog(shapefile_path, filter, suggested_path_suffix):
     file_dialog = QFileDialog()
@@ -71,4 +62,13 @@ def create_file_dialog(shapefile_path, filter, suggested_path_suffix):
     file_path, _ = QFileDialog.getSaveFileName(
         file_dialog, title, suggested_path, filter
     )
+    return file_path
+
+def validate_file_path(file_path, file_type):
+    if not file_path:
+        return
+
+    if not file_path.lower().endswith(file_type):
+        file_path += file_type
+
     return file_path
