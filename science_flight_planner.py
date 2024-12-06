@@ -213,9 +213,9 @@ class ScienceFlightPlanner:
 
         self.popupMenu.addAction(action)
         self.toolButton = QToolButton(self.iface.mainWindow())
-        self.toolButton.setText("tag")
+        self.toolButton.setText(self.action_module.tag)
+        self.toolButton.setToolTip(self.action_module.tag)
         self.toolButton.setMenu(self.popupMenu)
-        self.toolButton.setToolTip("Add tag to selected waypoints")
         self.toolButton.installEventFilter(self.toolbar)
         self.toolButton.setPopupMode(QToolButton.InstantPopup)
         self.toolButton.setIcon(QIcon(":resources/icon_tag.png"))
