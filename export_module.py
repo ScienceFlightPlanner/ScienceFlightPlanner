@@ -10,27 +10,23 @@ from qgis.gui import QgisInterface
 from .utils import LayerUtils
 
 
-class ExportModule:
-    iface: QgisInterface
-    layer_utils: LayerUtils
+def validate_file_path(file_path, file_type):
+    if not file_path:
+        return
 
-    def __init__(self, iface) -> None:
-        self.iface = iface
-        self.layer_utils = LayerUtils(iface)
+    if not file_path.lower().endswith(file_type):
+        file_path += file_type
 
-    def shapefile_to_wpt_and_gfp(self):
-        selected_layer = self.layer_utils.get_valid_selected_layer(
-            [QgsWkbTypes.GeometryType.PointGeometry]
-        )
-        shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
+    return file_path
 
-        wpt_file_path = create_file_dialog(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
 
-        gfp_file_path = create_file_dialog(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
+def wpt_to_gfp(input_file_path, output_file_path):
+    output_file_path = validate_file_path(output_file_path, ".gfp")
+    if output_file_path is None:
+        return
 
-        shapefile_to_wpt(selected_layer, wpt_file_path)
+    wpt_to_gfp_20230704.convert_wpt_to_gfp(input_file_path, output_file_path)
 
-        wpt_to_gfp(wpt_file_path, gfp_file_path)
 
 def shapefile_to_wpt(selected_layer, file_path):
     file_path = validate_file_path(file_path, ".wpt")
@@ -46,29 +42,35 @@ def shapefile_to_wpt(selected_layer, file_path):
             longitude = round(point.x(), 8)
             file.write(f"{id},{comment},{latitude},{longitude}\n")
 
-def wpt_to_gfp(input_file_path, output_file_path):
-    output_file_path = validate_file_path(output_file_path, ".gfp")
-    if output_file_path is None:
-        return
 
-    wpt_to_gfp_20230704.convert_wpt_to_gfp(input_file_path, output_file_path)
+class ExportModule:
+    iface: QgisInterface
+    layer_utils: LayerUtils
 
+    def __init__(self, iface) -> None:
+        self.iface = iface
+        self.layer_utils = LayerUtils(iface)
 
-def create_file_dialog(shapefile_path, filter, suggested_path_suffix):
-    file_dialog = QFileDialog()
-    title = "Save Waypoint Layer As"
-    suggested_path, _ = os.path.splitext(shapefile_path)
-    suggested_path += suggested_path_suffix
-    file_path, _ = QFileDialog.getSaveFileName(
-        file_dialog, title, suggested_path, filter
-    )
-    return file_path
+    def shapefile_to_wpt_and_gfp(self):
+        selected_layer = self.layer_utils.get_valid_selected_layer(
+            [QgsWkbTypes.GeometryType.PointGeometry]
+        )
+        shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
 
-def validate_file_path(file_path, file_type):
-    if not file_path:
-        return
+        wpt_file_path = self.create_file_dialog(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
 
-    if not file_path.lower().endswith(file_type):
-        file_path += file_type
+        gfp_file_path = self.create_file_dialog(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
 
-    return file_path
+        shapefile_to_wpt(selected_layer, wpt_file_path)
+
+        wpt_to_gfp(wpt_file_path, gfp_file_path)
+
+    def create_file_dialog(self, shapefile_path, filter, suggested_path_suffix):
+        file_dialog = QFileDialog(self.iface.mainWindow())
+        title = "Save Waypoint Layer As"
+        suggested_path, _ = os.path.splitext(shapefile_path)
+        suggested_path += suggested_path_suffix
+        file_path, _ = QFileDialog.getSaveFileName(
+            file_dialog, title, suggested_path, filter
+        )
+        return file_path
