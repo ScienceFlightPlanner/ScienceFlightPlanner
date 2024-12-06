@@ -61,13 +61,6 @@ class ExportModule:
         if not file_path.lower().endswith(file_type):
             file_path += file_type
 
-        if os.path.exists(file_path):
-            self.iface.messageBar().pushMessage(
-                "Please select a file path that does not already exist",
-                level=Qgis.Warning,
-                duration=4,
-            )
-            return
         return file_path
 
 def create_file_dialog(shapefile_path, filter, suggested_path_suffix):
