@@ -14,8 +14,8 @@ class ActionModule:
     distance = "Display Flight Distance"
     duration = "Display Expected Flight Duration"
     waypoint_generation = "Generate Waypoints for Flightplan"
-    export = "Export as wpt file"
-    tag = "tag"
+    export = "Export to Garmin"
+    tag = "Add tag to selected waypoints"
     reduced_waypoint_selection = "Mark Selected Waypoints as Significant"
     reduced_waypoint_generation = (
         "Generate Reduced Flightplan from Significant Waypoints"
