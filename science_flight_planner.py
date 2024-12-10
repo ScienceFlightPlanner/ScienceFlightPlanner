@@ -79,7 +79,6 @@ class ScienceFlightPlanner:
         # Save reference to the QGIS interface
         self.help_action = None
         self.iface = iface
-        #self.iface.mainWindow().setAttribute(Qt.WA_AlwaysShowToolTips, True)
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
@@ -114,7 +113,6 @@ class ScienceFlightPlanner:
         self.help_module = HelpManualModule(
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
         )
-        #self.iface.pluginMenu().triggered.connect(self.help_module.close)
 
     def add_action(
         self,
@@ -184,7 +182,6 @@ class ScienceFlightPlanner:
                         parent=self.popupMenu
                     )
             self.popupMenu.addAction(action)
-            len(tag_list) - 1
 
         self.popupMenu.addSeparator()
 
@@ -310,7 +307,6 @@ class ScienceFlightPlanner:
         # disconnects
         print("test")
         self.help_module.close()
-        #self.iface.pluginMenu().triggered.disconnect(self.help_module.close)
         self.coverage_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
