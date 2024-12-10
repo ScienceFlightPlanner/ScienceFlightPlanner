@@ -92,9 +92,20 @@
         <tr>
             <td><a href=#wp_gen> Generate Waypoints for Flight Plan</a></td>
             <td><img src=":resources/icon_file.png"></td>
-            <td>Generates a new shp-file which contains all waypoints (numbered from 1 to n) of the current flight plan.
-            </td>
+            <td>Generates a new shp-file which contains all waypoints (numbered from 1 to n) of the current flight plan.</td>
             <td>Line</td>
+        </tr>
+        <tr>
+            <td><a href=#export> Export to Garmin</a></td>
+            <td><img src=":resources/icon_export.png"></td>
+            <td>Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.</td>
+            <td>Points</td>
+        </tr>
+        <tr>
+            <td><a href=#wp_tag> Add tag to selected waypoints</a></td>
+            <td><img src=":resources/icon_tag.png"></td>
+            <td>Adds a tag to the selected waypoints of the current flight plan</td>
+            <td>Points</td>
         </tr>
         <tr>
             <td><a href=#mark_sig>Mark selected Waypoints as Significant</a></td>
@@ -105,8 +116,7 @@
         <tr>
             <td><a href=#sig_wp_gen>Generate reduced Flight Plan from significant Waypoints</a></td>
             <td><img src=":resources/icon_labels.png"></td>
-            <td>Extracts waypoints of currently selected waypoints that were previously marked as significant to a new
-                shapefile.</td>
+            <td>Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile.</td>
             <td>Points</td>
         </tr>
         <tr>
@@ -118,19 +128,19 @@
         <tr>
             <td><a href=#coverage> Show Coverage </a></td>
             <td>Sensor selection box in toolbar</td>
-            <td>When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight
-                altitude is computed and saved to a new shp-file.</td>
+            <td>When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shp-file.</td>
             <td>Line</td>
         </tr>
         <tr>
             <td><a href=#coverage_lines> Compute optimal Coverage Lines </a></td>
             <td><img src=":resources/icon_coverage_lines.png"></td>
-            <td>Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage
-                covers the selected area.</td>
+            <td>Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.</td>
             <td>Polygon</td>
         </tr>
     </table>
+
     <h2>Detailed Feature Description</h2>
+
     <h3 id="distance">Display Flight Distance</h3>
     <p> <img src=":resources/icon_distance.png"> </p>
     <p>
@@ -139,6 +149,7 @@
         accordance to changes in the layer/feature selection <a href=#faq>(FAQ)</a>. If the button is pressed again, the
         display of the length is toggled. Whether the tool is activated, is indicated by toggling the button.
     </p>
+
     <h3 id="duration">Display Expected Flight Duration</h3>
     <p><img src=":resources/icon_duration.png"></p>
     <p>
@@ -152,6 +163,7 @@
         The used flight speed can be set in the plugin settings <a href=#faq>(FAQ)</a> with a default speed set to
         200km/h.
     </p>
+
     <h3 id="wp_gen">Generate Waypoints for Flight Plan</h3>
     <p><img src=":resources/icon_file.png"></p>
     <p>
@@ -160,7 +172,27 @@
         changes direction.
     </p>
     <p>A window will pop up in which you can set the name and location of the shp-file in which the extracted waypoints
-        will be stored as points.</p>
+        will be stored as points.
+    </p>
+
+    <h3 id="wp_tag">Export to Garmin</h3>
+    <p><img src=":resources/icon_export.png"></p>
+    <p>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    </p>
+    <p>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    </p>
+
+    <h3 id="export">Add tag to selected waypoints</h3>
+    <p><img src=":resources/icon_tag.png"></p>
+    <p>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    </p>
+    <p>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    </p>
+
     <h3 id="mark_sig">Mark selected Waypoints as Significant</h3>
     <p> <img src=":resources/icon_highlight.png"></p>
     <p>
@@ -170,6 +202,7 @@
     <p>
         Afterwards each significant point is marked with a little star.
     </p>
+
     <h3 id="sig_wp_gen">Generate reduced Flightplan from significant Waypoints</h3>
     <p> <img src=":resources/icon_labels.png"> </p>
     <p>
@@ -179,6 +212,7 @@
         new shp-file have ids according to their position in the original flight plan.
     </p>
     <p>In the following pop-up you can then select location and name of the new file.</p>
+
     <h3 id="reverse">Reverse Waypoints </h3>
     <p><img src=":resources/icon_reverse.png"></p>
     <p>
@@ -187,7 +221,9 @@
         plan is reversed.
     </p>
     <p><u>Example:</u> If the starting point had number 1 and the end point number 30 and the waypoints are reversed,
-        the original starting point will then be number 30 and the original end point number 1.</p>
+        the original starting point will then be number 30 and the original end point number 1.
+    </p>
+
     <h3 id="coverage">Show Coverage</h3>
     <p>
         When a line layer is selected <a href=#faq>(FAQ)</a> and a sensor in the sensor selection box of the plugin
@@ -204,6 +240,7 @@
         Before this feature can be used, it is necessary to set the CRS used for coverage computations in the plugin
         settings. The CRS should be compatible with the region of the QGIS project.
     </p>
+
     <h3 id="coverage_lines">Compute Optimal Coverage Lines</h3>
     <p> <img src=":resources/icon_coverage_lines.png"></p>
     <p>
@@ -228,7 +265,6 @@
     <p>
         <img src=":resources/overlap_50_percent.png" width=auto height="150">
     </p>
-
     </p>
     <p>
         Additionally, it is possible to use two different settings for the line computations. The default setting, which
