@@ -21,9 +21,7 @@ import os.path
 import typing
 from typing import List
 
-from PyQt5.QtCore import QCoreApplication, Qt
-from PyQt5.QtWidgets import QToolButton, QMenu
-# Initialize Qt resources from file resources.py
+from PyQt5.QtWidgets import QToolButton, QMenu, QApplication
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
@@ -32,10 +30,13 @@ from .action_module import ActionModule
 from .coverage_module import CoverageModule
 from .flight_distance_duration_module import FlightDistanceDurationModule
 
+# Not an Unused import statement!!!
 # Initialize Qt resources from file resources.py
+from .resources import *
+# Do not delete!!!
+
 from .help_module import HelpManualModule
 from .options_widget import SfpOptionsFactory
-from .resources import *
 from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
 from .export_module import ExportModule
@@ -92,6 +93,13 @@ class ScienceFlightPlanner:
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
 
+        app = QApplication.instance()
+        app.setStyleSheet("""
+                        QToolTip {
+                            font-weight: bold;
+                        }
+                    """)
+
         self.pluginIsActive = False
 
         self.layer_utils = LayerUtils(iface)
@@ -116,11 +124,8 @@ class ScienceFlightPlanner:
         enabled_flag: bool = True,
         add_to_menu: bool = True,
         add_to_toolbar: bool = True,
-        status_tip: typing.Union[None, str] = None,
-        whats_this: typing.Union[None, str] = None,
         parent: typing.Union[None, QWidget] =None,
         is_checkable: bool = False,
-        connect: bool = True,
         append: bool = True,
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
@@ -141,13 +146,7 @@ class ScienceFlightPlanner:
         :param add_to_toolbar: Flag indicating whether the action should also
             be added to the toolbar. Defaults to True.
 
-        :param status_tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
-
         :param parent: Parent widget for the new action. Defaults None.
-
-        :param whats_this: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
 
         :param is_checkable: Flag indicating whether the action should be checkable
 
@@ -159,18 +158,11 @@ class ScienceFlightPlanner:
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        if connect:
-            action.triggered.connect(callback)
+
+        action.triggered.connect(callback)
 
         action.setEnabled(enabled_flag)
         action.setCheckable(is_checkable)
-
-        #if status_tip is not None:
-            #action.setStatusTip(status_tip)
-
-        #if whats_this is not None:
-            #action.setWhatsThis(whats_this)
-        print(action.toolTip() + " " + action.statusTip() + " " + action.whatsThis())
 
         if add_to_toolbar and self.toolbar:
             self.toolbar.addAction(action)
@@ -193,7 +185,6 @@ class ScienceFlightPlanner:
                         callback=partial(self.waypoint_tag_module.tag, tag),
                         add_to_toolbar=False,
                         parent=self.popupMenu,
-                        connect=True,
                         append=False
                     )
             self.popupMenu.addAction(action)
@@ -207,7 +198,6 @@ class ScienceFlightPlanner:
             callback=partial(self.waypoint_tag_module.new_tag, self.popupMenu),
             add_to_toolbar=False,
             parent=self.popupMenu,
-            connect=True,
             append=False
         )
 
