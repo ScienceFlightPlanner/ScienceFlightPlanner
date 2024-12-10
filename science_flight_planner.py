@@ -125,8 +125,7 @@ class ScienceFlightPlanner:
         add_to_menu: bool = True,
         add_to_toolbar: bool = True,
         parent: typing.Union[None, QWidget] =None,
-        is_checkable: bool = False,
-        append: bool = True,
+        is_checkable: bool = False
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
 
@@ -166,12 +165,10 @@ class ScienceFlightPlanner:
 
         if add_to_toolbar and self.toolbar:
             self.toolbar.addAction(action)
+            self.actions.append(action)
 
         if add_to_menu:
             self.pluginMenu.addAction(action)
-
-        if append:
-            self.actions.append(action)
 
         return action
 
@@ -184,8 +181,7 @@ class ScienceFlightPlanner:
                         text=tag,
                         callback=partial(self.waypoint_tag_module.tag, tag),
                         add_to_toolbar=False,
-                        parent=self.popupMenu,
-                        append=False
+                        parent=self.popupMenu
                     )
             self.popupMenu.addAction(action)
             len(tag_list) - 1
@@ -197,8 +193,7 @@ class ScienceFlightPlanner:
             text=tag_list[len(tag_list) - 1],
             callback=partial(self.waypoint_tag_module.new_tag, self.popupMenu),
             add_to_toolbar=False,
-            parent=self.popupMenu,
-            append=False
+            parent=self.popupMenu
         )
 
         self.popupMenu.addAction(action)
