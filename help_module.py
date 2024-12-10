@@ -162,7 +162,7 @@ class HelpWidget(QDockWidget):
         self.toolbar_widgets.append(separator_widget)
 
     def add_faq_widget(self):
-        """adds a faq widget to the tool bar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a faq widget to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
         faq_button = QPushButton(faq_action_name)
         faq_button.setStyleSheet("QPushButton {color: black}")
         faq_button.setToolTip("faq")
