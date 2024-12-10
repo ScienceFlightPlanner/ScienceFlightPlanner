@@ -279,11 +279,11 @@ class HelpWidget(QDockWidget):
 
     def fct_export(self):
         """trigger function for 'export as wpt file'"""
-        self.fct_action(self.action_module.waypoint_generation)
+        self.fct_action(self.action_module.export)
 
     def fct_tag(self):
         """trigger function for 'tag waypoint'"""
-        self.fct_action(self.action_module.export)
+        self.fct_action(self.action_module.tag)
 
     def fct_mark_significant_waypoints(self):
         """trigger function for 'mark selected waypoints as significant'"""
