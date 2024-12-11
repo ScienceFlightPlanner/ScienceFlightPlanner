@@ -46,7 +46,7 @@ from functools import partial
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
-icon_folder_path = ":resources"
+icon_folder_path = ":resources/icons"
 
 class ScienceFlightPlanner:
     """QGIS Plugin Implementation."""
@@ -200,7 +200,7 @@ class ScienceFlightPlanner:
         self.toolButton.setMenu(self.popupMenu)
         self.toolButton.installEventFilter(self.toolbar)
         self.toolButton.setPopupMode(QToolButton.InstantPopup)
-        self.toolButton.setIcon(QIcon(":resources/icon_tag.png"))
+        self.toolButton.setIcon(QIcon(":resources/icons/icon_tag.png"))
         self.actions.append(self.toolButton)
         self.toolbar.addWidget(self.toolButton)
 

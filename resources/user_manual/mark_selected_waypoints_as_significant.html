@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Display Flight Distance</title>
+    <title>Mark selected Waypoints as Significant</title>
     <style>
         p {
             line-height: 1.4;
@@ -57,13 +57,14 @@
 </head>
 
 <body>
-    <h3>Display Flight Distance</h3>
-    <p> <img src=":resources/icon_distance.png"> </p>
+    <h3>Mark selected Waypoints as Significant </h3>
+    <p> <img src=":resources/icons/icon_highlight.png"></p>
     <p>
-        When the above button is pressed and a line layer is selected (see FAQ), then the length (km) of the flight plan
-        in this layer is shown. While activated, the display of the flight distance updates in accordance to changes in
-        the layer/feature selection (see FAQ). If the button is pressed again, the display of the length is toggled.
-        Whether the tool is activated, is indicated by toggling the button.
+        When the above button is pressed and some waypoints are selected (see FAQ) they are marked as significant. This
+        means a field "sig" is added to the attribute table of the points which you have to confirm.
+    </p>
+    <p>
+        Afterwards each significant point is marked with a little star.
     </p>
 </body>
 

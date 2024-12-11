@@ -222,7 +222,7 @@ class HelpWidget(QDockWidget):
 
             # read corresponding html file
             action_html_name = action_name.replace(" ", "_").lower() + ".html"
-            html_path = os.path.join(self.plugin_dir, "resources")
+            html_path = os.path.join(self.plugin_dir, "resources/user_manual")
 
             file = None
 
