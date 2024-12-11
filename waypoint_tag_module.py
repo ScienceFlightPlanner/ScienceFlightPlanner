@@ -51,6 +51,7 @@ class WaypointTagModule:
         selected_layer.beginEditCommand("Add Tag for Waypoints")
         for feature in selected_features:
             feature.setAttribute(self.qgis_field_name, tag)
+            selected_layer.updateFeature(feature)
 
         selected_layer.removeSelection()
         selected_layer.endEditCommand() #"Add Tag for Waypoints"
