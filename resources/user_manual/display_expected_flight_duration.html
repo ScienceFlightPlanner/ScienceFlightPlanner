@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Reverse Waypoints</title>
+    <title>Display Expected Flight Duration</title>
     <style>
         p {
             line-height: 1.4;
@@ -57,14 +57,17 @@
 </head>
 
 <body>
-    <h3>Reverse Waypoints </h3>
-    <p><img src=":resources/icon_reverse.png"></p>
+    <h3>Display Expected Flight Duration</h3>
+    <p> <img src=":resources/icons/icon_duration.png"> </p>
     <p>
-        When the above button is pressed and a line layer or a layer containing waypoints is selected (see FAQ) and the
-        features have the field id, the order of the waypoints or the layer's flight plan is reversed.
+        When the above button is pressed and a line layer is selected (see FAQ), the expected duration (h) for flying
+        along the flight plan in this layer is shown. While activated, the display of the flight duration updates in
+        accordance to changes in the layer/feature selection (see FAQ). If the button is pressed again, the display of
+        the duration is toggled. Whether the tool is activated, is indicated by toggling the button.
     </p>
-    <p><u>Example:</u> If the starting point had number 1 and the end point number 30 and the waypoints are reversed,
-        the original starting point will then be number 30 and the original end point number 1.</p>
+    <p>
+        The used flight speed can be set in the plugin settings (see FAQ) with a default speed set to 200km/h.
+    </p>
 </body>
 
 </html>

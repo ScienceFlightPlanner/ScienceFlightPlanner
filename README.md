@@ -10,26 +10,26 @@ In addition to this help manual, you can find tutorial videos for using our plug
 
 Feature name | Access via | Short description | Applicable to geometry type
 ---|---|---|---
-Display Flight Distance |![](./resources/icon_distance.png)| Shows the length of the current flight plan in meters.| Line 
-Display Flight Duration |![](./resources/icon_duration.png)| Shows the expected flight duration of the current flight plan in hours.| Line 
-Generate Waypoints for Flight Plan |![](./resources/icon_file.png) | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan. | Line 
-Mark Selected Waypoints as Significant |![](./resources/icon_highlight.png) | Marks the selected waypoints of the current flight plan as significant. | Points 
-Generate Reduced Flight Plan from Significant Waypoints |![](./resources/icon_labels.png) | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile. | Points 
-Reverse Waypoints |![](./resources/icon_reverse.png) | Reverses the order of current waypoints or flight plan. | Line, Points 
+Display Flight Distance |![](./resources/icons/icon_distance.png)| Shows the length of the current flight plan in meters.| Line 
+Display Flight Duration |![](./resources/icons/icon_duration.png)| Shows the expected flight duration of the current flight plan in hours.| Line 
+Generate Waypoints for Flight Plan |![](./resources/icons/icon_file.png) | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan. | Line 
+Mark Selected Waypoints as Significant |![](./resources/icons/icon_highlight.png) | Marks the selected waypoints of the current flight plan as significant. | Points 
+Generate Reduced Flight Plan from Significant Waypoints |![](./resources/icons/icon_labels.png) | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile. | Points 
+Reverse Waypoints |![](./resources/icons/icon_reverse.png) | Reverses the order of current waypoints or flight plan. | Line, Points 
 Show Coverage | Sensor selection box in toolbar | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile. | Line 
-Compute Optimal Coverage Lines |![](./resources/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area. | Polygon 
+Compute Optimal Coverage Lines |![](./resources/icons/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area. | Polygon 
 
 ## Detailed feature description
 
 ### Display Flight Distance
 
-![](./resources/icon_distance.png)
+![](./resources/icons/icon_distance.png)
 
 When the above button is pressed and a line layer is selected [(FAQ)](#faq), then the length (km) of the flight plan in this layer is shown. While activated, the display of the flight distance updates in accordance to changes in the layer/feature selection [(FAQ)](#faq). If the button is pressed again, the display of the length is toggled. Whether the tool is activated, is indicated by toggling the button.
 
 ### Display Expected Flight Duration
 
-![](./resources/icon_duration.png)
+![](./resources/icons/icon_duration.png)
 
 When the above button is pressed and a line layer is selected [(FAQ)](#faq), the expected duration (h) for flying along the flight plan in this layer is shown. While activated, the display of the flight duration updates in accordance to changes in the layer/feature selection [(FAQ)](#faq). If the button is pressed again, the display of the duration is toggled. Whether the tool is activated, is indicated by toggling the button.
 
@@ -37,7 +37,7 @@ The used flight speed can be set in the plugin settings [(FAQ)](#faq) with a def
 
 ### Generate Waypoints for Flight Plan
 
-![](./resources/icon_file.png)
+![](./resources/icons/icon_file.png)
 
 When the above button is pressed and a line layer is selected [(FAQ)](#faq), all waypoints of this layer\'s flight plan are extracted. A waypoint is defined as each point in the flight path where the flight changes direction.
 
@@ -45,7 +45,7 @@ A window will pop up in which you can set the name and location of the shp-file 
 
 ### Mark Selected Waypoints as Significant
 
-![](./resources/icon_highlight.png)
+![](./resources/icons/icon_highlight.png)
 
 When the above button is pressed and some waypoints are selected [(FAQ)](#faq) they are marked as significant. This means a field \"sig\" is added to the attribute table of the points which you have to confirm.
 
@@ -53,7 +53,7 @@ Afterwards each significant point is marked with a little star.
 
 ### Generate Reduced Flight Plan from Significant Waypoints
 
-![](./resources/icon_labels.png)
+![](./resources/icons/icon_labels.png)
 
 When the above button is pressed and waypoints in the current layer were previously marked as significant, i.e. the flight plan layer has the field \"sig\", as generated by [\"Mark selected Waypoints as Significant\"](#mark_sig), the waypoints chosen to be significant will be saved in a new shp-file. The points in the new shp-file have ids according to their position in the original flight plan.
 
@@ -61,7 +61,7 @@ In the following pop-up you can then select location and name of the new file.
 
 ### Reverse Waypoints
 
-![](./resources/icon_reverse.png)
+![](./resources/icons/icon_reverse.png)
 
 When the above button is pressed and a line layer or a layer containing waypoints is selected [(FAQ)](#faq) and the features have the field id, the order of the waypoints or the layer\'s flight plan is reversed.
 
@@ -78,7 +78,7 @@ Before this feature can be used, it is necessary to set the CRS used for coverag
 
 ### Compute Optimal Coverage Lines
 
-![](./resources/icon_coverage_lines.png)
+![](./resources/icons/icon_coverage_lines.png)
 
 When the above button is pressed, optimal flight lines are computed given a sensor and a polygon, representing an area of interest, are selected. These lines can be used as a template for a flight plan over the area of interest which for the selected sensor has some amount of overlap with as few turns as possible.
 
@@ -88,11 +88,11 @@ The amount of overlap which is considered when creating the optimal flight lines
 
 0% overlap
 
-![](./resources/overlap_0_percent.png)
+![](./resources/user_manual/overlap_0_percent.png)
 
 50% overlap
 
-![](./resources/overlap_50_percent.png)
+![](./resources/user_manual/overlap_50_percent.png)
 
 Additionally, it is possible to use two different settings for the line computations. The default setting, which we strongly suggest to use, is called \"optimal\". In this case the lines are optimal w.r.t. the criteria described above. Choosing \"90° rotated\" means that the lines are 90° rotated from the optimal orientation. Therefore, they are no longer optimal but depending on the flight plan and use case this might still be useful.
 
