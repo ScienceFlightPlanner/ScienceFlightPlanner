@@ -12,7 +12,7 @@
         <file>resources/icons/icon_highlight.png</file>
         <file>resources/icons/icon_help.png</file>
         <file>resources/icons/icon_coverage_lines.png</file>
-        <file>resources/icons/icon_flow_lines.png</file>
+        <file>resources/icons/icon_flowline.png</file>
         <file>resources/icons/icon_racetrack.png</file>
         <file>resources/user_manual/complete_manual.html</file>
         <file>resources/user_manual/compute_optimal_coverage_lines.html</file>
