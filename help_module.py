@@ -3,7 +3,7 @@ import os
 from typing import List, Union
 
 from PyQt5.QtWidgets import QToolButton
-from qgis._core import QgsApplication
+from qgis.core import QgsApplication
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (
@@ -30,7 +30,6 @@ class HelpWidget(QDockWidget):
 
     iface: QgisInterface
     plugin_dir: str
-    app: QgsApplication
     action_module: ActionModule
     sensor_combobox_plugin: QComboBox
 
@@ -57,7 +56,6 @@ class HelpWidget(QDockWidget):
         super().__init__("ScienceFlightPlanner - Help Manual", iface.mainWindow())
         self.iface = iface
         self.plugin_dir = plugin_dir
-        self.app = QgsApplication.instance()
 
         self.actions = actions
         self.action_module = ActionModule(iface)
@@ -259,14 +257,14 @@ class HelpWidget(QDockWidget):
         """trigger function for 'display flight distance'"""
         self.fct_action(self.action_module.distance)
 
-    def fct_display_coverage(self, index: int):
+    def fct_display_coverage(self):
         """trigger function for 'select sensor'"""
         self.fct_action(self.action_module.sensor_coverage)
 
-    def update_coverage_widget(self, index: int):
+    def update_coverage_widget(self):
         """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted' signal)"""
         assert self.sensor_combobox is not None
-        self.fct_display_coverage(index)
+        self.fct_display_coverage()
         self.sensor_combobox.clear()
         self.sensor_combobox.addItem(self.sensor_combobox_plugin.currentText())
 

@@ -75,7 +75,7 @@ class ActionModule:
             self.layer_selection_changed
         )
 
-    def layer_selection_changed(self, layer: QgsMapLayer):
+    def layer_selection_changed(self):
         """Call method when layer selection is changed"""
         QTimer().singleShot(0, self.disable_invalid_actions_layer_wrapper)
 
