@@ -88,7 +88,7 @@ class ScienceFlightPlanner:
         self.toolbar_items = []
         self.options_factory = None
         self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
-        self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
+        self.toolbar = self.iface.addToolBar("ScienceFlightPlanner Toolbar")
         if self.toolbar:
             self.toolbar.setObjectName("ScienceFlightPlanner")
 
