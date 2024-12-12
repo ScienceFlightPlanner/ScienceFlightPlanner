@@ -3,7 +3,6 @@ import os
 from typing import List, Union
 
 from PyQt5.QtWidgets import QToolButton
-from qgis.core import QgsApplication
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (

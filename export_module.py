@@ -4,7 +4,7 @@ from .libs.garmin_fpl import wpt_to_gfp_20230704
 
 from PyQt5.QtWidgets import QFileDialog
 
-from qgis.core import Qgis, QgsWkbTypes
+from qgis.core import QgsWkbTypes
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
