@@ -1,13 +1,8 @@
-from functools import partial
 from typing import List, Union
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QToolButton, QToolBar, QAbstractButton, QSpinBox, QSizePolicy
 from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QObject, QTimer
-from qgis.PyQt.QtWidgets import QAction, QWidget
 
 
 class ActionModule:
@@ -25,6 +20,10 @@ class ActionModule:
     )
     reversal = "Reverse Waypoints"
     coverage_lines = "Compute Optimal Coverage Lines"
+
+    flowline = "Calculate flowlines"
+    racetrack = "Convert grid to racetrack"
+
     help_manual = "Help"
 
     flight_altitude = "Set Flight Altitude"
@@ -43,6 +42,14 @@ class ActionModule:
             QgsWkbTypes.GeometryType.LineGeometry,
         ],
         coverage_lines: [QgsWkbTypes.GeometryType.PolygonGeometry],
+        flowline: [
+            QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
+        ],
+        racetrack: [
+            QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
+        ],
         flight_altitude: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,

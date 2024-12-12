@@ -190,6 +190,8 @@ class HelpWidget(QDockWidget):
             self.action_module.reduced_waypoint_generation: self.fct_generate_reduced_waypoints,
             self.action_module.reversal: self.fct_reverse_waypoints,
             self.action_module.coverage_lines: self.fct_optimal_coverage_lines,
+            self.action_module.flowline: self.fct_flowline,
+            self.action_module.racetrack: self.fct_racetrack,
             complete_manual_name: self.fct_complete_manual,
         }[action.text()]
 
@@ -283,6 +285,14 @@ class HelpWidget(QDockWidget):
     def fct_tag(self):
         """trigger function for 'tag waypoint'"""
         self.fct_action(self.action_module.tag)
+
+    def fct_flowline(self):
+        """trigger function for 'Calculate flowlines'"""
+        self.fct_action(self.action_module.flowline)
+
+    def fct_racetrack(self):
+        """trigger function for 'Convert grid to racetrack'"""
+        self.fct_action(self.action_module.racetrack)
 
     def fct_mark_significant_waypoints(self):
         """trigger function for 'mark selected waypoints as significant'"""

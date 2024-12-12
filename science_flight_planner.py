@@ -27,6 +27,8 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
 
+from .flowline_module import FlowlineModule
+from .racetrack_module import RacetrackModule
 from .action_module import ActionModule
 from .coverage_module import CoverageModule
 from .flight_distance_duration_module import FlightDistanceDurationModule
@@ -68,6 +70,8 @@ class ScienceFlightPlanner:
     waypoint_reduction_module: WaypointReductionModule
     waypoint_reversal_module: WaypointReversalModule
     coverage_module: CoverageModule
+    flowline_module: FlowlineModule
+    racetrack_module: RacetrackModule
     action_module: ActionModule
 
     def __init__(self, iface: QgisInterface):
@@ -109,6 +113,8 @@ class ScienceFlightPlanner:
         self.waypoint_reduction_module = WaypointReductionModule(iface)
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
+        self.flowline_module = FlowlineModule(iface)
+        self.racetrack_module = RacetrackModule(iface)
         self.action_module = ActionModule(iface)
         self.help_module = HelpManualModule(
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
@@ -263,6 +269,18 @@ class ScienceFlightPlanner:
             icon="icon_coverage_lines.png",
             text=self.action_module.coverage_lines,
             callback=self.coverage_module.compute_optimal_coverage_lines,
+            parent=self.toolbar,
+        )
+        self.add_action(
+            icon="icon_flowline.png",
+            text=self.action_module.flowline,
+            callback=self.flowline_module.method,
+            parent=self.toolbar,
+        )
+        self.add_action(
+            icon="icon_racetrack.png",
+            text=self.action_module.racetrack,
+            callback=self.racetrack_module.method,
             parent=self.toolbar,
         )
         self.add_action(
