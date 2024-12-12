@@ -21,6 +21,7 @@ import os.path
 import typing
 from typing import List
 
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QToolButton, QMenu, QApplication
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
@@ -32,6 +33,7 @@ from .flight_distance_duration_module import FlightDistanceDurationModule
 
 # Not an Unused import statement!!!
 # Initialize Qt resources from file resources.py
+# noinspection PyUnresolvedReferences
 from .resources import *
 # Do not delete!!!
 
@@ -46,7 +48,7 @@ from functools import partial
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
-icon_folder_path = ":resources/icons"
+icon_folder_path = os.path.join(":resources", "icons")
 
 class ScienceFlightPlanner:
     """QGIS Plugin Implementation."""
@@ -54,8 +56,7 @@ class ScienceFlightPlanner:
     toolButton: QToolButton
     iface: QgisInterface
     plugin_dir: str
-    actions: List[QAction]
-    tag_actions: List[QAction]
+    toolbar_items: List[QObject]
     pluginMenu: QMenu
     toolbar: QToolBar
     pluginIsActive: bool
@@ -84,8 +85,7 @@ class ScienceFlightPlanner:
         self.plugin_dir = os.path.dirname(__file__)
 
         # Declare instance attributes
-        self.actions = []
-        self.tag_actions = []
+        self.toolbar_items = []
         self.options_factory = None
         self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
         self.toolbar = self.iface.addToolBar("ScienceFlightPlanner")
@@ -116,7 +116,7 @@ class ScienceFlightPlanner:
 
     def add_action(
         self,
-        icon_path: str,
+        icon: str,
         text: str,
         callback: typing.Callable[..., None],
         enabled_flag: bool = True,
@@ -127,8 +127,7 @@ class ScienceFlightPlanner:
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
 
-        :param icon_path: Path to the icon for this action. Can be a resource
-            path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
+        :param icon: Name of the icon file.
 
         :param text: Text that should be shown in menu items for this action.
 
@@ -151,10 +150,12 @@ class ScienceFlightPlanner:
             added to self.actions list.
         """
         if parent is None:
-            parent = self.toolbar
+            parent = self.iface.mainWindow()
 
+        icon_path = os.path.join(icon_folder_path, icon)
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
+        action.setObjectName(text)
 
         action.triggered.connect(callback)
 
@@ -163,10 +164,11 @@ class ScienceFlightPlanner:
 
         if add_to_toolbar and self.toolbar:
             self.toolbar.addAction(action)
-            self.actions.append(action)
 
         if add_to_menu:
             self.pluginMenu.addAction(action)
+
+        self.toolbar_items.append(action)
 
         return action
 
@@ -175,33 +177,37 @@ class ScienceFlightPlanner:
         tag_list = self.waypoint_tag_module.tags
         for tag in tag_list[0:len(tag_list) - 1]:
             action = self.add_action(
-                        os.path.join(icon_folder_path, "icon_tag.png"),
+                        icon="icon_tag.png",
                         text=tag,
                         callback=partial(self.waypoint_tag_module.tag, tag),
                         add_to_toolbar=False,
                         parent=self.popupMenu
                     )
+            action.setToolTip(self.action_module.tag)
             self.popupMenu.addAction(action)
 
         self.popupMenu.addSeparator()
 
         action = self.add_action(
-            os.path.join(icon_folder_path, "icon_custom_tag.png"),
-            text=tag_list[len(tag_list) - 1],
+            icon="icon_custom_tag.png",
+            text=tag_list[-1],
             callback=partial(self.waypoint_tag_module.new_tag, self.popupMenu),
             add_to_toolbar=False,
             parent=self.popupMenu
         )
-
+        action.setToolTip(self.action_module.tag)
         self.popupMenu.addAction(action)
+
         self.toolButton = QToolButton(self.iface.mainWindow())
+        icon_path = os.path.join(icon_folder_path, "icon_tag.png")
+        self.toolButton.setIcon(QIcon(icon_path))
         self.toolButton.setText(self.action_module.tag)
         self.toolButton.setToolTip(self.action_module.tag)
         self.toolButton.setMenu(self.popupMenu)
         self.toolButton.installEventFilter(self.toolbar)
         self.toolButton.setPopupMode(QToolButton.InstantPopup)
-        self.toolButton.setIcon(QIcon(":resources/icons/icon_tag.png"))
-        self.actions.append(self.toolButton)
+
+        self.toolbar_items.append(self.toolButton)
         self.toolbar.addWidget(self.toolButton)
 
     def initGui(self):
@@ -209,61 +215,61 @@ class ScienceFlightPlanner:
 
         """Add toolbar buttons"""
         self.add_action(
-            os.path.join(icon_folder_path, "icon_distance.png"),
+            icon="icon_distance.png",
             text=self.action_module.distance,
             callback=self.flight_distance_duration_module.toggle_display_flight_distance,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
             is_checkable=True,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_duration.png"),
+            icon="icon_duration.png",
             text=self.action_module.duration,
             callback=self.flight_distance_duration_module.toggle_display_flight_duration,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
             is_checkable=True,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_file.png"),
+            icon="icon_file.png",
             text=self.action_module.waypoint_generation,
             callback=self.waypoint_generation_module.generate_waypoints_shp_file_action,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_export.png"),
+            icon="icon_export.png",
             text=self.action_module.export,
             callback=self.export_module.shapefile_to_wpt_and_gfp,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_popup_menu_button()
         self.add_action(
-            os.path.join(icon_folder_path, "icon_highlight.png"),
+            icon="icon_highlight.png",
             text=self.action_module.reduced_waypoint_selection,
             callback=self.waypoint_reduction_module.highlight_selected_waypoints,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_labels.png"),
+            icon="icon_labels.png",
             text=self.action_module.reduced_waypoint_generation,
             callback=self.waypoint_reduction_module.generate_significant_waypoints_shp_file_action,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_reverse.png"),
+            icon="icon_reverse.png",
             text=self.action_module.reversal,
             callback=self.waypoint_reversal_module.reverse_waypoints_action,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_coverage_lines.png"),
+            icon="icon_coverage_lines.png",
             text=self.action_module.coverage_lines,
             callback=self.coverage_module.compute_optimal_coverage_lines,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
         )
         self.add_action(
-            os.path.join(icon_folder_path, "icon_help.png"),
+            icon="icon_help.png",
             text=self.action_module.help_manual,
             callback=self.help_module.open_help_manual,
-            parent=self.iface.mainWindow(),
+            parent=self.toolbar,
             is_checkable=True,
         )
 
@@ -286,19 +292,16 @@ class ScienceFlightPlanner:
         self.coverage_module.flight_altitude_spinbox.setToolTip(
             self.action_module.flight_altitude
         )
+        self.toolbar_items.append(self.coverage_module.flight_altitude_spinbox)
+
         self.coverage_module.sensor_combobox.setToolTip(
             self.action_module.sensor_coverage
         )
+        self.toolbar_items.append(self.coverage_module.sensor_combobox)
 
-        self.action_module.connect(
-            self.actions,
-            [
-                self.coverage_module.flight_altitude_spinbox,
-                self.coverage_module.sensor_combobox,
-            ],
-        )
+        self.action_module.connect(self.toolbar_items)
 
-        self.help_module.set_actions(self.actions)
+        self.help_module.set_actions()
 
     # --------------------------------------------------------------------------
     #this function is probably dead code
@@ -323,7 +326,7 @@ class ScienceFlightPlanner:
         self.iface.pluginHelpMenu().removeAction(self.help_action)
         del self.help_action
 
-        for action in self.actions:
+        for action in self.toolbar_items:
             #self.toolbar.removeAction(action)
             if isinstance(action, QAction):
                 self.iface.removeToolBarIcon(action)

@@ -1,6 +1,9 @@
+from functools import partial
 from typing import List, Union
 
-from PyQt5.QtWidgets import QToolButton
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QToolButton, QToolBar, QAbstractButton, QSpinBox, QSizePolicy
 from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QObject, QTimer
@@ -56,12 +59,11 @@ class ActionModule:
         self.proj = QgsProject.instance()
         self.message_box = None
 
-    def connect(self, actions: List[QAction], widgets: List[QWidget]):
+    def connect(self, toolbar_items: List[QObject]):
         """connect the signal"""
         self.toolbar_items = list(
-            filter(lambda action: action.text() != self.help_manual, actions)
+            filter(lambda action: action.toolTip() != self.help_manual, toolbar_items)
         )
-        self.toolbar_items.extend(widgets)
         self.disable_invalid_actions_layer_wrapper()
         self.iface.layerTreeView().currentLayerChanged.connect(
             self.layer_selection_changed
@@ -102,11 +104,7 @@ class ActionModule:
             geometry_type = self.current_layer.geometryType()
             for action in self.toolbar_items:
                 action.setDisabled(False)
-                text = (
-                    action.toolTip()
-                    if not isinstance(action, QAction) and not isinstance(action, QToolButton)
-                    else action.text()
-                )
+                text = action.toolTip()
                 if geometry_type not in self.geometry_type_for_action[text]:
                     to_disable.append(action)
 
