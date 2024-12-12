@@ -2,7 +2,6 @@ import codecs
 import os
 from typing import List, Union
 
-from PyQt5.QtWidgets import QToolButton
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (
@@ -16,6 +15,7 @@ from qgis.PyQt.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QWidget,
+    QToolButton
 )
 
 from .action_module import ActionModule
