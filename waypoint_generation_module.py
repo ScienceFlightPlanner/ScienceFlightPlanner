@@ -15,7 +15,7 @@ class WaypointGenerationModule:
         self.layer_utils = LayerUtils(iface)
 
     def generate_waypoints_shp_file_action(self):
-        """Generates a SHP-file that contains all waypoints of the selected line"""
+        """Generates an SHP-file that contains all waypoints of the selected line"""
 
         # retrieve waypoints of selected layer
         selected_layer = self.layer_utils.get_valid_selected_layer(

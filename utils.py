@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, cast
 
 from qgis.core import (
     Qgis,
@@ -58,6 +58,8 @@ class LayerUtils:
                     "Please select a vector layer", level=Qgis.Warning, duration=4
                 )
             return
+        else:
+            selected_layer = cast(QgsVectorLayer, selected_layer)
 
         if selected_layer.geometryType() not in accepted_types:
             # get error string given invalid type
@@ -150,7 +152,7 @@ class LayerUtils:
         waypoint_ids: List[int],
         source_crs: QgsCoordinateReferenceSystem,
     ) -> Union[None, QgsMapLayer]:
-        """Generates a SHP-File that contains the given waypoints and saves it at the given path"""
+        """Generates an SHP-File that contains the given waypoints and saves it at the given path"""
         # select file path of shp-file
         file_dialog = QFileDialog()
         title = "Save Waypoint Layer As"

@@ -1,6 +1,7 @@
 from qgis.core import (
     Qgis,
     QgsGeometry,
+    QgsVectorLayer,
     QgsMapLayer,
     QgsProject,
     QgsVectorLayerUtils,
@@ -114,7 +115,7 @@ class WaypointReversalModule:
         # handle multi type geometry
         else:
             if geom.type() == QgsWkbTypes.GeometryType.PointGeometry:
-                # reverse mulit point
+                # reverse multi point
                 reversed_multi_point = geom.asMultiPoint()[::-1]
                 return QgsGeometry.fromMultiPointXY(reversed_multi_point)
             else:
@@ -125,7 +126,7 @@ class WaypointReversalModule:
                 return QgsGeometry.fromMultiPolylineXY(reversed_multi_polyline)
 
     def _sort_layer_by_field_permanently(
-        self, layer: QgsMapLayer, field_name: str
+        self, layer: QgsVectorLayer, field_name: str
     ) -> None:
         """Sort currently selected layer by given field in ascending order permanently"""
         project = QgsProject.instance()

@@ -236,7 +236,7 @@ class CoverageModule:
             self.sensor_combobox.setEnabled(True)
 
     def sensor_coverage_flight_altitude_changed(self):
-        """Updates all sensor coverage layers of the currently seleted layer"""
+        """Updates all sensor coverage layers of the currently selected layer"""
         selected_layer = self.layer_utils.get_valid_selected_layer(
             [
                 QgsWkbTypes.GeometryType.LineGeometry,
@@ -268,7 +268,7 @@ class CoverageModule:
             return
 
     def sensor_coverage_sensor_settings_changed(self):
-        """Updates all sensor cooverage layers"""
+        """Updates all sensor coverage layers"""
         layers = QgsProject.instance().mapLayers().values()
 
         for layer in layers:
@@ -284,7 +284,7 @@ class CoverageModule:
     def update_sensor_coverage(
         self, selected_layer: QgsMapLayer, sensor: Union[str, None] = None
     ):
-        """Updates the sensor converage layer of the selected layer and the selected sensor"""
+        """Updates the sensor coverage layer of the selected layer and the selected sensor"""
         # Get required data to compute sensor coverage
         flight_altitude = self.flight_altitude_spinbox.value()
 
@@ -396,7 +396,7 @@ class CoverageModule:
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
-        """Generates a SHP-File for the sensor coverage"""
+        """Generates an SHP-File for the sensor coverage"""
         # select file path of shp-file
         file_dialog = QFileDialog()
         title = "Save Waypoint Layer As"
@@ -572,7 +572,7 @@ class CoverageModule:
     def perpendicular_counter_clockwise(
         self, vector: QgsVector, sensor_coverage: float
     ) -> QgsVector:
-        """Computes a vector perpendicular to the given vector (rotated counter clockwise) with the length of sensor_coverage"""
+        """Computes a vector perpendicular to the given vector (rotated counter-clockwise) with the length of sensor_coverage"""
         if vector.x() == 0 and vector.y() == 0:
             normalized_perpendicular = QgsVector(0, 0)
         else:
@@ -590,7 +590,7 @@ class CoverageModule:
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
-        """Generates a SHP-File for the sensor coverage lines"""
+        """Generates an SHP-File for the sensor coverage lines"""
         # select file path of shp-file
         file_dialog = QFileDialog()
         title = "Save Waypoint Layer As"
@@ -696,14 +696,14 @@ class CoverageModule:
             QgsUnitTypes.DistanceUnit.DistanceMeters,
             coverage_crs.mapUnits(),
         )
-        coverage_range = coverage_range * unit_factor
+        coverage_range *= unit_factor
 
         default_overlap = 0
         overlap = float(
             self.settings.value("science_flight_planner/overlap", default_overlap)
         )
         overlap_factor = 1 - overlap
-        # create bounding box and extract it's corners
+        # create bounding box and extract its corners
         geometry = QgsGeometry(feature.geometry())
         geometry.transform(transform_to_coverage_crs)
         bounding_box = geometry.orientedMinimumBoundingBox()[0].asPolygon()
