@@ -64,7 +64,7 @@ class WaypointReductionModule:
         # notify user if no changes cannot be made due to missing feature selection
         if len(selected_features) == 0:
             settings_name = "show_selection_info"
-            txt = 'No features were marked significant! \n\nThere are no features selected in the currently selected layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CRTL\" key (on Mac: \"Command\" key) and click on the features you want to select.\n\n'
+            txt = 'No features were marked significant! \n\nThere are no features selected in the currently selected layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CTRL\" key (on Mac: \"Command\" key) and click on the features you want to select.\n\n'
 
             if not show_checkable_info_message_box(settings_name, txt, QgsProject.instance()):
                 self.iface.messageBar().pushMessage(
@@ -113,7 +113,7 @@ class WaypointReductionModule:
             self.add_sig_filtering_label(selected_layer)
 
     def generate_significant_waypoints_shp_file_action(self) -> None:
-        """Generates a SHP-file that contains a reduced number waypoints of the selected SHP-File containing the
+        """Generates an SHP-file that contains a reduced number waypoints of the selected SHP-File containing the
         waypoints and a significance highlighting"""
         # retrieve selected Layer and check for validity
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -347,7 +347,7 @@ class WaypointReductionModule:
         field_name: str,
         expression: Union[str, None] = None,
     ) -> None:
-        "label layer according to a new specified labeling expression"
+        """label layer according to a new specified labeling expression"""
 
         is_expression = expression is not None
         label_expression = expression if is_expression else f"{field_name}"
