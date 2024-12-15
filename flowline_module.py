@@ -1,6 +1,6 @@
 import csv
 from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QComboBox, QPushButton, QLabel
+from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QComboBox, QPushButton, QLabel, QMessageBox
 from qgis.core import QgsVectorLayer, QgsPoint, QgsFeature, QgsGeometry, QgsProject, QgsField, \
     QgsCoordinateReferenceSystem
 from qgis.gui import QgisInterface
@@ -50,12 +50,12 @@ class FlowlineModule:
         self.open_csv_file_dialog()
 
     def loadCsvAsFlowline(self, csv_file_path, selected_crs):
-        # Create a memory layer for storing the 3D points (PointZ layer)
-        layer = QgsVectorLayer(f"PointZ?crs={selected_crs}", "Flowline", "memory")  # Set CRS to selected CRS
+        # Create a memory layer for storing the points (Point layer, without Z values)
+        layer = QgsVectorLayer(f"Point?crs={selected_crs}", "Flowline", "memory")  # Set CRS to selected CRS
         provider = layer.dataProvider()
 
-        # Add fields for the id and Z (altitude)
-        provider.addAttributes([QgsField("id", QVariant.String), QgsField("altitude", QVariant.Double)])
+        # Add a field for the id (no Z value, only X and Y)
+        provider.addAttributes([QgsField("id", QVariant.String)])
         layer.updateFields()
 
         points = []
@@ -64,15 +64,14 @@ class FlowlineModule:
             for row in reader:
                 x = float(row['x'])
                 y = float(row['y'])
-                z = float(row['z'].strip()) if 'z' in row else 0.0  # Use '0.0' if Z is not available in the CSV
-                point = QgsPoint(x, y, z)
+                point = QgsPoint(x, y)  # Create the point with only X and Y
                 points.append(point)
 
         # Create a feature to represent the points
         for i, point in enumerate(points):
             feature = QgsFeature()
-            feature.setGeometry(QgsGeometry.fromPoint(point))  # Use QgsGeometry.fromPoint() for 3D points
-            feature.setAttributes([str(i), point.z()])  # Set the id and altitude (Z) attribute
+            feature.setGeometry(QgsGeometry.fromPoint(point))  # Use QgsGeometry.fromPoint() for 2D points
+            feature.setAttributes([str(i)])  # Set the id for the point feature
 
             # Add the feature to the layer
             provider.addFeature(feature)

@@ -21,7 +21,8 @@ class ActionModule:
     reversal = "Reverse Waypoints"
     coverage_lines = "Compute Optimal Coverage Lines"
 
-    flowline = "Calculate flowlines"
+    flowline = "Get flowline from file"
+    cut_flowline = "Cut flowline to flightplan"
     racetrack = "Convert grid to racetrack"
 
     help_manual = "Help"
@@ -43,6 +44,10 @@ class ActionModule:
         ],
         coverage_lines: [QgsWkbTypes.GeometryType.PolygonGeometry],
         flowline: [
+            QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
+        ],
+        cut_flowline: [
             QgsWkbTypes.GeometryType.PointGeometry,
             QgsWkbTypes.GeometryType.LineGeometry,
         ],
