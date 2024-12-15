@@ -1,7 +1,16 @@
 from PyQt5.QtCore import QVariant
-from qgis._core import QgsWkbTypes, Qgis, QgsFeature, QgsGeometry, QgsVectorLayer, QgsField, QgsProject, QgsCoordinateReferenceSystem
+from qgis._core import QgsWkbTypes, Qgis, QgsVectorLayer, QgsField, QgsProject
 from qgis._gui import QgisInterface
 from .utils import LayerUtils
+
+
+def delete_points_outside_range(first_point_id, last_point_id, point_layer):
+    """Deletes points outside the selected ID range."""
+    point_layer.startEditing()
+    for feature in point_layer.getFeatures():
+        point_id = feature["id"]
+        if not (first_point_id <= point_id <= last_point_id):
+            point_layer.dataProvider().deleteFeature(feature.id())
 
 
 class CutFlowlineModule:
@@ -17,7 +26,7 @@ class CutFlowlineModule:
         self.iface = iface
         self.layer_utils = LayerUtils(iface)
 
-    def create_cut_layer(self, cut_features, point_layer, crs):
+    def create_cut_layer(self, cut_features, crs):
         """Creates a new layer with the cut features."""
         # Create a new Point layer with the same CRS as the original point layer
         cut_layer = QgsVectorLayer(f"Point?crs={crs}", "CutPoints", "memory")
@@ -78,14 +87,6 @@ class CutFlowlineModule:
                 cut_features.append(feature)  # Add the point to the cut list if it is within the range
 
         if cut_features:
-            self.create_cut_layer(cut_features, point_layer, crs)  # Pass the point_layer to create the new layer with the same CRS
+            self.create_cut_layer(cut_features, crs)  # Pass the point_layer to create the new layer with the same CRS
         else:
             self.iface.messageBar().pushMessage("Info", "No points found within the selected range.", level=Qgis.Info)
-
-    def delete_points_outside_range(self, first_point_id, last_point_id, point_layer):
-        """Deletes points outside the selected ID range."""
-        point_layer.startEditing()
-        for feature in point_layer.getFeatures():
-            point_id = feature["id"]
-            if not (first_point_id <= point_id <= last_point_id):
-                point_layer.dataProvider().deleteFeature(feature.id())
