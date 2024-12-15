@@ -22,7 +22,7 @@ class ActionModule:
     coverage_lines = "Compute Optimal Coverage Lines"
 
     flowline = "Get flowline from file"
-    cut_flowline = "Cut flowline"
+    cut_flowline = "Cut flowline to flightplan"
     racetrack = "Convert grid to racetrack"
 
     help_manual = "Help"
@@ -49,6 +49,7 @@ class ActionModule:
         ],
         cut_flowline: [
             QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
         ],
         racetrack: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
