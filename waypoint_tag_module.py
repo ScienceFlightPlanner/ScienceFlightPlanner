@@ -6,6 +6,8 @@ from qgis.gui import QgisInterface
 from .utils import LayerUtils
 
 class WaypointTagModule:
+    max_tag_length = 10
+
     qgis_field_name = "tag"
 
     tags = ["Fly-over",
@@ -47,7 +49,7 @@ class WaypointTagModule:
 
     def new_tag(self, parent):
         text, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
-        if len(text) > 10:
+        if len(text) > self.max_tag_length:
             self.iface.messageBar().pushMessage(
                 "Tag must be less than 10 characters",
                 level=Qgis.Warning,
