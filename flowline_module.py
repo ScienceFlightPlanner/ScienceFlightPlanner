@@ -54,8 +54,11 @@ class FlowlineModule:
         layer = QgsVectorLayer(f"Point?crs={selected_crs}", "Flowline", "memory")  # Set CRS to selected CRS
         provider = layer.dataProvider()
 
-        # Add a field for the id (no Z value, only X and Y)
-        provider.addAttributes([QgsField("id", QVariant.String)])
+        # Add fields: 'id' as Integer64 and 'tag' as String
+        provider.addAttributes([
+            QgsField("id", QVariant.Int),  # id as Integer64
+            QgsField("tag", QVariant.String)  # new tag attribute
+        ])
         layer.updateFields()
 
         points = []
@@ -70,8 +73,8 @@ class FlowlineModule:
         # Create a feature to represent the points
         for i, point in enumerate(points):
             feature = QgsFeature()
-            feature.setGeometry(QgsGeometry.fromPoint(point))  # Use QgsGeometry.fromPoint() for 2D points
-            feature.setAttributes([str(i)])  # Set the id for the point feature
+            feature.setGeometry(QgsGeometry.fromPoint(point))  # Use QgsGeometry.fromPointXY() for 2D points
+            feature.setAttributes([int(i), "Fly-over"])  # Set id as Integer64 and tag with default 'Fly-over'
 
             # Add the feature to the layer
             provider.addFeature(feature)
