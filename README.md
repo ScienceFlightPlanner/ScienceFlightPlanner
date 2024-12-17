@@ -8,16 +8,18 @@ In addition to this help manual, you can find tutorial videos for using our plug
 
 ## Feature Overview
 
-Feature name | Access via | Short description | Applicable to geometry type
----|---|---|---
-Display Flight Distance |![](./resources/icons/icon_distance.png)| Shows the length of the current flight plan in meters.| Line 
-Display Flight Duration |![](./resources/icons/icon_duration.png)| Shows the expected flight duration of the current flight plan in hours.| Line 
-Generate Waypoints for Flight Plan |![](./resources/icons/icon_file.png) | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan. | Line 
-Mark Selected Waypoints as Significant |![](./resources/icons/icon_highlight.png) | Marks the selected waypoints of the current flight plan as significant. | Points 
-Generate Reduced Flight Plan from Significant Waypoints |![](./resources/icons/icon_labels.png) | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile. | Points 
-Reverse Waypoints |![](./resources/icons/icon_reverse.png) | Reverses the order of current waypoints or flight plan. | Line, Points 
-Show Coverage | Sensor selection box in toolbar | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile. | Line 
-Compute Optimal Coverage Lines |![](./resources/icons/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area. | Polygon 
+Feature name | Access via                                     | Short description                                                 | Applicable to geometry type
+---|------------------------------------------------|-------------------------------------------------------------------|---
+Display Flight Distance | ![](./resources/icons/icon_distance.png)       | Shows the length of the current flight plan in meters.            | Line 
+Display Flight Duration | ![](./resources/icons/icon_duration.png)       | Shows the expected flight duration of the current flight plan in hours. | Line 
+Generate Waypoints for Flight Plan | ![](./resources/icons/icon_file.png)           | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan. | Line 
+Export in Garmin GTN750Xi Format | ![](./resources/icons/icon_export.png)         | Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan. | Waypoints file
+Add tag to selected waypoints | ![](./resources/icons/icon_tag.png)            | Adds a tag to the selected waypoints of the current flight plan.  | Points
+Mark Selected Waypoints as Significant | ![](./resources/icons/icon_highlight.png)      | Marks the selected waypoints of the current flight plan as significant. | Points 
+Generate Reduced Flight Plan from Significant Waypoints | ![](./resources/icons/icon_labels.png)         | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile. | Points 
+Reverse Waypoints | ![](./resources/icons/icon_reverse.png)        | Reverses the order of current waypoints or flight plan.           | Line, Points 
+Show Coverage | Sensor selection box in toolbar                | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile. | Line 
+Compute Optimal Coverage Lines | ![](./resources/icons/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area. | Polygon 
 
 ## Detailed feature description
 
@@ -42,6 +44,40 @@ The used flight speed can be set in the plugin settings [(FAQ)](#faq) with a def
 When the above button is pressed and a line layer is selected [(FAQ)](#faq), all waypoints of this layer\'s flight plan are extracted. A waypoint is defined as each point in the flight path where the flight changes direction.
 
 A window will pop up in which you can set the name and location of the shp-file in which the extracted waypoints will be stored as points.
+
+### Export in Garmin GTN750Xi Format
+
+![](./resources/icons/icon_export.png) 
+
+After selecting a waypoint or multiple waypoints [(FAQ)](#faq) and pressing this button, a label is added to the point.
+
+You can choose from the following predefined tags:  
+- **fly-over**  
+- **fly-by**  
+- **LH-180** – Left Hand 180°  
+- **LH-270** – Left Hand 270°  
+- **RH-180** – Right Hand 180°  
+- **RH-270** – Right Hand 270°  
+
+Additionally, you can create a custom tag. **Note**: Custom tags must **not exceed 10 characters** in length.
+
+After adding a tag, select the corresponding waypoint to see the tag displayed in the **status bar** at the bottom of the screen.  
+
+To view all waypoints and their associated tags:  
+   1. Select the **waypoint layer**.  
+   2. Open the **Attribute Table** (right-click → “Open Attribute Table”).   
+
+
+### Add tag to selected waypoints
+
+![](./resources/icons/icon_tag.png)
+
+When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750. 
+After pressing the button, the selected .wpt file will be transformed into two files of following format: 
+- example_user.wpt (MUST be named _user.wpt for import) 
+- example_gfp.gfp
+
+_Hint: To avoid the GTN750 system giving the waypoints coordinates a generic ID, first import the user.wpt file and only after this import the .gfp-file._
 
 ### Mark Selected Waypoints as Significant
 
