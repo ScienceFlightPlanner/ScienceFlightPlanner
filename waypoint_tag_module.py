@@ -1,11 +1,13 @@
 from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QInputDialog
+from PyQt5.QtWidgets import QInputDialog, QMessageBox
 from qgis.core import Qgis, QgsWkbTypes, QgsField
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
 
 class WaypointTagModule:
+    max_tag_length = 10
+
     qgis_field_name = "tag"
 
     tags = ["Fly-over",
@@ -33,18 +35,7 @@ class WaypointTagModule:
             return
 
         if selected_layer.fields().indexFromName(self.qgis_field_name) == -1:
-            new_field = QgsField(self.qgis_field_name, QVariant.String)
-            added = selected_layer.dataProvider().addAttributes([new_field])
-            if added:
-                selected_layer.updateFields()
-
-            attr_map = {}
-            field_id = selected_layer.fields().indexFromName(self.qgis_field_name)
-            for feature in selected_layer.getFeatures():
-                attr_map[feature.id()] = {field_id: self.default_tag}
-
-            selected_layer.dataProvider().changeAttributeValues(attr_map)
-            selected_layer.updateFields()
+            self.add_tag_field_to_layer(selected_layer)
 
         selected_features = selected_layer.getSelectedFeatures()
         selected_layer.startEditing()
@@ -58,7 +49,7 @@ class WaypointTagModule:
 
     def new_tag(self, parent):
         text, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
-        if len(text) > 10:
+        if len(text) > self.max_tag_length:
             self.iface.messageBar().pushMessage(
                 "Tag must be less than 10 characters",
                 level=Qgis.Warning,
@@ -66,3 +57,28 @@ class WaypointTagModule:
             )
             return
         self.tag(text)
+
+    def add_tag_field_to_layer(self, layer):
+        reply = QMessageBox.question(
+            self.iface.mainWindow(),
+            f"Add Field {self.qgis_field_name} to Layer {layer.name()}?",
+            f"Add Field '{self.qgis_field_name}' to Layer {layer.name()}?\n\n"
+            f"If '{self.qgis_field_name}' is not added ,\nselected Points cannot be tagged.",
+            QMessageBox.No,
+            QMessageBox.Yes,
+        )
+        if reply == QMessageBox.No:
+            return
+
+        new_field = QgsField(self.qgis_field_name, QVariant.String)
+        added = layer.dataProvider().addAttributes([new_field])
+        if added:
+            layer.updateFields()
+
+        attr_map = {}
+        field_id = layer.fields().indexFromName(self.qgis_field_name)
+        for feature in layer.getFeatures():
+            attr_map[feature.id()] = {field_id: self.default_tag}
+
+        layer.dataProvider().changeAttributeValues(attr_map)
+        layer.updateFields()
