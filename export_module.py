@@ -1,12 +1,13 @@
 import os
 
-from .libs.garmin_fpl import wpt_to_gfp_20230704
-
 from PyQt5.QtWidgets import QFileDialog
 
 from qgis.core import QgsWkbTypes
 from qgis.gui import QgisInterface
 
+import tempfile
+
+from .libs.garmin_fpl import wpt_to_gfp_20230704, DEC2DMM_20230704
 from .utils import LayerUtils
 
 
@@ -25,8 +26,13 @@ def wpt_to_gfp(input_file_path, output_file_path):
     if output_file_path is None:
         return
 
-    wpt_to_gfp_20230704.convert_wpt_to_gfp(input_file_path, output_file_path)
-
+    with tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False) as temp_file:
+        print(temp_file.name)
+        DEC2DMM_20230704.dec2ddm(input_file_path, temp_file.name)
+    try:
+        wpt_to_gfp_20230704.convert_wpt_to_gfp(temp_file.name, output_file_path)
+    finally:
+        os.remove(temp_file.name)
 
 def shapefile_to_wpt(selected_layer, file_path):
     file_path = validate_file_path(file_path, ".wpt")
