@@ -280,7 +280,7 @@ class ScienceFlightPlanner:
         self.add_action(
             icon="icon_racetrack.png",
             text=self.action_module.racetrack,
-            callback=self.racetrack_module.method,
+            callback=self.racetrack_module.compute_way_points,
             parent=self.toolbar,
         )
         self.add_action(

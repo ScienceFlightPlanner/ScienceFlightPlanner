@@ -47,8 +47,7 @@ class ActionModule:
             QgsWkbTypes.GeometryType.LineGeometry,
         ],
         racetrack: [
-            QgsWkbTypes.GeometryType.PointGeometry,
-            QgsWkbTypes.GeometryType.LineGeometry,
+            QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
         flight_altitude: [
             QgsWkbTypes.GeometryType.LineGeometry,
