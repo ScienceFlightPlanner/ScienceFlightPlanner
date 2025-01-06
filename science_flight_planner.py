@@ -114,7 +114,7 @@ class ScienceFlightPlanner:
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
         self.flowline_module = FlowlineModule(iface)
-        self.racetrack_module = RacetrackModule(iface)
+        self.racetrack_module = RacetrackModule(iface, self.coverage_module)
         self.action_module = ActionModule(iface)
         self.help_module = HelpManualModule(
             iface, self.coverage_module.sensor_combobox, self.plugin_dir
@@ -329,6 +329,7 @@ class ScienceFlightPlanner:
         print("test")
         self.help_module.close()
         self.coverage_module.close()
+        self.racetrack_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
         self.action_module.close()

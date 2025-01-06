@@ -1,13 +1,33 @@
 import os
-from qgis._core import QgsWkbTypes, Qgis, QgsCoordinateTransform, QgsProject, QgsUnitTypes, QgsGeometry, QgsVector, \
-    QgsPointXY, QgsFeature, QgsPoint, QgsExpressionContextUtils, QgsSettings, QgsCoordinateReferenceSystem, \
-    QgsVectorLayer, QgsFields, QgsField, QgsVectorFileWriter
-from qgis.gui import QgisInterface
 from typing import Dict, Union
 
+from PyQt5.QtWidgets import (
+    QWidget,
+    QSpinBox,
+    QComboBox,
+    QFileDialog,
+)
+from qgis._core import (
+    QgsWkbTypes,
+    Qgis,
+    QgsCoordinateTransform,
+    QgsProject,
+    QgsUnitTypes,
+    QgsGeometry,
+    QgsVector,
+    QgsPointXY,
+    QgsFeature,
+    QgsPoint,
+    QgsExpressionContextUtils,
+    QgsSettings,
+    QgsCoordinateReferenceSystem,
+    QgsVectorLayer,
+    QgsFields,
+    QgsField,
+    QgsVectorFileWriter,
+)
+from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QWidget, QSpinBox, QComboBox, QFileDialog
-
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
 
@@ -21,6 +41,33 @@ class RacetrackModule:
     coverage_module: CoverageModule
     sensor_combobox: QComboBox
 
+    def __init__(self, iface, coverage_module) -> None:
+        self.iface = iface
+        self.layer_utils = LayerUtils(iface)
+        self.coverage_module = coverage_module
+
+        self.settings = self.coverage_module.settings
+        self.flight_altitude_widget = self.coverage_module.flight_altitude_widget
+        self.flight_altitude_spinbox = self.coverage_module.flight_altitude_spinbox
+        self.sensor_combobox = self.coverage_module.sensor_combobox
+
+    # disconnect not identified?
+    def close(self):
+        self.flight_altitude_spinbox.valueChanged.disconnect(
+            self.coverage_module.flight_altitude_value_changed
+        )
+        self.flight_altitude_spinbox.valueChanged.disconnect(
+            self.coverage_module.sensor_coverage_flight_altitude_changed
+        )
+        self.iface.layerTreeView().currentLayerChanged.disconnect(
+            self.coverage_module.flight_altitude_layer_changed
+        )
+        self.sensor_combobox.currentTextChanged.disconnect(
+            self.coverage_module.sensor_selection_changed
+        )
+        self.iface.layerTreeView().currentLayerChanged.disconnect(
+            self.coverage_module.sensor_coverage_layer_changed
+        )
 
     def generate_points_shp_file(
         self,
@@ -35,6 +82,7 @@ class RacetrackModule:
         file_dialog = QFileDialog()
         title = "Save Waypoint Layer As"
         suggested_file_path, _ = os.path.splitext(path_of_line)
+        #change name
         suggested_file_path += (
             f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
         )
@@ -74,23 +122,6 @@ class RacetrackModule:
         del writer
         return layer
 
-    def close(self):
-        self.flight_altitude_spinbox.valueChanged.disconnect(
-            self.flight_altitude_value_changed
-        )
-        self.flight_altitude_spinbox.valueChanged.disconnect(
-            self.sensor_coverage_flight_altitude_changed
-        )
-        self.iface.layerTreeView().currentLayerChanged.disconnect(
-            self.flight_altitude_layer_changed
-        )
-        self.sensor_combobox.currentTextChanged.disconnect(
-            self.sensor_selection_changed
-        )
-        self.iface.layerTreeView().currentLayerChanged.disconnect(
-            self.sensor_coverage_layer_changed
-        )
-
     def compute_way_points(self):
         # load layer, feature, sensor, flight altitude and crs
         layer = self.layer_utils.get_valid_selected_layer(
@@ -104,6 +135,7 @@ class RacetrackModule:
             return
 
         sensor = self.sensor_combobox.currentText()
+
         if sensor == "No sensor":
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
@@ -219,18 +251,17 @@ class RacetrackModule:
             points.append(start)
             j += 1
 
-        provider = layer.dataProvider()
+        provider = point_layer.dataProvider()
 
-        # Add fields: 'id' as Integer64 and 'tag' as String
+        # Add fields: 'tag' as String
         provider.addAttributes([
-            QgsField("id", QVariant.Int),  # id as Integer64
             QgsField("tag", QVariant.String)  # new tag attribute
         ])
         layer.updateFields()
 
         for i, point in enumerate(points):
             f = QgsFeature()
-            f.setGeometry(QgsGeometry.fromPoint(point))
+            f.setGeometry(QgsGeometry.fromPointXY(point))
             f.setAttributes([int(i), "Fly-over"])
 
             provider.addFeature(f)
@@ -243,16 +274,3 @@ class RacetrackModule:
         )
 
         self.coverage_module.flight_altitude_layer_changed(point_layer)
-
-    def __init__(self, iface) -> None:
-        self.iface = iface
-        self.layer_utils = LayerUtils(iface)
-        self.coverage_module = CoverageModule(iface)
-
-        self.settings = QgsSettings()
-        self.flight_altitude_widget = QWidget()
-        self.flight_altitude_spinbox = QSpinBox()
-        self.sensor_combobox = QComboBox()
-
-    def method(self):
-        print("RacetrackModule method called")
