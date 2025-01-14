@@ -34,6 +34,10 @@ def wpt_to_gfp(input_file_path, output_file_path):
     finally:
         os.remove(temp_file.name)
 
+def pad_with_zeros(number, expected_decimal_places):
+    current_decimal_places = len(str(number).split(".")[1])
+    return str(number) + str(0) * (expected_decimal_places - current_decimal_places)
+
 def shapefile_to_wpt(selected_layer, file_path):
     file_path = validate_file_path(file_path, ".wpt")
     if file_path is None:
@@ -46,7 +50,10 @@ def shapefile_to_wpt(selected_layer, file_path):
             point = f.geometry().asPoint()
             latitude = round(point.y(), 9)
             longitude = round(point.x(), 8)
-            file.write(f"{id},{comment},{latitude},{longitude}\n")
+            latitude_padded = pad_with_zeros(latitude, 9)
+            longitude_padded = pad_with_zeros(longitude, 8)
+
+            file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\n")
 
 
 class ExportModule:
