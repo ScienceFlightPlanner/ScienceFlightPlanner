@@ -49,7 +49,7 @@ class CoverageModule:
     flight_altitude_spinbox: QSpinBox
     sensor_combobox: QComboBox
 
-    default_flight_altitude: int = 610
+    default_flight_altitude: int = 2000
     flight_altitude_maximum: int = 9999
 
     def __init__(self, iface: QgisInterface):
@@ -59,7 +59,7 @@ class CoverageModule:
         self.settings = QgsSettings()
         self.flight_altitude_widget = QWidget()
         self.flight_altitude_spinbox = QSpinBox()
-        self.sensor_combobox = QComboBox()
+        self.sensor_combobox = QComboBox(self.iface.mainWindow())
 
     def init_gui(self, toolbar: QToolBar):
         self.flight_altitude_spinbox.setMaximum(self.flight_altitude_maximum)

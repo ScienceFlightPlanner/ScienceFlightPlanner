@@ -1,3 +1,4 @@
+import math
 import os
 from typing import Dict, Union
 
@@ -5,7 +6,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QSpinBox,
     QComboBox,
-    QFileDialog,
+    QFileDialog, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
 )
 from qgis._core import (
     QgsWkbTypes,
@@ -28,8 +29,51 @@ from qgis._core import (
 )
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
+from numba import farray
+
+#from statsmodels.stats.libqsturng.make_tbls import q0100
+
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
+
+class RacetrackDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+        
+        # Setting maximum turning distance
+        dist_layout = QHBoxLayout()
+        dist_label = QLabel("Maximum Turning Distance: ")
+        self.dist_spinbox = QSpinBox()
+        self.dist_spinbox.setRange(0, 10000) # How big could a turning circle be?
+        self.dist_spinbox.setValue(1000)
+        dist_layout.addWidget(dist_label)
+        dist_layout.addWidget(self.dist_spinbox)
+        self.layout.addLayout(dist_layout)
+
+        # Setting an Algorithm
+        algo_layout = QHBoxLayout()
+        algo_label = QLabel("Algorithm:")
+        self.algo_combo = QComboBox()
+        self.algo_combo.addItems(["Fly to top and back", "Back and Forth"])
+        algo_layout.addWidget(algo_label)
+        algo_layout.addWidget(self.algo_combo)
+        self.layout.addLayout(algo_layout)
+
+        button_layout = QHBoxLayout()
+        self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+        self.layout.addLayout(button_layout)
+
+    def get_values(self):
+        return self.dist_spinbox.value(), self.algo_combo.currentText()
+
+
 
 class RacetrackModule:
     iface: QgisInterface
@@ -159,10 +203,19 @@ class RacetrackModule:
                 duration=4,
             )
             return
+
         crs = layer.crs()
         coverage_crs = self.coverage_module.get_valid_coverage_crs()
         if coverage_crs is None:
             return
+
+        dialog = RacetrackDialog(parent=self.iface.mainWindow())
+        if dialog.exec_() == dialog.Accepted:
+            max_turn_distance, algorithm_choice = dialog.get_values()
+        else:
+            return
+
+
         transform_to_coverage_crs = QgsCoordinateTransform(
             crs, coverage_crs, QgsProject.instance()
         )
@@ -237,19 +290,106 @@ class RacetrackModule:
             return
         j = 1
         points = []
-        while True:
-            distance = 2 * coverage_range * overlap_factor * j - coverage_range
-            if distance > vec.length() + coverage_range:
-                break
+        max_fly_over_dist = max_turn_distance
 
-            end = QgsPointXY( point_end.x() + vec_normalized.x() * distance, point_end.y() + vec_normalized.y() * distance)
-            points.append(end)
-            start = QgsPointXY(
-                    point_start.x() + vec_normalized.x() * distance,
-                    point_start.y() + vec_normalized.y() * distance,
-                )
-            points.append(start)
-            j += 1
+        if algorithm_choice == "Back and Forth":
+            forward = True
+            number_of_lines = math.ceil(vec.length() / (coverage_range * 2))
+            max_flyover = math.floor(max_turn_distance / coverage_range * 2)
+            j = 1
+            left_point = True
+            reached_end = False
+            inner_iteration = 0
+
+            for k in range(number_of_lines):
+                if not reached_end:
+                    dist = 2 * coverage_range * overlap_factor * j - coverage_range
+                    start, end = start_end_points(left_point, point_start, point_end, vec_normalized, dist)
+                    points.append(start)
+                    points.append(end)
+                    left_point = not left_point
+                    if forward:
+                        if j + max_flyover <= number_of_lines:
+                            j = j + max_flyover
+                            inner_iteration = inner_iteration + 1
+                            if ((j - 1) / ((2.0 * max_flyover) - 1.0)) % 1.0 != 0.0:
+                                forward = not forward
+                            else:
+                                inner_iteration = 0
+                        else:
+                            reached_end = True
+                    else:
+                        j = (j - max_flyover) + 1
+                        inner_iteration = inner_iteration + 1
+                        forward = not forward
+                else:
+                    if inner_iteration == 0:
+                        remaining_tracks = number_of_lines - j
+                    else:
+                        remaining_tracks = int((((2 * max_flyover) - inner_iteration) - 2) / 2)
+                        self.iface.messageBar().pushMessage(
+                            f"remaning tracks: {remaining_tracks}, max_flyover: {max_flyover}, inner_iteration: {inner_iteration} ",
+                            level=Qgis.MessageLevel.Warning,
+                            duration=20,
+                        )
+                    for i in range(remaining_tracks):
+                        if forward:
+                            j = j + remaining_tracks
+                        else:
+                            j = j - remaining_tracks
+
+                        dist = 2 * coverage_range * overlap_factor * j - coverage_range
+                        start, end = start_end_points(left_point, point_start, point_end, vec_normalized, dist)
+                        points.append(start)
+                        points.append(end)
+                        left_point = not left_point
+                        remaining_tracks = remaining_tracks - 1
+                        forward = not forward
+                        left_point = not left_point
+                    break
+
+        elif algorithm_choice == "Fly to top and back":
+            left_point = True
+            forward = True
+            number_of_lines = math.ceil(vec.length()/(coverage_range * 2))
+            j = 1
+            max_flyover = math.floor(max_turn_distance / coverage_range * 2)
+            # on_top = number_of_lines - 1 % max_flyover
+            line_from_bottom = 2
+            for k in range(number_of_lines):
+                dist = 2 * coverage_range * overlap_factor * j - coverage_range
+                start, end = start_end_points(left_point, point_start, point_end, vec_normalized, dist)
+                points.append(start)
+                points.append(end)
+                left_point = not left_point
+                if forward:
+                    if j + max_flyover > number_of_lines:
+                        if j + 1 <= number_of_lines:
+                            j = j + 1
+                            forward = not forward
+                        else:
+                            j = j + 1 - max_flyover
+                            forward = not forward
+                    else:
+                        j = j + max_flyover
+                else:
+                    if j == line_from_bottom:
+                        forward = not forward
+                        j = j + 1
+                        line_from_bottom += 2
+                    elif j - max_flyover < line_from_bottom:
+                        j = line_from_bottom
+                        line_from_bottom += 1
+                        forward = not forward
+                    else:
+                        j -= max_flyover
+        else:
+            self.iface.messageBar().pushMessage(
+                f"This algorithm is not implemented",
+                level=Qgis.MessageLevel.Warning,
+                duration=4,
+            )
+
 
         provider = point_layer.dataProvider()
 
@@ -274,3 +414,17 @@ class RacetrackModule:
         )
 
         self.coverage_module.flight_altitude_layer_changed(point_layer)
+
+def start_end_points(left_point, point_start, point_end, vec_normalized, dist):
+    start = QgsPointXY(
+        point_start.x() + vec_normalized.x() * dist,
+        point_start.y() + vec_normalized.y() * dist,
+    )
+    end = QgsPointXY(
+        point_end.x() + vec_normalized.x() * dist,
+        point_end.y() + vec_normalized.y() * dist
+    )
+    if left_point:
+        return start, end
+    else:
+        return end, start
