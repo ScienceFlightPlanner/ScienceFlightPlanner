@@ -12,9 +12,6 @@ from .utils import LayerUtils
 
 
 def validate_file_path(file_path, file_type):
-    if not file_path:
-        return
-
     if not file_path.lower().endswith(file_type):
         file_path += file_type
 
@@ -22,12 +19,7 @@ def validate_file_path(file_path, file_type):
 
 
 def wpt_to_gfp(input_file_path, output_file_path):
-    output_file_path = validate_file_path(output_file_path, ".gfp")
-    if output_file_path is None:
-        return
-
     with tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False) as temp_file:
-        print(temp_file.name)
         DEC2DMM_20230704.dec2ddm(input_file_path, temp_file.name)
     try:
         wpt_to_gfp_20230704.convert_wpt_to_gfp(temp_file.name, output_file_path)
@@ -39,10 +31,6 @@ def pad_with_zeros(number, expected_decimal_places):
     return str(number) + str(0) * (expected_decimal_places - current_decimal_places)
 
 def shapefile_to_wpt(selected_layer, file_path):
-    file_path = validate_file_path(file_path, ".wpt")
-    if file_path is None:
-        return
-
     with open(file_path, "w") as file:
         for f in selected_layer.getFeatures():
             id = f.attribute("id")
@@ -70,13 +58,35 @@ class ExportModule:
         )
         shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
 
-        wpt_file_path = self.create_file_dialog(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
+        wpt_file_path = self.get_file_path(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
+        if wpt_file_path is None:
+            return
 
-        gfp_file_path = self.create_file_dialog(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
+        gfp_file_path = self.get_file_path(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
+        if gfp_file_path is None:
+            return
 
         shapefile_to_wpt(selected_layer, wpt_file_path)
 
         wpt_to_gfp(wpt_file_path, gfp_file_path)
+
+    def get_file_path(self, shapefile_path, filter, suggested_path_suffix):
+        file_path = self.create_file_dialog(shapefile_path, filter, suggested_path_suffix)
+        file_type = filter[-5:-1]
+
+        if not file_path or file_path == "":
+            if file_type == ".wpt":
+                temp_file = tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False)
+                temp_file.close()
+                file_path = temp_file.name
+            elif file_type == ".gfp":
+                return
+
+        file_path = validate_file_path(file_path, file_type)
+        if file_path is None:
+            return
+
+        return file_path
 
     def create_file_dialog(self, shapefile_path, filter, suggested_path_suffix):
         file_dialog = QFileDialog(self.iface.mainWindow())
