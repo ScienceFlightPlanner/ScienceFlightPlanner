@@ -62,12 +62,11 @@ class ExportModule:
         shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
 
         wpt_file_path = self.get_file_path(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
-        if wpt_file_path is None:
-            return
-
-        shapefile_to_wpt(selected_layer, wpt_file_path)
-
         gfp_file_path = self.get_file_path(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
+
+        if not wpt_file_path.endswith("wp_DDM.wpt") or gfp_file_path is not None:
+            shapefile_to_wpt(selected_layer, wpt_file_path)
+
         if gfp_file_path is None:
             return
 
@@ -86,8 +85,6 @@ class ExportModule:
                 return
 
         file_path = validate_file_path(file_path, file_type)
-        if file_path is None:
-            return
 
         return file_path
 
