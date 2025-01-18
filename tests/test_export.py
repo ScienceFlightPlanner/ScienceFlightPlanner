@@ -12,7 +12,7 @@ from unittest.mock import patch
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
 # noinspection PyUnresolvedReferences
-from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros
+from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros, validate_file_path
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.tests.test_tags import load_project, select_layer
 
@@ -110,6 +110,15 @@ class TestExport(unittest.TestCase):
         self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
 
         self.compare_gfp_files(output_file, expected)
+
+    @parameterized.expand([
+        ("correct_extension", "example.txt", ".txt", "example.txt"),
+        ("missing_extension", "example", ".txt", "example.txt"),
+        ("case_insensitive_extension", "example.TXT", ".txt", "example.TXT"),
+        ("empty_file_name", "", ".txt", ".txt"),
+    ])
+    def test_validate_file_path(self, name, file_path, file_type, expected_result):
+        self.assertEqual(validate_file_path(file_path, file_type), expected_result)
 
     #TODO
     def test_export_layer_without_tag_field(self):
