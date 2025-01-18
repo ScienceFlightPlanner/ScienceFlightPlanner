@@ -17,6 +17,10 @@ from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad
 from ScienceFlightPlanner.tests.test_tags import load_project, select_layer
 
 
+def tearDown_if_test_passed(output_file_path):
+    os.remove(output_file_path)
+
+
 class TestExport(unittest.TestCase):
     plugin_instance: ScienceFlightPlanner
 
@@ -26,6 +30,8 @@ class TestExport(unittest.TestCase):
         load_project()
 
     def compare_wpt_files(self, file1, file2):
+        self.assertTrue(os.path.exists(file1), f"File path {file1} does not exist.")
+
         with open(file1, 'r') as f1, open(file2, 'r') as f2:
             lines1 = f1.readlines()
             lines2 = f2.readlines()
@@ -35,7 +41,11 @@ class TestExport(unittest.TestCase):
         for i, (line1, line2) in enumerate(zip(lines1, lines2), start=1):
             self.assertEqual(line1, line2, f"Files differ at line {i}.")
 
+        tearDown_if_test_passed(file1)
+
     def compare_gfp_files(self, file1, file2):
+        self.assertTrue(os.path.exists(file1), f"File path {file1} does not exist.")
+
         with open(file1, 'r') as f1, open(file2, 'r') as f2:
             file1_str = f1.read()
             file2_str = f2.read()
@@ -65,6 +75,13 @@ class TestExport(unittest.TestCase):
             self.assertAlmostEqual(file1_longitude, file2_longitude,
                              msg=f"Coordinates differ in {file1_coord} and {file2_coord}: {file1_longitude} != {file2_longitude}", delta=1)
 
+        tearDown_if_test_passed(file1)
+
+    def assertListEqualUnsorted(self, list1, list2):
+        list1_sorted = sorted(list1)
+        list2_sorted = sorted(list2)
+        self.assertListEqual(list1_sorted, list2_sorted, f"Directory shouldn't contain file: {set(list1_sorted) - set(list2_sorted)}")
+
     # begin tests
     @parameterized.expand([
         ["Flight1", "resources/Flight1/Flight1.geojson", "resources/Flight1/Flight1_user.wpt", "resources/Flight1/Flight1_user_reference.wpt"],
@@ -90,12 +107,12 @@ class TestExport(unittest.TestCase):
 
 
     @parameterized.expand([
-        ["Flight1", "Flight1_wp", "resources/Flight1/Flight1_test_gfp_without_wpt.gfp", "resources/Flight1/Flight1_reference.gfp"],
-        ["Flight3", "Flight3_wp", "resources/Flight3/Flight3_test_gfp_without_wpt.gfp", "resources/Flight3/Flight3_reference.gfp"],
-        ["Flight4", "Flight4_wp", "resources/Flight4/Flight4_test_gfp_without_wpt.gfp", "resources/Flight4/Flight4_reference.gfp"],
+        ["Flight1", "Flight1_wp", "resources/Flight1", "resources/Flight1/Flight1_test_wpt_QFileDialog_closed.gfp", "resources/Flight1/Flight1_reference.gfp"],
+        ["Flight3", "Flight3_wp", "resources/Flight3", "resources/Flight3/Flight3_test_wpt_QFileDialog_closed.gfp", "resources/Flight3/Flight3_reference.gfp"],
+        ["Flight4", "Flight4_wp", "resources/Flight4", "resources/Flight4/Flight4_test_wpt_QFileDialog_closed.gfp", "resources/Flight4/Flight4_reference.gfp"],
     ])
     @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
-    def test_gfp_without_wpt(self, name, layer, output_file, expected, mock_create_file_dialog):
+    def test_wpt_QFileDialog_closed(self, name, layer, output_directory, output_file, expected, mock_create_file_dialog):
         def side_effect(_0, filter, _1):
             if filter == "Garmin Waypoint File (*.wpt)":
                 return ""
@@ -107,9 +124,87 @@ class TestExport(unittest.TestCase):
 
         select_layer(layer)
 
+        files_in_directory_before = os.listdir(output_directory) + [output_file.split("/")[-1]]
+
         self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
 
+        files_in_directory_after = os.listdir(output_directory)
+
         self.compare_gfp_files(output_file, expected)
+
+        self.assertListEqualUnsorted(files_in_directory_before, files_in_directory_after)
+
+
+    @parameterized.expand([
+        ["Flight1", "Flight1_wp", "resources/Flight1", "resources/Flight1/Flight1_test_gfp_QFileDialog_closed.wpt",
+         "resources/Flight1/Flight1_user_reference.wpt"],
+        ["Flight3", "Flight3_wp", "resources/Flight3", "resources/Flight3/Flight3_test_gfp_QFileDialog_closed.wpt",
+         "resources/Flight3/Flight3_user_reference.wpt"],
+        ["Flight4", "Flight4_wp", "resources/Flight4", "resources/Flight4/Flight4_test_gfp_QFileDialog_closed.wpt",
+         "resources/Flight4/Flight4_user_reference.wpt"],
+    ])
+    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    def test_gfp_QFileDialog_closed(self, name, layer, output_directory, output_file, expected,
+                                    mock_create_file_dialog):
+        def side_effect(_0, filter, _1):
+            if filter == "Garmin Waypoint File (*.wpt)":
+                return output_file
+            elif filter == "Garmin Flightplan (*.gfp)":
+                return ""
+            return None
+
+        mock_create_file_dialog.side_effect = side_effect
+
+        select_layer(layer)
+
+        files_in_directory_before = os.listdir(output_directory) + [output_file.split("/")[-1]]
+
+        self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
+
+        files_in_directory_after = os.listdir(output_directory)
+
+        self.compare_wpt_files(output_file, expected)
+
+        self.assertListEqualUnsorted(files_in_directory_before, files_in_directory_after)
+
+
+    @parameterized.expand([
+        ["Flight1", "Flight1_wp", "resources/Flight1"],
+        ["Flight3", "Flight3_wp", "resources/Flight3"],
+        ["Flight4", "Flight4_wp", "resources/Flight4"],
+    ])
+    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    def test_wpt_and_gfp_QFileDialog_closed(self, name, layer, output_directory, mock_create_file_dialog):
+        def side_effect(_0, filter, _1):
+            if filter == "Garmin Waypoint File (*.wpt)":
+                return ""
+            elif filter == "Garmin Flightplan (*.gfp)":
+                return ""
+            return None
+
+        mock_create_file_dialog.side_effect = side_effect
+
+        select_layer(layer)
+
+        files_in_directory_before = os.listdir(output_directory)
+
+        self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
+
+        files_in_directory_after = os.listdir(output_directory)
+
+        self.assertListEqualUnsorted(files_in_directory_before, files_in_directory_after)
+
+
+    @parameterized.expand([
+        ("exact_decimal_places", 12.12345678, 8, "12.12345678"),
+        ("additional_zeros", 12.34, 9, "12.340000000"),
+        ("no_decimal_places", 12, 9, "12.000000000"),
+        ("negative_number", -12.3, 8, "-12.30000000"),
+        ("zero_input", 0, 9, "0.000000000"),
+    ])
+    def test_pad_with_zeros(self, name, number, expected_decimal_places, expected_result):
+        self.assertEqual(pad_with_zeros(number, expected_decimal_places), expected_result)
+
 
     @parameterized.expand([
         ("correct_extension", "example.txt", ".txt", "example.txt"),
@@ -120,9 +215,10 @@ class TestExport(unittest.TestCase):
     def test_validate_file_path(self, name, file_path, file_type, expected_result):
         self.assertEqual(validate_file_path(file_path, file_type), expected_result)
 
+
     #TODO
     def test_export_layer_without_tag_field(self):
-        layer = QgsVectorLayer("resources/Flight1.geojson", "ogr")
+        layer = QgsVectorLayer("resources/Flight_without_tags/Flight_no_tag.geojson", "ogr")
         self.assertRaises(KeyError, partial(shapefile_to_wpt, layer, "resources/Flight1_user.wpt"))
 
 

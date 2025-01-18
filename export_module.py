@@ -65,11 +65,11 @@ class ExportModule:
         if wpt_file_path is None:
             return
 
+        shapefile_to_wpt(selected_layer, wpt_file_path)
+
         gfp_file_path = self.get_file_path(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
         if gfp_file_path is None:
             return
-
-        shapefile_to_wpt(selected_layer, wpt_file_path)
 
         wpt_to_gfp(wpt_file_path, gfp_file_path)
 
