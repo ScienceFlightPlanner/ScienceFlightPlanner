@@ -17,7 +17,6 @@ def validate_file_path(file_path, file_type):
 
     return file_path
 
-
 def wpt_to_gfp(input_file_path, output_file_path):
     with tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False) as temp_file:
         DEC2DMM_20230704.dec2ddm(input_file_path, temp_file.name)
@@ -27,8 +26,12 @@ def wpt_to_gfp(input_file_path, output_file_path):
         os.remove(temp_file.name)
 
 def pad_with_zeros(number, expected_decimal_places):
-    current_decimal_places = len(str(number).split(".")[1])
-    return str(number) + str(0) * (expected_decimal_places - current_decimal_places)
+    number_str = str(number)
+    if "." not in number_str:
+        return number_str + "." + str(0) * expected_decimal_places
+
+    current_decimal_places = len(number_str.split(".")[1])
+    return number_str + str(0) * (expected_decimal_places - current_decimal_places)
 
 def shapefile_to_wpt(selected_layer, file_path):
     with open(file_path, "w") as file:
