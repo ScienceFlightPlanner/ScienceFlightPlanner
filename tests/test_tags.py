@@ -46,8 +46,8 @@ def load_project():
     if not b:
         raise Exception("Could not load QGIS project")
 
-def select_layer():
-    layer = QgsProject.instance().mapLayersByName("SLOGIS2024-Flight1_wp")[0]
+def select_layer(layer_name):
+    layer = QgsProject.instance().mapLayersByName(layer_name)[0]
     iface.layerTreeView().setCurrentLayer(layer)
 
 def get_tag_actions():
@@ -98,7 +98,7 @@ class TestTags(unittest.TestCase):
         self.plugin_instance = plugins["ScienceFlightPlanner"]
         self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
         load_project()
-        select_layer()
+        select_layer("SLOGIS2024-Flight1_wp")
         deselect_selected_features()
 
     def check_feature_changes(self, features_before, features_after, tag, ids):

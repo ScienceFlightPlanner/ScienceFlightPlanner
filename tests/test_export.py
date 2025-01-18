@@ -1,15 +1,20 @@
+import os
 import sys
 from functools import partial
 
+from qgis.core import QgsProject
 from qgis.core import QgsVectorLayer
 from qgis.utils import plugins
 from qgis.testing import unittest
 from parameterized import parameterized
+from unittest.mock import patch
 
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
 # noinspection PyUnresolvedReferences
-from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp
+from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.tests.test_tags import load_project, select_layer
 
 
 class TestExport(unittest.TestCase):
@@ -17,6 +22,8 @@ class TestExport(unittest.TestCase):
 
     def setUp(self):
         self.plugin_instance = plugins["ScienceFlightPlanner"]
+        self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
+        load_project()
 
     def compare_wpt_files(self, file1, file2):
         with open(file1, 'r') as f1, open(file2, 'r') as f2:
@@ -58,6 +65,7 @@ class TestExport(unittest.TestCase):
             self.assertAlmostEqual(file1_longitude, file2_longitude,
                              msg=f"Coordinates differ in {file1_coord} and {file2_coord}: {file1_longitude} != {file2_longitude}", delta=1)
 
+    # begin tests
     @parameterized.expand([
         ["Flight1", "resources/Flight1/Flight1.geojson", "resources/Flight1/Flight1_user.wpt", "resources/Flight1/Flight1_user_reference.wpt"],
         ["Flight3", "resources/Flight3/Flight3.geojson", "resources/Flight3/Flight3_user.wpt", "resources/Flight3/Flight3_user_reference.wpt"],
@@ -70,6 +78,7 @@ class TestExport(unittest.TestCase):
         shapefile_to_wpt(layer, output_file)
         self.compare_wpt_files(output_file, expected)
 
+
     @parameterized.expand([
         ["Flight1", "resources/Flight1/Flight1_user_reference.wpt", "resources/Flight1/Flight1.gfp", "resources/Flight1/Flight1_reference.gfp"],
         ["Flight3", "resources/Flight3/Flight3_user_reference.wpt", "resources/Flight3/Flight3.gfp", "resources/Flight3/Flight3_reference.gfp"],
@@ -77,6 +86,29 @@ class TestExport(unittest.TestCase):
     ])
     def test_gfp(self, name, input_file, output_file, expected):
         wpt_to_gfp(input_file, output_file)
+        self.compare_gfp_files(output_file, expected)
+
+
+    @parameterized.expand([
+        ["Flight1", "Flight1_wp", "resources/Flight1/Flight1_test_gfp_without_wpt.gfp", "resources/Flight1/Flight1_reference.gfp"],
+        ["Flight3", "Flight3_wp", "resources/Flight3/Flight3_test_gfp_without_wpt.gfp", "resources/Flight3/Flight3_reference.gfp"],
+        ["Flight4", "Flight4_wp", "resources/Flight4/Flight4_test_gfp_without_wpt.gfp", "resources/Flight4/Flight4_reference.gfp"],
+    ])
+    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    def test_gfp_without_wpt(self, name, layer, output_file, expected, mock_create_file_dialog):
+        def side_effect(_0, filter, _1):
+            if filter == "Garmin Waypoint File (*.wpt)":
+                return ""
+            elif filter == "Garmin Flightplan (*.gfp)":
+                return output_file
+            return None
+
+        mock_create_file_dialog.side_effect = side_effect
+
+        select_layer(layer)
+
+        self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
+
         self.compare_gfp_files(output_file, expected)
 
     #TODO
