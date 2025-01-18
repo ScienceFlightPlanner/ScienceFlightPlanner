@@ -33,7 +33,7 @@ def pad_with_zeros(number, expected_decimal_places):
 def shapefile_to_wpt(selected_layer, file_path):
     with open(file_path, "w") as file:
         for f in selected_layer.getFeatures():
-            id = f.attribute("id")
+            id = "{:02d}".format(f.attribute("id"))
             comment = f.attribute("tag")
             point = f.geometry().asPoint()
             latitude = round(point.y(), 9)
