@@ -281,7 +281,7 @@ class ScienceFlightPlanner:
             parent=self.toolbar,
         )
         self.add_action(
-            icon="icon_flowline.png",
+            icon="icon_cut_flowline.png",
             text=self.action_module.cut_flowline,
             callback=self.cut_flowline_module.cut_action,
             parent=self.toolbar,
