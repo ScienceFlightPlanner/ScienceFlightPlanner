@@ -338,6 +338,7 @@ class ScienceFlightPlanner:
         #TODO
         """Removes the plugin menu item and icon from QGIS GUI."""
         self.help_module.close()
+        #self.onClosePlugin()
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
         self.iface.pluginMenu().removeAction(self.pluginMenu.menuAction())
 
@@ -349,8 +350,9 @@ class ScienceFlightPlanner:
             if isinstance(action, QAction):
                 self.iface.removeToolBarIcon(action)
 
+        self.toolbar.deleteLater()
         # remove the toolbar
-        del self.toolbar
+        #del self.toolbar
 
     # --------------------------------------------------------------------------
 

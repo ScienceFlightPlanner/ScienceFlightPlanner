@@ -274,6 +274,30 @@ class LayerUtils:
             feature = selected_features[0]
         return feature
 
+    def add_field_to_layer(self, layer, qgis_field_name, field_type, default_field_value, message):
+        reply = QMessageBox.question(
+            self.iface.mainWindow(),
+            f"Add Field {qgis_field_name} to Layer {layer.name()}?",
+            f"Add Field '{qgis_field_name}' to Layer {layer.name()}?\n\n{message}",
+            QMessageBox.No,
+            QMessageBox.Yes,
+        )
+        if reply == QMessageBox.No:
+            return False
+
+        new_field = QgsField(qgis_field_name, field_type)
+        added = layer.dataProvider().addAttributes([new_field])
+        if added:
+            layer.updateFields()
+
+        attr_map = {}
+        field_id = layer.fields().indexFromName(qgis_field_name)
+        for feature in layer.getFeatures():
+            attr_map[feature.id()] = {field_id: default_field_value}
+
+        layer.dataProvider().changeAttributeValues(attr_map)
+        layer.updateFields()
+        return added
 
 def get_geometry_type_from_string(geom_string: str) -> QgsWkbTypes.GeometryType:
     """Returns Geometry Type for a given string (assumes valid geometry type)"""

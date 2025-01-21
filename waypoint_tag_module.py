@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QInputDialog, QMessageBox
-from qgis.core import Qgis, QgsWkbTypes, QgsField
+from PyQt5.QtWidgets import QInputDialog
+from qgis.core import Qgis, QgsWkbTypes
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
@@ -20,6 +20,8 @@ class WaypointTagModule:
 
     default_tag = tags[0]
 
+    message_box_text = f"If '{qgis_field_name}' is not added, \nselected Points cannot be tagged."
+
     iface: QgisInterface
     layer_utils: LayerUtils
 
@@ -35,7 +37,9 @@ class WaypointTagModule:
             return
 
         if selected_layer.fields().indexFromName(self.qgis_field_name) == -1:
-            self.add_tag_field_to_layer(selected_layer)
+            added = self.layer_utils.add_field_to_layer(selected_layer, self.qgis_field_name, QVariant.String, self.default_tag, self.message_box_text)
+            if not added:
+                return
 
         selected_features = selected_layer.getSelectedFeatures()
         selected_layer.startEditing()
@@ -57,28 +61,3 @@ class WaypointTagModule:
             )
             return
         self.tag(text)
-
-    def add_tag_field_to_layer(self, layer):
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Add Field {self.qgis_field_name} to Layer {layer.name()}?",
-            f"Add Field '{self.qgis_field_name}' to Layer {layer.name()}?\n\n"
-            f"If '{self.qgis_field_name}' is not added ,\nselected Points cannot be tagged.",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.No:
-            return
-
-        new_field = QgsField(self.qgis_field_name, QVariant.String)
-        added = layer.dataProvider().addAttributes([new_field])
-        if added:
-            layer.updateFields()
-
-        attr_map = {}
-        field_id = layer.fields().indexFromName(self.qgis_field_name)
-        for feature in layer.getFeatures():
-            attr_map[feature.id()] = {field_id: self.default_tag}
-
-        layer.dataProvider().changeAttributeValues(attr_map)
-        layer.updateFields()

@@ -1,5 +1,6 @@
 import os
 
+from PyQt5.QtCore import QVariant
 from PyQt5.QtWidgets import QFileDialog
 
 from qgis.core import QgsWkbTypes
@@ -59,6 +60,13 @@ class ExportModule:
         selected_layer = self.layer_utils.get_valid_selected_layer(
             [QgsWkbTypes.GeometryType.PointGeometry]
         )
+
+        if selected_layer.fields().indexFromName("tag") == -1:
+            added = self.layer_utils.add_field_to_layer(selected_layer, "tag", QVariant.String, "Fly-over",
+                                                "If 'tag' is not added, \nthe wpt file cannot be generated.")
+            if not added:
+                return
+
         shapefile_path = selected_layer.dataProvider().dataSourceUri().split('|')[0]
 
         wpt_file_path = self.get_file_path(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
