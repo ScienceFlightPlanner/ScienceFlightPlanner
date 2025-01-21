@@ -121,10 +121,9 @@ class RacetrackModule:
             'coverage_crs': coverage_crs
         }
 
-    def _get_flight_parameters(self, layer: QgsVectorLayer) -> Union[FlightParameters, None]:
-        """Get flight-related parameters including sensor settings"""
+    def _get_sensor_parameters(self) -> Union[Tuple[str, float], None]:
+        """Get and validate sensor parameters"""
         sensor = self.sensor_combobox.currentText()
-
         if sensor == "No sensor":
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
@@ -137,29 +136,38 @@ class RacetrackModule:
             sensor_opening_angle = float(
                 self.settings.value("science_flight_planner/sensors", {})[sensor]
             )
+            return sensor, sensor_opening_angle
         except:
             if sensor:
-                return None
-
-            self.iface.messageBar().pushMessage(
-                f"Couldn't read sensor options for sensor {sensor}",
-                level=Qgis.MessageLevel.Warning,
-                duration=4,
-            )
+                self.iface.messageBar().pushMessage(
+                    f"Couldn't read sensor options for sensor {sensor}",
+                    level=Qgis.MessageLevel.Warning,
+                    duration=4,
+                )
             return None
 
-        # Get user input from dialog
-        dialog = RacetrackDialog(parent=self.iface.mainWindow())
-        if dialog.exec_() == dialog.Accepted:
-            max_turn_distance, algorithm = dialog.get_values()
-        else:
+    def _get_flight_parameters(self, layer: QgsVectorLayer) -> Union[FlightParameters, None]:
+        """Get flight-related parameters including sensor settings"""
+        # First check sensor parameters
+        sensor_params = self._get_sensor_parameters()
+        if not sensor_params:
             return None
 
+        sensor, sensor_opening_angle = sensor_params
+
+        # Calculate coverage range before showing dialog
         flight_altitude = self.flight_altitude_spinbox.value()
         coverage_range = self.coverage_module.compute_sensor_coverage_in_meters(
             sensor_opening_angle, flight_altitude
         )
         if coverage_range <= 0:
+            return None
+
+        # Only show dialog if we have valid sensor parameters
+        dialog = RacetrackDialog(parent=self.iface.mainWindow())
+        if dialog.exec_() == dialog.Accepted:
+            max_turn_distance, algorithm = dialog.get_values()
+        else:
             return None
 
         default_overlap = 0
@@ -290,12 +298,15 @@ class RacetrackModule:
             else:
                 return j - max_flyover
 
-    def _get_save_file_path(self, base_path: str, sensor_name: str,
-                            flight_altitude: float, overlap: float) -> str:
+    def _get_save_file_path(self, base_path: str,
+                            sensor_name: str,
+                            flight_altitude: float,
+                            overlap: float,
+                            max_turn: float) -> str:
         """Get save file path for the waypoint layer"""
         suggested_file_path, _ = os.path.splitext(base_path)
         suggested_file_path += (
-            f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
+            f"_{sensor_name}_{flight_altitude}m_alt_{overlap}overlap_{max_turn}m_turn_racetrack.shp"
         )
         file_path, _ = QFileDialog.getSaveFileName(
             QFileDialog(), "Save Waypoint Layer As", suggested_file_path,
@@ -311,7 +322,7 @@ class RacetrackModule:
                                  crs: QgsCoordinateReferenceSystem) -> Union[QgsVectorLayer, None]:
         """Generates an SHP-File for the sensor coverage way points"""
         file_path = self._get_save_file_path(
-            path_of_line, params.sensor_name, params.flight_altitude, params.overlap
+            path_of_line, params.sensor_name, params.flight_altitude, params.overlap, params.max_turn_distance
         )
 
         if not file_path:
@@ -551,10 +562,10 @@ class RacetrackModule:
         provider = point_layer.dataProvider()
 
         features = []
-        for i, point in enumerate(points):
+        for i, point in enumerate(points, start=1):
             f = QgsFeature()
             f.setGeometry(QgsGeometry.fromPointXY(point))
-            f.setAttributes([int(i), "Fly-over"])
+            f.setAttributes([int(i), "fly-over"])
             features.append(f)
 
         provider.addFeatures(features)

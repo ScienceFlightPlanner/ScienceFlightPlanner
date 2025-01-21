@@ -10,8 +10,8 @@ class WaypointTagModule:
 
     qgis_field_name = "tag"
 
-    tags = ["Fly-over",
-            "Fly-by",
+    tags = ["fly-over",
+            "fly-by",
             "RH 180",
             "RH 270",
             "LH 180",
