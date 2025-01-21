@@ -1,5 +1,5 @@
-import pandas as pd
-import numpy as np
+#import pandas as pd
+#import numpy as np
 import os
 import glob
 
@@ -13,7 +13,8 @@ def decimal_degrees_to_ddm(decimal_degrees):
     '''
     degrees = int(decimal_degrees) # get degrees
     decimal_minutes = (decimal_degrees - degrees) * 60 # convert minutes to decimal minutes
-    decimal_minutes = np.round(decimal_minutes, decimals=1) # round to format necessary for gfp format (1 decimal)
+    #decimal_minutes = np.round(decimal_minutes, decimals=1) # round to format necessary for gfp format (1 decimal)
+    decimal_minutes = round(decimal_minutes, 1)
     return degrees, decimal_minutes # get degree integer and decimal minutes
 
 def convert2stringLon(val):
@@ -44,24 +45,66 @@ def convert2stringLat(val):
         NorthSouth = 'N'
     return('{:1}{:02d}d{:04.1f}m'.format(NorthSouth,deg,min))
 
-def dec2ddm(fname, target):
+def dec2ddm_pandas(fname, target):
     '''
     function to read in wpt file as exported by MACS, converts DECDeg to DMM, and saves it back
     output: Same as input with DECDeg will be in DDM
     '''
-    dtype_dict = {0: str, 1: str, 2: np.float64,3: np.float64}
-    f = pd.read_csv(fname, header=None,dtype = dtype_dict)
+    #dtype_dict = {0: str, 1: str, 2: np.float64,3: np.float64}
+    #f = pd.read_csv(fname, header=None,dtype = dtype_dict)
     #f = pd.read_csv(fname, header=None)
 
-    lat = list(map(decimal_degrees_to_ddm, f.iloc[:,2]))
-    lon = list(map(decimal_degrees_to_ddm, f.iloc[:,3]))
+    #lat = list(map(decimal_degrees_to_ddm, f.iloc[:,2]))
+    #lon = list(map(decimal_degrees_to_ddm, f.iloc[:,3]))
 
-    lon = list(map(convert2stringLon,lon))
-    lat = list(map(convert2stringLat,lat))
-    f[2] = lat
-    f[3] = lon
+    #lon = list(map(convert2stringLon,lon))
+    #lat = list(map(convert2stringLat,lat))
+    #f[2] = lat
+    #f[3] = lon
 
-    f.to_csv(target, header=False, index = False) # saves file with extension DDM
+    #f.to_csv(target, header=False, index = False) # saves file with extension DDM
+    return
+
+def read_csv(fname):
+    """
+    Read CSV file manually (without pandas)
+    Output: List of rows (each row is a list of values).
+    """
+    data = []
+    with open(fname, 'r') as file:
+        for line in file:
+            data.append(line.strip().split(','))
+    return data
+
+def write_csv(data, target):
+    """
+    Write data to CSV file manually (without pandas).
+    """
+    with open(target, 'w') as file:
+        for row in data:
+            file.write(','.join(row) + '\n')
+
+def dec2ddm(fname, target):
+    """
+    Read, convert, and write CSV file with decimal degrees converted to DDM.
+    """
+    data = read_csv(fname)
+
+    for i, row in enumerate(data):
+        try:
+            lat_dd = float(row[2])
+            lon_dd = float(row[3])
+        except ValueError:
+            raise ValueError(f"Invalid latitude or longitude at line {i+1}")
+
+        lat_ddm = decimal_degrees_to_ddm(lat_dd)
+        lon_ddm = decimal_degrees_to_ddm(lon_dd)
+
+        row[2] = convert2stringLat(lat_ddm)
+        row[3] = convert2stringLon(lon_ddm)
+
+    write_csv(data, target)
+
 
 if __name__ == '__main__':
     fname = sys.argv[1]
