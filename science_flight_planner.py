@@ -351,9 +351,9 @@ class ScienceFlightPlanner:
             if isinstance(action, QAction):
                 self.iface.removeToolBarIcon(action)
 
-        self.toolbar.deleteLater()
+        # self.toolbar.deleteLater()
         # remove the toolbar
-        #del self.toolbar
+        del self.toolbar
 
     # --------------------------------------------------------------------------
 
