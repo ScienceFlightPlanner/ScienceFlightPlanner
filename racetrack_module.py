@@ -96,25 +96,7 @@ class RacetrackModule:
 
     def close(self):
         """Disconnect all signal handlers"""
-        self._disconnect_signals()
-
-    def _disconnect_signals(self):
-        """Handle disconnection of all signal handlers"""
-        self.flight_altitude_spinbox.valueChanged.disconnect(
-            self.coverage_module.flight_altitude_value_changed
-        )
-        self.flight_altitude_spinbox.valueChanged.disconnect(
-            self.coverage_module.sensor_coverage_flight_altitude_changed
-        )
-        self.iface.layerTreeView().currentLayerChanged.disconnect(
-            self.coverage_module.flight_altitude_layer_changed
-        )
-        self.sensor_combobox.currentTextChanged.disconnect(
-            self.coverage_module.sensor_selection_changed
-        )
-        self.iface.layerTreeView().currentLayerChanged.disconnect(
-            self.coverage_module.sensor_coverage_layer_changed
-        )
+        self.coverage_module.close()
 
     def _get_layer_parameters(self) -> Union[Dict, None]:
         """Get layer, feature, and CRS parameters"""
