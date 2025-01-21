@@ -190,6 +190,7 @@ class HelpWidget(QDockWidget):
             self.action_module.reversal: self.fct_reverse_waypoints,
             self.action_module.coverage_lines: self.fct_optimal_coverage_lines,
             self.action_module.flowline: self.fct_flowline,
+            self.action_module.cut_flowline: self.fct_cut_flowline,
             self.action_module.racetrack: self.fct_racetrack,
             complete_manual_name: self.fct_complete_manual,
         }[action.text()]
@@ -288,6 +289,10 @@ class HelpWidget(QDockWidget):
     def fct_flowline(self):
         """trigger function for 'Calculate flowlines'"""
         self.fct_action(self.action_module.flowline)
+
+    def fct_cut_flowline(self):
+        """trigger function for 'cut flowline'"""
+        self.fct_action(self.action_module.cut_flowline)
 
     def fct_racetrack(self):
         """trigger function for 'Convert grid to racetrack'"""
