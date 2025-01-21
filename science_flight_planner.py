@@ -27,7 +27,7 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
 
-from .CutFlowlineModule import CutFlowlineModule
+from .cut_flowline_module import CutFlowlineModule
 from .flowline_module import FlowlineModule
 from .racetrack_module import RacetrackModule
 from .action_module import ActionModule
