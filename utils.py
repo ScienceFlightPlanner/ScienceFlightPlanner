@@ -244,6 +244,8 @@ class LayerUtils:
                 "ESRI Shapefile",
             )
 
+
+
     def get_selected_feature_from_layer(self, layer: QgsMapLayer):
         """Returns the selected feature of the given layer or the only feature if only one feature is present. If no or multiple features are selected an according warning is thrown."""
         features = list(layer.getFeatures())
