@@ -28,7 +28,6 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
 
 from .cut_flowline_module import CutFlowlineModule
-from .flowline_module import FlowlineModule
 from .racetrack_module import RacetrackModule
 from .action_module import ActionModule
 from .coverage_module import CoverageModule
@@ -71,7 +70,6 @@ class ScienceFlightPlanner:
     waypoint_reduction_module: WaypointReductionModule
     waypoint_reversal_module: WaypointReversalModule
     coverage_module: CoverageModule
-    flowline_module: FlowlineModule
     cut_flowline_module: CutFlowlineModule
     racetrack_module: RacetrackModule
     action_module: ActionModule
@@ -115,7 +113,6 @@ class ScienceFlightPlanner:
         self.waypoint_reduction_module = WaypointReductionModule(iface)
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
-        self.flowline_module = FlowlineModule(iface)
         self.cut_flowline_module = CutFlowlineModule(iface)
         self.racetrack_module = RacetrackModule(iface)
         self.action_module = ActionModule(iface)
@@ -272,12 +269,6 @@ class ScienceFlightPlanner:
             icon="icon_coverage_lines.png",
             text=self.action_module.coverage_lines,
             callback=self.coverage_module.compute_optimal_coverage_lines,
-            parent=self.toolbar,
-        )
-        self.add_action(
-            icon="icon_flowline.png",
-            text=self.action_module.flowline,
-            callback=self.flowline_module.method,
             parent=self.toolbar,
         )
         self.add_action(
