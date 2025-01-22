@@ -103,6 +103,17 @@ class OptionsDialog(BASE, WIDGET):
         self.load_sensor_table()
         self.coverage_module = coverage_module
 
+        default_max_turn_distance = 3500
+
+        max_turn_distance = self.proj.readDoubleEntry(
+            "ScienceFlightPlanner", "max_turn_distance", default_max_turn_distance
+        )[0]
+        self.maxTurnDistanceSpinBox.setValue(int(max_turn_distance))
+        self.maxTurnDistanceSpinBox.setMaximum(100000)
+        self.maxTurnDistanceSpinBox.setMinimum(0)
+
+
+
     def load_sensor_table(self):
         """Creates the table on the settings page which allows to manage (add, delete, edit) sensors"""
         self.clear_sensor_table()
@@ -179,6 +190,13 @@ class OptionsDialog(BASE, WIDGET):
                     names.append(sensor_name)
                 angle_widget = self.gridLayout.itemAtPosition(row, 1).widget()
                 self.sensors[sensor_name] = angle_widget.value()
+
+        self.proj.writeEntryDouble(
+            "ScienceFlightPlanner",
+            "max_turn_distance",
+            self.maxTurnDistanceSpinBox.value()
+        )
+
         self.proj.writeEntryDouble(
             "ScienceFlightPlanner", "flight_speed", self.flightSpeedSpinBox.value()
         )
@@ -193,6 +211,11 @@ class OptionsDialog(BASE, WIDGET):
         self.settings.setValue(
             "science_flight_planner/overlap_rotation",
             self.overlapComboBox.currentIndex(),
+        )
+        self.proj.writeEntryDouble(
+            "ScienceFlightPlanner",
+            "max_turn_distance",
+            self.maxTurnDistanceSpinBox.value()
         )
         self.settings.setValue("science_flight_planner/sensors", self.sensors)
         self.coverage_module.set_sensor_combobox_entries()

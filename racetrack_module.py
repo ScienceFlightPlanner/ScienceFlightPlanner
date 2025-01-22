@@ -19,6 +19,7 @@ from PyQt5.QtCore import QVariant
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
 
+DEFAULT_MAX_TURN_DISTANCE = 1000
 
 @dataclass
 class FlightParameters:
@@ -33,16 +34,11 @@ class FlightParameters:
 class RacetrackDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
+        # Get the saved max turn distance or use default value 1000
+        self.max_turn_distance = QgsProject.instance().readDoubleEntry(
+            "ScienceFlightPlanner", "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
+        )[0]
         self._init_ui()
-
-    def _init_ui(self):
-        """Initialize the dialog UI components"""
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self._add_turning_distance_input()
-        self._add_algorithm_selector()
-        self._add_button_controls()
 
     def _add_turning_distance_input(self):
         """Add the turning distance input section"""
@@ -50,10 +46,22 @@ class RacetrackDialog(QDialog):
         dist_label = QLabel("Maximum Turning Distance: ")
         self.dist_spinbox = QSpinBox()
         self.dist_spinbox.setRange(0, 10000)
-        self.dist_spinbox.setValue(1000)
+
+        self.dist_spinbox.setValue(int(self.max_turn_distance))
+
         dist_layout.addWidget(dist_label)
         dist_layout.addWidget(self.dist_spinbox)
         self.layout.addLayout(dist_layout)
+
+    def _init_ui(self):
+        """Initialize the dialog UI components"""
+        self.setWindowTitle("Racetrack Settings")
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self._add_turning_distance_input()
+        self._add_algorithm_selector()
+        self._add_button_controls()
 
     def _add_algorithm_selector(self):
         """Add the algorithm selection dropdown"""
@@ -76,7 +84,7 @@ class RacetrackDialog(QDialog):
         button_layout.addWidget(self.cancel_button)
         self.layout.addLayout(button_layout)
 
-    def get_values(self) -> Tuple[int, str]:
+    def get_values(self):
         return self.dist_spinbox.value(), self.algo_combo.currentText()
 
 
