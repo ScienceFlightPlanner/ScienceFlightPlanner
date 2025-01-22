@@ -16,6 +16,11 @@ from qgis._core import (
 )
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
+
+from .constants import (
+    PLUGIN_NAME,
+    SENSOR_COMBOBOX_DEFAULT_VALUE
+)
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
 
@@ -36,7 +41,7 @@ class RacetrackDialog(QDialog):
         super().__init__(parent)
         # Get the saved max turn distance or use default value 1000
         self.max_turn_distance = QgsProject.instance().readDoubleEntry(
-            "ScienceFlightPlanner", "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
+            PLUGIN_NAME, "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
         )[0]
         self._init_ui()
 
@@ -132,7 +137,7 @@ class RacetrackModule:
     def _get_sensor_parameters(self) -> Union[Tuple[str, float], None]:
         """Get and validate sensor parameters"""
         sensor = self.sensor_combobox.currentText()
-        if sensor == "No sensor":
+        if sensor == SENSOR_COMBOBOX_DEFAULT_VALUE:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,

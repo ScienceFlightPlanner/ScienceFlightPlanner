@@ -38,7 +38,7 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from .utils import LayerUtils
-
+from .constants import SENSOR_COMBOBOX_DEFAULT_VALUE
 
 class CoverageModule:
     iface: QgisInterface
@@ -49,8 +49,9 @@ class CoverageModule:
     flight_altitude_spinbox: QSpinBox
     sensor_combobox: QComboBox
 
-    default_flight_altitude: int = 2000
-    flight_altitude_maximum: int = 9999
+    SPINBOX_LABEL: str = "Flight altitude (AGL) in m:"
+    DEFAULT_FLIGHT_ALTITUDE: int = 2000
+    FLIGHT_ALTITUDE_MAXIMUM: int = 9999
 
     def __init__(self, iface: QgisInterface):
         self.iface = iface
@@ -62,8 +63,8 @@ class CoverageModule:
         self.sensor_combobox = QComboBox(self.iface.mainWindow())
 
     def init_gui(self, toolbar: QToolBar):
-        self.flight_altitude_spinbox.setMaximum(self.flight_altitude_maximum)
-        self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+        self.flight_altitude_spinbox.setMaximum(self.FLIGHT_ALTITUDE_MAXIMUM)
+        self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
         self.flight_altitude_spinbox.setSingleStep(10)
         self.flight_altitude_spinbox.valueChanged.connect(
             self.flight_altitude_value_changed
@@ -76,7 +77,7 @@ class CoverageModule:
         )
 
         layout = QHBoxLayout()
-        layout.addWidget(QLabel("Flight altitude (AGL) in m:"))
+        layout.addWidget(QLabel(self.SPINBOX_LABEL))
         layout.addWidget(self.flight_altitude_spinbox)
         layout.setContentsMargins(5, 0, 5, 0)
         self.flight_altitude_widget.setLayout(layout)
@@ -163,7 +164,7 @@ class CoverageModule:
         flight_altitude = QgsExpression("@sfp_flight_altitude").evaluate(context)
         self.flight_altitude_spinbox.blockSignals(True)
         if not flight_altitude:
-            self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+            self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
             self.flight_altitude_spinbox.blockSignals(False)
             return
 
@@ -171,20 +172,20 @@ class CoverageModule:
             flight_altitude_number = int(flight_altitude)
             if (
                 flight_altitude_number < 0
-                or flight_altitude_number > self.flight_altitude_maximum
+                or flight_altitude_number > self.FLIGHT_ALTITUDE_MAXIMUM
             ):
-                self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+                self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
             else:
                 self.flight_altitude_spinbox.setValue(flight_altitude_number)
         except ValueError:
-            self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+            self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
 
         self.flight_altitude_spinbox.blockSignals(False)
 
     def set_sensor_combobox_entries(self):
         """Sets the entries in the comboBox for the sensors"""
         self.sensor_combobox.clear()
-        self.sensor_combobox.addItem("No sensor")
+        self.sensor_combobox.addItem(SENSOR_COMBOBOX_DEFAULT_VALUE)
         try:
             sensor_names = list(
                 self.settings.value("science_flight_planner/sensors", {}).keys()
@@ -202,7 +203,7 @@ class CoverageModule:
     def sensor_selection_changed(self):
         """Updates the sensor coverage layer after sensor selection changed"""
         current_sensor = self.sensor_combobox.currentText()
-        if current_sensor == "No sensor" or current_sensor == "":
+        if current_sensor == SENSOR_COMBOBOX_DEFAULT_VALUE or current_sensor == "":
             return
 
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -222,7 +223,7 @@ class CoverageModule:
 
     def sensor_coverage_layer_changed(self, layer: QgsMapLayer):
         """Updates the sensor selection after the selected layer changed"""
-        self.sensor_combobox.setCurrentText("No sensor")
+        self.sensor_combobox.setCurrentText(SENSOR_COMBOBOX_DEFAULT_VALUE)
         if (
             not layer
             or layer.type() != QgsMapLayer.VectorLayer
@@ -289,7 +290,7 @@ class CoverageModule:
         flight_altitude = self.flight_altitude_spinbox.value()
 
         current_sensor = sensor or self.sensor_combobox.currentText()
-        if current_sensor == "No sensor" or current_sensor == "":
+        if current_sensor == SENSOR_COMBOBOX_DEFAULT_VALUE or current_sensor == "":
             return
 
         try:
@@ -344,7 +345,7 @@ class CoverageModule:
             )
 
             if not coverage_layer:
-                self.sensor_combobox.setCurrentText("No sensor")
+                self.sensor_combobox.setCurrentText(SENSOR_COMBOBOX_DEFAULT_VALUE)
                 return
 
             QgsExpressionContextUtils.setLayerVariable(
@@ -647,7 +648,7 @@ class CoverageModule:
             return
 
         sensor = self.sensor_combobox.currentText()
-        if sensor == "No sensor":
+        if sensor == SENSOR_COMBOBOX_DEFAULT_VALUE:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,

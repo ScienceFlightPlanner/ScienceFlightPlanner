@@ -4,23 +4,9 @@ from qgis.core import Qgis, QgsWkbTypes
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
+from .constants import MAX_TAG_LENGTH, QGIS_FIELD_NAME, DEFAULT_TAG, MESSAGE_BOX_TEXT
 
 class WaypointTagModule:
-    max_tag_length = 10
-
-    qgis_field_name = "tag"
-
-    tags = ["fly-over",
-            "fly-by",
-            "RH 180",
-            "RH 270",
-            "LH 180",
-            "LH 270",
-            "Custom tag"]
-
-    default_tag = tags[0]
-
-    message_box_text = f"If '{qgis_field_name}' is not added, \nselected Points cannot be tagged."
 
     iface: QgisInterface
     layer_utils: LayerUtils
@@ -36,8 +22,8 @@ class WaypointTagModule:
         if selected_layer is None:
             return
 
-        if selected_layer.fields().indexFromName(self.qgis_field_name) == -1:
-            added = self.layer_utils.add_field_to_layer(selected_layer, self.qgis_field_name, QVariant.String, self.default_tag, self.message_box_text)
+        if selected_layer.fields().indexFromName(QGIS_FIELD_NAME) == -1:
+            added = self.layer_utils.add_field_to_layer(selected_layer, QGIS_FIELD_NAME, QVariant.String, DEFAULT_TAG, MESSAGE_BOX_TEXT)
             if not added:
                 return
 
@@ -45,7 +31,7 @@ class WaypointTagModule:
         selected_layer.startEditing()
         selected_layer.beginEditCommand("Add Tag for Waypoints")
         for feature in selected_features:
-            feature.setAttribute(self.qgis_field_name, tag)
+            feature.setAttribute(QGIS_FIELD_NAME, tag)
             selected_layer.updateFeature(feature)
 
         selected_layer.removeSelection()
@@ -53,7 +39,7 @@ class WaypointTagModule:
 
     def new_tag(self, parent):
         text, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
-        if len(text) > self.max_tag_length:
+        if len(text) > MAX_TAG_LENGTH:
             self.iface.messageBar().pushMessage(
                 "Tag must be less than 10 characters",
                 level=Qgis.Warning,

@@ -4,60 +4,56 @@ from qgis.core import QgsMapLayer, QgsProject, QgsWkbTypes
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QObject, QTimer
 
+from .constants import (
+    DISTANCE_ACTION_NAME,
+    DURATION_ACTION_NAME,
+    WAYPOINT_GENERATION_ACTION_NAME,
+    EXPORT_ACTION_NAME,
+    TAG_ACTION_NAME,
+    REDUCED_WAYPOINT_SELECTION_ACTION_NAME,
+    REDUCED_WAYPOINT_GENERATION_ACTION_NAME,
+    REVERSAL_ACTION_NAME,
+    COVERAGE_LINES_ACTION_NAME,
+    FLOWLINE_ACTION_NAME,
+    CUT_FLOWLINE_ACTION_NAME,
+    RACETRACK_ACTION_NAME,
+    HELP_MANUAL_ACTION_NAME,
+    FLIGHT_ALTITUDE_ACTION_NAME,
+    SENSOR_COVERAGE_ACTION_NAME,
+)
 
 class ActionModule:
     iface: QgisInterface
     toolbar_items: Union[List[QObject], None]
 
-    distance = "Display Flight Distance"
-    duration = "Display Expected Flight Duration"
-    waypoint_generation = "Generate Waypoints for Flightplan"
-    export = "Export to Garmin"
-    tag = "Add tag to selected waypoints"
-    reduced_waypoint_selection = "Mark Selected Waypoints as Significant"
-    reduced_waypoint_generation = (
-        "Generate Reduced Flightplan from Significant Waypoints"
-    )
-    reversal = "Reverse Waypoints"
-    coverage_lines = "Compute Optimal Coverage Lines"
-
-    flowline = "Get flowline from file"
-    cut_flowline = "Cut flowline"
-    racetrack = "Convert grid to racetrack"
-
-    help_manual = "Help"
-
-    flight_altitude = "Set Flight Altitude"
-    sensor_coverage = "Select Sensor"
-
     geometry_type_for_action = {
-        distance: [QgsWkbTypes.GeometryType.LineGeometry],
-        duration: [QgsWkbTypes.GeometryType.LineGeometry],
-        waypoint_generation: [QgsWkbTypes.GeometryType.LineGeometry],
-        export: [QgsWkbTypes.GeometryType.PointGeometry],
-        tag: [QgsWkbTypes.GeometryType.PointGeometry],
-        reduced_waypoint_selection: [QgsWkbTypes.GeometryType.PointGeometry],
-        reduced_waypoint_generation: [QgsWkbTypes.GeometryType.PointGeometry],
-        reversal: [
+        DISTANCE_ACTION_NAME: [QgsWkbTypes.GeometryType.LineGeometry],
+        DURATION_ACTION_NAME: [QgsWkbTypes.GeometryType.LineGeometry],
+        WAYPOINT_GENERATION_ACTION_NAME: [QgsWkbTypes.GeometryType.LineGeometry],
+        EXPORT_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
+        TAG_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
+        REDUCED_WAYPOINT_SELECTION_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
+        REDUCED_WAYPOINT_GENERATION_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
+        REVERSAL_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PointGeometry,
             QgsWkbTypes.GeometryType.LineGeometry,
         ],
-        coverage_lines: [QgsWkbTypes.GeometryType.PolygonGeometry],
-        flowline: [
+        COVERAGE_LINES_ACTION_NAME: [QgsWkbTypes.GeometryType.PolygonGeometry],
+        FLOWLINE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PointGeometry,
             QgsWkbTypes.GeometryType.LineGeometry,
         ],
-        cut_flowline: [
+        CUT_FLOWLINE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PointGeometry,
         ],
-        racetrack: [
+        RACETRACK_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
-        flight_altitude: [
+        FLIGHT_ALTITUDE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
-        sensor_coverage: [
+        SENSOR_COVERAGE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
@@ -72,7 +68,7 @@ class ActionModule:
     def connect(self, toolbar_items: List[QObject]):
         """connect the signal"""
         self.toolbar_items = list(
-            filter(lambda action: action.toolTip() != self.help_manual, toolbar_items)
+            filter(lambda action: action.toolTip() != HELP_MANUAL_ACTION_NAME, toolbar_items)
         )
         self.disable_invalid_actions_layer_wrapper()
         self.iface.layerTreeView().currentLayerChanged.connect(
