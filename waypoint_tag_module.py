@@ -4,7 +4,12 @@ from qgis.core import Qgis, QgsWkbTypes
 from qgis.gui import QgisInterface
 
 from .utils import LayerUtils
-from .constants import MAX_TAG_LENGTH, QGIS_FIELD_NAME, DEFAULT_TAG, MESSAGE_BOX_TEXT
+from .constants import (
+    MAX_TAG_LENGTH,
+    QGIS_FIELD_NAME_TAG,
+    DEFAULT_TAG,
+    MESSAGE_BOX_TEXT
+)
 
 class WaypointTagModule:
 
@@ -22,8 +27,8 @@ class WaypointTagModule:
         if selected_layer is None:
             return
 
-        if selected_layer.fields().indexFromName(QGIS_FIELD_NAME) == -1:
-            added = self.layer_utils.add_field_to_layer(selected_layer, QGIS_FIELD_NAME, QVariant.String, DEFAULT_TAG, MESSAGE_BOX_TEXT)
+        if selected_layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
+            added = self.layer_utils.add_field_to_layer(selected_layer, QGIS_FIELD_NAME_TAG, QVariant.String, DEFAULT_TAG, MESSAGE_BOX_TEXT)
             if not added:
                 return
 
@@ -31,7 +36,7 @@ class WaypointTagModule:
         selected_layer.startEditing()
         selected_layer.beginEditCommand("Add Tag for Waypoints")
         for feature in selected_features:
-            feature.setAttribute(QGIS_FIELD_NAME, tag)
+            feature.setAttribute(QGIS_FIELD_NAME_TAG, tag)
             selected_layer.updateFeature(feature)
 
         selected_layer.removeSelection()

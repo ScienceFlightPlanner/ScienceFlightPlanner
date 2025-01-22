@@ -12,7 +12,7 @@ PLUGIN_HELP_MANUAL_TITLE = "Science Flight Planner - Help Manual"
 
 MAX_TAG_LENGTH = 10
 
-QGIS_FIELD_NAME = "tag"
+QGIS_FIELD_NAME_TAG = "tag"
 
 TAGS = [
     "fly-over",
@@ -27,7 +27,7 @@ CUSTOM_TAG = "Custom tag"
 
 DEFAULT_TAG = TAGS[0]
 
-MESSAGE_BOX_TEXT = f"If '{QGIS_FIELD_NAME}' is not added, \nselected Points cannot be tagged."
+MESSAGE_BOX_TEXT = f"If '{QGIS_FIELD_NAME_TAG}' is not added, \nselected Points cannot be tagged."
 
 DISTANCE_ACTION_NAME = "Display Flight Distance"
 DURATION_ACTION_NAME = "Display Expected Flight Duration"
