@@ -24,6 +24,7 @@
         <file>resources/user_manual/generate_waypoints_for_flightplan.html</file>
         <file>resources/user_manual/mark_selected_waypoints_as_significant.html</file>
         <file>resources/user_manual/reverse_waypoints.html</file>
+        <file>resources/user_manual/cut_flowline.html</file>
         <file>resources/user_manual/select_sensor.html</file>
         <file>resources/user_manual/overlap_0_percent.png</file>
         <file>resources/user_manual/overlap_50_percent.png</file>

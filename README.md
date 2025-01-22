@@ -8,19 +8,20 @@ In addition to this help manual, you can find tutorial videos for using our plug
 
 ## Feature Overview
 
-Feature name | Access via                                     | Short description                                                 | Applicable to geometry type
----|------------------------------------------------|-------------------------------------------------------------------|---
-Display Flight Distance | ![](./resources/icons/icon_distance.png)       | Shows the length of the current flight plan in meters.            | Line 
-Display Flight Duration | ![](./resources/icons/icon_duration.png)       | Shows the expected flight duration of the current flight plan in hours. | Line 
-Generate Waypoints for Flight Plan | ![](./resources/icons/icon_file.png)           | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan. | Line 
-Export in Garmin GTN750Xi Format | ![](./resources/icons/icon_export.png)         | Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan. | Waypoints file
-Add tag to selected waypoints | ![](./resources/icons/icon_tag.png)            | Adds a tag to the selected waypoints of the current flight plan.  | Points
-Mark Selected Waypoints as Significant | ![](./resources/icons/icon_highlight.png)      | Marks the selected waypoints of the current flight plan as significant. | Points 
-Generate Reduced Flight Plan from Significant Waypoints | ![](./resources/icons/icon_labels.png)         | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile. | Points 
-Reverse Waypoints | ![](./resources/icons/icon_reverse.png)        | Reverses the order of current waypoints or flight plan.           | Line, Points 
+Feature name | Access via                                     | Short description                                                                                                                                           | Applicable to geometry type
+---|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|---
+Display Flight Distance | ![](./resources/icons/icon_distance.png)       | Shows the length of the current flight plan in meters.                                                                                                      | Line 
+Display Flight Duration | ![](./resources/icons/icon_duration.png)       | Shows the expected flight duration of the current flight plan in hours.                                                                                     | Line 
+Generate Waypoints for Flight Plan | ![](./resources/icons/icon_file.png)           | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan.                                                   | Line 
+Export in Garmin GTN750Xi Format | ![](./resources/icons/icon_export.png)         | Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.                                                                 | Waypoints file
+Add tag to selected waypoints | ![](./resources/icons/icon_tag.png)            | Adds a tag to the selected waypoints of the current flight plan.                                                                                            | Points
+Mark Selected Waypoints as Significant | ![](./resources/icons/icon_highlight.png)      | Marks the selected waypoints of the current flight plan as significant.                                                                                     | Points 
+Generate Reduced Flight Plan from Significant Waypoints | ![](./resources/icons/icon_labels.png)         | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile.                                           | Points 
+Reverse Waypoints | ![](./resources/icons/icon_reverse.png)        | Reverses the order of current waypoints or flight plan.                                                                                                     | Line, Points 
 Show Coverage | Sensor selection box in toolbar                | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile. | Line 
-Compute Optimal Coverage Lines | ![](./resources/icons/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area. | Polygon 
-
+Compute Optimal Coverage Lines | ![](./resources/icons/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.                             | Polygon 
+Cut flowline | ![](./resources/icons/icon_cut_flowline.png)   | Cut a flowline out of a given flowline at the selected waypoints                                                                                            | Points
+Racetrack from Polygon | ![](./resources/icons/icon_racetrack.png)      | Given a polygone, flight alttitude, max turning distance calculates optimal waypoints for a plane based on selected algorithm                               | Polygon 
 ## Detailed feature description
 
 ### Display Flight Distance

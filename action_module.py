@@ -22,7 +22,7 @@ class ActionModule:
     coverage_lines = "Compute Optimal Coverage Lines"
 
     flowline = "Get flowline from file"
-    cut_flowline = "Cut flowline to flightplan"
+    cut_flowline = "Cut flowline"
     racetrack = "Convert grid to racetrack"
 
     help_manual = "Help"
