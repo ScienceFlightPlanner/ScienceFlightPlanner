@@ -49,7 +49,6 @@ class ActionModule:
         ],
         cut_flowline: [
             QgsWkbTypes.GeometryType.PointGeometry,
-            QgsWkbTypes.GeometryType.LineGeometry,
         ],
         racetrack: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
