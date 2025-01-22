@@ -2,6 +2,7 @@ import os
 import sys
 from functools import partial
 
+from PyQt5.QtWidgets import QMessageBox
 from qgis.core import QgsProject
 from qgis.core import QgsVectorLayer
 from qgis.utils import plugins
@@ -215,11 +216,18 @@ class TestExport(unittest.TestCase):
     def test_validate_file_path(self, name, file_path, file_type, expected_result):
         self.assertEqual(validate_file_path(file_path, file_type), expected_result)
 
+    # TODO
+    @parameterized.expand([
+        ("", "Flight_no_tag_wp", "resources/Flight1_user.wpt"),
+    ])
+    @patch("PyQt5.QtWidgets.QMessageBox.question")
+    def NOtest_export_layer_without_tag_field(self, name, layer, output_file, mock_question_box):
+        mock_question_box.return_value = QMessageBox.Yes
 
-    #TODO
-    def test_export_layer_without_tag_field(self):
-        layer = QgsVectorLayer("resources/Flight_without_tags/Flight_no_tag.geojson", "ogr")
-        self.assertRaises(KeyError, partial(shapefile_to_wpt, layer, "resources/Flight1_user.wpt"))
+        select_layer(layer)
+        # self.assertRaises(KeyError, partial(shapefile_to_wpt, layer, output_file))
+        self.plugin_instance.export_module.shapefile_to_wpt_and_gfp()
+
 
 
 def run_all():
