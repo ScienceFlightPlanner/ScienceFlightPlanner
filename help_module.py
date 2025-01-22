@@ -1,5 +1,6 @@
 import codecs
 import os
+from functools import partial
 from typing import List, Union
 
 from qgis.gui import QgisInterface
@@ -21,18 +22,6 @@ from qgis.PyQt.QtWidgets import (
 from .constants import (
     PLUGIN_TOOLBAR_NAME,
     PLUGIN_HELP_MANUAL_TITLE,
-    DISTANCE_ACTION_NAME,
-    DURATION_ACTION_NAME,
-    WAYPOINT_GENERATION_ACTION_NAME,
-    EXPORT_ACTION_NAME,
-    TAG_ACTION_NAME,
-    REDUCED_WAYPOINT_SELECTION_ACTION_NAME,
-    REDUCED_WAYPOINT_GENERATION_ACTION_NAME,
-    REVERSAL_ACTION_NAME,
-    COVERAGE_LINES_ACTION_NAME,
-    FLOWLINE_ACTION_NAME,
-    CUT_FLOWLINE_ACTION_NAME,
-    RACETRACK_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
 )
 
@@ -171,7 +160,8 @@ class HelpWidget(QDockWidget):
         sensor_widget.setLayout(layout)
 
         sensor_combobox.addItem(self.sensor_combobox_plugin.currentText())
-        sensor_combobox.highlighted.connect(self.fct_display_coverage)
+        fct_display_coverage = partial(self.fct_action, SENSOR_COVERAGE_ACTION_NAME)
+        sensor_combobox.highlighted.connect(fct_display_coverage)
         sensor_combobox.activated.connect(self.update_coverage_widget)
 
         self.toolbar_widgets.append(sensor_widget)
@@ -201,27 +191,14 @@ class HelpWidget(QDockWidget):
 
         faq_widget = QWidget()
         faq_widget.setLayout(layout)
-        faq_button.clicked.connect(self.fct_faq)
+        fct_faq = partial(self.fct_action, FAQ_ACTION_NAME)
+        faq_button.clicked.connect(fct_faq)
         self.toolbar_widgets.append(faq_widget)
         self.faq_button = faq_button
 
     def get_corresponding_action_fct(self, action: Union[QAction, QToolButton]):
-        """returns the corresponding trigger function for the action"""
-        return {
-            DISTANCE_ACTION_NAME: self.fct_distance,
-            DURATION_ACTION_NAME: self.fct_duration,
-            WAYPOINT_GENERATION_ACTION_NAME: self.fct_generate_waypoints,
-            EXPORT_ACTION_NAME: self.fct_export,
-            TAG_ACTION_NAME: self.fct_tag,
-            REDUCED_WAYPOINT_SELECTION_ACTION_NAME: self.fct_mark_significant_waypoints,
-            REDUCED_WAYPOINT_GENERATION_ACTION_NAME: self.fct_generate_reduced_waypoints,
-            REVERSAL_ACTION_NAME: self.fct_reverse_waypoints,
-            COVERAGE_LINES_ACTION_NAME: self.fct_optimal_coverage_lines,
-            FLOWLINE_ACTION_NAME: self.fct_flowline,
-            CUT_FLOWLINE_ACTION_NAME: self.fct_cut_flowline,
-            RACETRACK_ACTION_NAME: self.fct_racetrack,
-            COMPLETE_MANUAL_NAME: self.fct_complete_manual,
-        }[action.text()]
+        """returns the action function with the corresponding argument for the action"""
+        return partial(self.fct_action, action.text())
 
     def fct_action(self, action_name: str):
         """general trigger function. When action is triggered and is not checked right now, the corresponding manual is displayed else the complete manual is displayed"""
@@ -270,72 +247,12 @@ class HelpWidget(QDockWidget):
 
             self.current_action_name = action_name
 
-    def fct_faq(self):
-        """trigger function for 'faq'"""
-        self.fct_action(FAQ_ACTION_NAME)
-
-    def fct_optimal_coverage_lines(self):
-        """trigger function for 'compute optimal coverage lines'"""
-        self.fct_action(COVERAGE_LINES_ACTION_NAME)
-
-    def fct_complete_manual(self):
-        """trigger function for 'complete manual'"""
-        self.fct_action(COMPLETE_MANUAL_NAME)
-
-    def fct_distance(self):
-        """trigger function for 'display flight distance'"""
-        self.fct_action(DISTANCE_ACTION_NAME)
-
-    def fct_display_coverage(self):
-        """trigger function for 'select sensor'"""
-        self.fct_action(SENSOR_COVERAGE_ACTION_NAME)
-
     def update_coverage_widget(self):
         """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted' signal)"""
         assert self.sensor_combobox is not None
-        self.fct_display_coverage()
+        self.fct_action(SENSOR_COVERAGE_ACTION_NAME)
         self.sensor_combobox.clear()
         self.sensor_combobox.addItem(self.sensor_combobox_plugin.currentText())
-
-    def fct_duration(self):
-        """trigger functions for 'display expected flight duration'"""
-        self.fct_action(DURATION_ACTION_NAME)
-
-    def fct_generate_waypoints(self):
-        """trigger function for 'generate waypoints for flightplan'"""
-        self.fct_action(WAYPOINT_GENERATION_ACTION_NAME)
-
-    def fct_export(self):
-        """trigger function for 'export as wpt file'"""
-        self.fct_action(EXPORT_ACTION_NAME)
-
-    def fct_tag(self):
-        """trigger function for 'tag waypoint'"""
-        self.fct_action(TAG_ACTION_NAME)
-
-    def fct_flowline(self):
-        """trigger function for 'Calculate flowlines'"""
-        self.fct_action(FLOWLINE_ACTION_NAME)
-
-    def fct_cut_flowline(self):
-        """trigger function for 'cut flowline'"""
-        self.fct_action(CUT_FLOWLINE_ACTION_NAME)
-
-    def fct_racetrack(self):
-        """trigger function for 'Convert grid to racetrack'"""
-        self.fct_action(RACETRACK_ACTION_NAME)
-
-    def fct_mark_significant_waypoints(self):
-        """trigger function for 'mark selected waypoints as significant'"""
-        self.fct_action(REDUCED_WAYPOINT_SELECTION_ACTION_NAME)
-
-    def fct_generate_reduced_waypoints(self):
-        """trigger function for 'generate reduced flightplan from significant waypoints'"""
-        self.fct_action(REDUCED_WAYPOINT_GENERATION_ACTION_NAME)
-
-    def fct_reverse_waypoints(self):
-        """trigger function for 'reverse waypoints'"""
-        self.fct_action(REVERSAL_ACTION_NAME)
 
 
 class HelpManualModule:
