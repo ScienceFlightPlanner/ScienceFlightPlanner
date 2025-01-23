@@ -43,7 +43,6 @@ from .constants import (
     REDUCED_WAYPOINT_GENERATION_ACTION_NAME,
     REVERSAL_ACTION_NAME,
     COVERAGE_LINES_ACTION_NAME,
-    FLOWLINE_ACTION_NAME,
     CUT_FLOWLINE_ACTION_NAME,
     RACETRACK_ACTION_NAME,
     HELP_MANUAL_ACTION_NAME,
@@ -290,7 +289,7 @@ class ScienceFlightPlanner:
         )
         self.add_action(
             icon="icon_cut_flowline.png",
-            text=FLOWLINE_ACTION_NAME,
+            text=CUT_FLOWLINE_ACTION_NAME,
             callback=self.cut_flowline_module.cut_action,
             parent=self.toolbar,
         )
