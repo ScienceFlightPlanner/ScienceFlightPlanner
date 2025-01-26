@@ -14,6 +14,10 @@ MAX_TAG_LENGTH = 10
 
 QGIS_FIELD_NAME_TAG = "tag"
 
+QGIS_FIELD_NAME_ID = "id"
+
+QGIS_FIELD_NAME_SIG = "sig"
+
 TAGS = [
     "fly-over",
     "fly-by",
@@ -26,8 +30,6 @@ TAGS = [
 CUSTOM_TAG = "Custom tag"
 
 DEFAULT_TAG = TAGS[0]
-
-MESSAGE_BOX_TEXT = f"If '{QGIS_FIELD_NAME_TAG}' is not added, \nselected Points cannot be tagged."
 
 DISTANCE_ACTION_NAME = "Display Flight Distance"
 DURATION_ACTION_NAME = "Display Expected Flight Duration"

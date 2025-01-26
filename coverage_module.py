@@ -29,7 +29,6 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import (
     QComboBox,
-    QFileDialog,
     QHBoxLayout,
     QLabel,
     QMessageBox,
@@ -38,7 +37,10 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from .utils import LayerUtils
-from .constants import SENSOR_COMBOBOX_DEFAULT_VALUE
+from .constants import (
+    SENSOR_COMBOBOX_DEFAULT_VALUE,
+    QGIS_FIELD_NAME_ID
+)
 
 class CoverageModule:
     iface: QgisInterface
@@ -393,48 +395,22 @@ class CoverageModule:
 
     def generate_coverage_shp_file(
         self,
-        path_of_line: str,
+        current_layer_path: str,
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
         """Generates an SHP-File for the sensor coverage"""
-        # select file path of shp-file
-        file_dialog = QFileDialog()
-        title = "Save Waypoint Layer As"
-        suggested_file_path, _ = os.path.splitext(path_of_line)
-        suggested_file_path += f"_coverage_{sensor_name}.shp"
-        filter = "ESRI Shapefile (*.shp *.SHP)"
-        file_path, _ = QFileDialog.getSaveFileName(
-            file_dialog, title, suggested_file_path, filter
-        )
-
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(".shp"):
-            file_path += ".shp"
-
-        if os.path.exists(file_path):
-            self.iface.messageBar().pushMessage(
-                "Please select a file path that does not already exist",
-                level=Qgis.Warning,
-                duration=4,
-            )
-            return
-
-        fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-
-        # create the File Writer
-        writer = self.layer_utils.create_vector_file_write(
-            file_path,
-            fields,
+        path_suffix = f"_coverage_{sensor_name}.shp"
+        writer_layer_tuple = self.generate_shp_file(
+            current_layer_path,
+            path_suffix,
             QgsWkbTypes.Polygon,
-            crs,
+            crs
         )
+        if writer_layer_tuple is None:
+            return
 
-        # add vector as layer
-        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+        writer, layer = writer_layer_tuple
 
         render_context = QgsRenderContext.fromMapSettings(
             self.iface.mapCanvas().mapSettings()
@@ -583,54 +559,56 @@ class CoverageModule:
             sensor_coverage * normalized_perpendicular.y(),
         )
 
+    def generate_shp_file(
+            self,
+            current_layer_path: str,
+            path_suffix: str,
+            geometry_type: QgsWkbTypes,
+            crs: QgsCoordinateReferenceSystem,
+    ):
+        dialog_title = "Save Waypoint Layer As"
+        # select file path of shp-file
+        file_path = self.layer_utils.get_shp_file_path(dialog_title, current_layer_path, path_suffix)
+
+        if not file_path:
+            return
+
+        fields = QgsFields()
+        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
+
+        # create the File Writer
+        writer = self.layer_utils.create_vector_file_write(
+            file_path,
+            fields,
+            geometry_type,
+            crs,
+        )
+
+        # add vector as layer
+        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+
+        return writer, layer
+
     def generate_lines_shp_file(
         self,
-        path_of_line: str,
+        current_layer_path: str,
         flight_altitude: float,
         overlap: float,
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
         """Generates an SHP-File for the sensor coverage lines"""
-        # select file path of shp-file
-        file_dialog = QFileDialog()
-        title = "Save Waypoint Layer As"
-        suggested_file_path, _ = os.path.splitext(path_of_line)
-        suggested_file_path += (
-            f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
-        )
-        filter = "ESRI Shapefile (*.shp *.SHP)"
-        file_path, _ = QFileDialog.getSaveFileName(
-            file_dialog, title, suggested_file_path, filter
-        )
-
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(".shp"):
-            file_path += ".shp"
-
-        if os.path.exists(file_path):
-            self.iface.messageBar().pushMessage(
-                "Please select a file path that does not already exist",
-                level=Qgis.Warning,
-                duration=4,
-            )
-            return
-
-        fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-
-        # create the File Writer
-        writer = self.layer_utils.create_vector_file_write(
-            file_path,
-            fields,
+        path_suffix = f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
+        writer_layer_tuple = self.generate_shp_file(
+            current_layer_path,
+            path_suffix,
             QgsWkbTypes.LineString,
-            crs,
+            crs
         )
+        if writer_layer_tuple is None:
+            return
 
-        # add vector as layer
-        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+        writer, layer = writer_layer_tuple
 
         del writer
         return layer

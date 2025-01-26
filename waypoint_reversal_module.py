@@ -10,6 +10,7 @@ from qgis.core import (
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtWidgets import QMessageBox
 
+from .constants import QGIS_FIELD_NAME_ID
 from .utils import LayerUtils
 
 
@@ -36,7 +37,7 @@ class WaypointReversalModule:
         # sort features permanently according to reversal order
         if is_reserved:
             self._sort_layer_by_field_permanently(
-                selected_layer, self.layer_utils.get_id_field_name()
+                selected_layer, QGIS_FIELD_NAME_ID
             )
             QMessageBox.information(
                 self.iface.mainWindow(),

@@ -7,8 +7,7 @@ from .utils import LayerUtils
 from .constants import (
     MAX_TAG_LENGTH,
     QGIS_FIELD_NAME_TAG,
-    DEFAULT_TAG,
-    MESSAGE_BOX_TEXT
+    DEFAULT_TAG
 )
 
 class WaypointTagModule:
@@ -28,7 +27,13 @@ class WaypointTagModule:
             return
 
         if selected_layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
-            added = self.layer_utils.add_field_to_layer(selected_layer, QGIS_FIELD_NAME_TAG, QVariant.String, DEFAULT_TAG, MESSAGE_BOX_TEXT)
+            added = self.layer_utils.add_field_to_layer(
+                selected_layer,
+                QGIS_FIELD_NAME_TAG,
+                QVariant.String,
+                DEFAULT_TAG,
+                f"If '{QGIS_FIELD_NAME_TAG}' is not added, \nselected Points cannot be tagged."
+            )
             if not added:
                 return
 

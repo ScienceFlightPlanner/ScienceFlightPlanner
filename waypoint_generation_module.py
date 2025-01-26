@@ -29,12 +29,12 @@ class WaypointGenerationModule:
         if not waypoints:
             return
 
-        path_of_line = selected_layer.dataProvider().dataSourceUri()
+        current_layer_path = selected_layer.dataProvider().dataSourceUri()
 
         waypoint_ids = list(range(1, len(waypoints) + 1))
         # generate shp-file
         self.layer_utils.generate_shp_file(
-            path_of_line, "_wp", waypoints, waypoint_ids, selected_layer.crs()
+            current_layer_path, "_wp", waypoints, waypoint_ids, selected_layer.crs()
         )
 
     def _get_waypoints_of_layer(

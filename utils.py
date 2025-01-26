@@ -25,6 +25,7 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import QCheckBox, QFileDialog, QMessageBox
 
+from .constants import QGIS_FIELD_NAME_ID
 
 class LayerUtils:
     iface: QgisInterface
@@ -126,13 +127,12 @@ class LayerUtils:
     def get_id_field_name_for_layer(self, layer: QgsMapLayer) -> Union[str, None]:
         """Get name of field used for reversing features of a given layer, if given feature does not have a feature
         like id a message is printed and None is returned"""
-        field_name = self.get_id_field_name()
         fields = layer.fields()
-        index = fields.lookupField(field_name)
+        index = fields.lookupField(QGIS_FIELD_NAME_ID)
         # check whether field like id is in list of fields of given layer
         if index < 0:
             self.iface.messageBar().pushMessage(
-                f"Please select a vector layer that has field '{field_name}'",
+                f"Please select a vector layer that has field '{QGIS_FIELD_NAME_ID}'",
                 level=Qgis.Warning,
                 duration=4,
             )
@@ -140,45 +140,72 @@ class LayerUtils:
         field_name = fields.at(index).name()
         return field_name
 
-    def get_id_field_name(self) -> str:
-        """Getter for field name used for identification"""
-        return "id"
+    def validate_file_path(self, file_path, file_type):
+        if not file_path.lower().endswith(file_type):
+            file_path += file_type
 
-    def generate_shp_file(
-        self,
-        path_of_line: str,
-        path_suffix: str,
-        waypoints: List[QgsPointXY],
-        waypoint_ids: List[int],
-        source_crs: QgsCoordinateReferenceSystem,
-    ) -> Union[None, QgsMapLayer]:
-        """Generates an SHP-File that contains the given waypoints and saves it at the given path"""
-        # select file path of shp-file
-        file_dialog = QFileDialog()
-        title = "Save Waypoint Layer As"
-        suggested_path, _ = os.path.splitext(path_of_line)
-        suggested_path += path_suffix
-        filter = "ESRI Shapefile (*.shp *.SHP)"
-        file_path, _ = QFileDialog.getSaveFileName(
-            file_dialog, title, suggested_path, filter
-        )
+        return file_path
 
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(".shp"):
-            file_path += ".shp"
-
+    def check_if_path_exists(self, file_path):
         if os.path.exists(file_path):
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
                 level=Qgis.Warning,
                 duration=4,
             )
+            return True
+        return False
+
+    def create_file_dialog(
+            self,
+            dialog_title,
+            path_of_current_layer,
+            filter, path_suffix
+    ):
+        suggested_path, _ = os.path.splitext(path_of_current_layer)
+        suggested_path += path_suffix
+        file_path, _ = QFileDialog.getSaveFileName(
+            self.iface.mainWindow(), dialog_title, suggested_path, filter
+        )
+        return file_path
+
+    def get_shp_file_path(
+            self,
+            dialog_title: str,
+            path_of_current_layer: str,
+            path_suffix: str
+    ) -> Union[None, str]:
+
+        filter = "ESRI Shapefile (*.shp *.SHP)"
+        file_path = self.create_file_dialog(
+            dialog_title, path_of_current_layer, filter, path_suffix
+        )
+
+        if not file_path:
             return
 
-        fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
+        file_path = self.validate_file_path(file_path, ".shp")
+
+        if self.check_if_path_exists(file_path):
+            return
+
+        return file_path
+
+    def generate_shp_file(
+        self,
+        current_layer_path: str,
+        path_suffix: str,
+        waypoints: List[QgsPointXY],
+        waypoint_ids: List[int],
+        source_crs: QgsCoordinateReferenceSystem,
+    ) -> Union[None, Tuple[QgsVectorFileWriter, QgsMapLayer]]:
+        """Generates an SHP-File that contains the given waypoints and saves it at the given path"""
+        dialog_title = "Save Waypoint Layer As"
+        # select file path of shp-file
+        file_path = self.get_shp_file_path(dialog_title, current_layer_path, path_suffix)
+
+        if not file_path:
+            return
 
         # transform waypoints in correct coordinate reference system
         destination_crs = QgsCoordinateReferenceSystem("EPSG:4326")
@@ -188,6 +215,9 @@ class LayerUtils:
 
         for index in range(len(waypoints)):
             waypoints[index] = crs_translator.transform(waypoints[index])
+
+        fields = QgsFields()
+        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
 
         # create the File Writer
         writer = self.create_vector_file_write(
@@ -207,10 +237,8 @@ class LayerUtils:
         # add vector as layer
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
 
-        del writer
-
         layer.reload()
-        return layer
+        return writer, layer
 
     def create_vector_file_write(
         self,
@@ -219,7 +247,7 @@ class LayerUtils:
         geometry_type: QgsWkbTypes,
         crs: QgsCoordinateReferenceSystem,
     ) -> QgsVectorFileWriter:
-        "Creates a QGSVectorFileWriter with the given attributes"
+        """Creates a QGSVectorFileWriter with the given attributes"""
         try:
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.fileEncoding = "UTF-8"
@@ -243,8 +271,6 @@ class LayerUtils:
                 crs,
                 "ESRI Shapefile",
             )
-
-
 
     def get_selected_feature_from_layer(self, layer: QgsMapLayer):
         """Returns the selected feature of the given layer or the only feature if only one feature is present. If no or multiple features are selected an according warning is thrown."""
@@ -280,7 +306,8 @@ class LayerUtils:
         reply = QMessageBox.question(
             self.iface.mainWindow(),
             f"Add Field {qgis_field_name} to Layer {layer.name()}?",
-            f"Add Field '{qgis_field_name}' to Layer {layer.name()}?\n\n{message}",
+            f"Add Field '{qgis_field_name}' to Layer {layer.name()}?\n"
+            f"{message}",
             QMessageBox.No,
             QMessageBox.Yes,
         )

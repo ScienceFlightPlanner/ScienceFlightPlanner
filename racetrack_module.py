@@ -18,6 +18,8 @@ from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
 
 from .constants import (
+    QGIS_FIELD_NAME_ID,
+    QGIS_FIELD_NAME_TAG,
     PLUGIN_NAME,
     SENSOR_COMBOBOX_DEFAULT_VALUE
 )
@@ -353,8 +355,8 @@ class RacetrackModule:
     def _create_point_layer(self, file_path: str, crs: QgsCoordinateReferenceSystem) -> Union[QgsVectorLayer, None]:
         """Create and return a new point layer"""
         fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-        fields.append(QgsField("tag", QVariant.String))
+        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
+        fields.append(QgsField(QGIS_FIELD_NAME_TAG, QVariant.String))
 
         writer = self.layer_utils.create_vector_file_write(
             file_path, fields, QgsWkbTypes.Point, crs
