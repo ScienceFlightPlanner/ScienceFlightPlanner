@@ -242,7 +242,7 @@ class WaypointReductionModule:
             QMessageBox.No,
             QMessageBox.Yes,
         )
-        if reply:
+        if reply == QMessageBox.Yes:
             deleted = layer.dataProvider().deleteAttributes([index])
             if deleted:
                 layer.updateFields()
