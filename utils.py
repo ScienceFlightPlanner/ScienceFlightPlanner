@@ -25,7 +25,7 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import QCheckBox, QFileDialog, QMessageBox
 
-from .constants import QGIS_FIELD_NAME_ID
+from .constants import QGIS_FIELD_NAME_ID, PLUGIN_NAME
 
 class LayerUtils:
     iface: QgisInterface
@@ -356,13 +356,13 @@ def show_checkable_info_message_box(
     settings_name: str, txt: str, proj: QgsProject
 ) -> bool:
     """Opens a MessageBox with option to disable future display of the same information"""
-    show_info = proj.readBoolEntry("ScienceFlightPlanner", settings_name, True)[0]
+    show_info = proj.readBoolEntry(PLUGIN_NAME, settings_name, True)[0]
     show_info_bool = show_info if isinstance(show_info, bool) else show_info == "true"
     if show_info_bool:
         check_box = QCheckBox("Don't show this again.")
         message_box = QMessageBox()
         message_box.setIcon(QMessageBox.Information)
-        message_box.setWindowTitle("ScienceFlightPlanner")
+        message_box.setWindowTitle(PLUGIN_NAME)
         message_box.setText(txt)
         message_box.addButton(QMessageBox.Ok)
         message_box.setDefaultButton(QMessageBox.Ok)
@@ -370,7 +370,7 @@ def show_checkable_info_message_box(
 
         message_box.exec()
         if check_box.checkState() == Qt.Checked:
-            proj.writeEntryBool("ScienceFlightPlanner", settings_name, False)
+            proj.writeEntryBool(PLUGIN_NAME, settings_name, False)
     return show_info
 
 """Methods for automatic external library installation"""

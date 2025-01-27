@@ -39,7 +39,11 @@ from qgis.PyQt.QtWidgets import (
 from .utils import LayerUtils
 from .constants import (
     SENSOR_COMBOBOX_DEFAULT_VALUE,
-    QGIS_FIELD_NAME_ID
+    QGIS_FIELD_NAME_ID,
+    PLUGIN_SENSOR_SETTINGS_PATH,
+    PLUGIN_OVERLAP_SETTINGS_PATH,
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
+    PLUGIN_NAME
 )
 
 class CoverageModule:
@@ -190,7 +194,7 @@ class CoverageModule:
         self.sensor_combobox.addItem(SENSOR_COMBOBOX_DEFAULT_VALUE)
         try:
             sensor_names = list(
-                self.settings.value("science_flight_planner/sensors", {}).keys()
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {}).keys()
             )
         except:
             self.iface.messageBar().pushMessage(
@@ -297,7 +301,7 @@ class CoverageModule:
 
         try:
             sensor_opening_angle = float(
-                self.settings.value("science_flight_planner/sensors", {})[
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[
                     current_sensor
                 ]
             )
@@ -636,7 +640,7 @@ class CoverageModule:
 
         try:
             sensor_opening_angle = float(
-                self.settings.value("science_flight_planner/sensors", {})[sensor]
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[sensor]
             )
         except:
             # Return if the coverage layer was deleted when updating it
@@ -679,7 +683,7 @@ class CoverageModule:
 
         default_overlap = 0
         overlap = float(
-            self.settings.value("science_flight_planner/overlap", default_overlap)
+            self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, default_overlap)
         )
         overlap_factor = 1 - overlap
         # create bounding box and extract its corners
@@ -699,7 +703,7 @@ class CoverageModule:
             bottom_left.x() - bottom_right.x(), bottom_left.y() - bottom_right.y()
         )
         draw_horizontal_lines = horizontal_vec.length() > vertical_vec.length()
-        if int(self.settings.value("science_flight_planner/overlap_rotation", 0)):
+        if int(self.settings.value(PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH, 0)):
             draw_horizontal_lines = not draw_horizontal_lines
         if draw_horizontal_lines:
             vec = vertical_vec
@@ -758,7 +762,7 @@ class CoverageModule:
         """Returns the coverage crs as set in the plugin settings. If no crs is set, an according warning is thrown."""
         coverage_crs = QgsCoordinateReferenceSystem(
             QgsProject.instance().readEntry(
-                "ScienceFlightPlanner", "coverage_crs", None
+                PLUGIN_NAME, "coverage_crs", None
             )[0]
         )
         if not coverage_crs.isValid():

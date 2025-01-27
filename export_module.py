@@ -11,8 +11,10 @@ from .libs.garmin_fpl import wpt_to_gfp_20230704, DEC2DMM_20230704
 from .utils import LayerUtils
 
 
+TEMP_FILE_SUFFIX = "wp_DDM.wpt"
+
 def wpt_to_gfp(input_file_path, output_file_path):
-    with tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(suffix=TEMP_FILE_SUFFIX, delete=False) as temp_file:
         DEC2DMM_20230704.dec2ddm(input_file_path, temp_file.name)
     try:
         wpt_to_gfp_20230704.convert_wpt_to_gfp(temp_file.name, output_file_path)
@@ -70,7 +72,7 @@ class ExportModule:
         wpt_file_path = self.get_file_path(shapefile_path, "Garmin Waypoint File (*.wpt)", "_user")
         gfp_file_path = self.get_file_path(shapefile_path, "Garmin Flightplan (*.gfp)", "_gfp")
 
-        if not wpt_file_path.endswith("wp_DDM.wpt") or gfp_file_path is not None:
+        if not wpt_file_path.endswith(TEMP_FILE_SUFFIX) or gfp_file_path is not None:
             shapefile_to_wpt(selected_layer, wpt_file_path)
 
         if gfp_file_path is None:
@@ -85,7 +87,7 @@ class ExportModule:
 
         if not file_path or file_path == "":
             if file_type == ".wpt":
-                temp_file = tempfile.NamedTemporaryFile(suffix='wp_DDM.wpt', delete=False)
+                temp_file = tempfile.NamedTemporaryFile(suffix=TEMP_FILE_SUFFIX, delete=False)
                 temp_file.close()
                 file_path = temp_file.name
             elif file_type == ".gfp":

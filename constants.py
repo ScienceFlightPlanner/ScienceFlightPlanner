@@ -1,5 +1,13 @@
 PLUGIN_NAME = "ScienceFlightPlanner"
 
+PLUGIN_ICON_PATH = ":icon.png"
+
+PLUGIN_SENSOR_SETTINGS_PATH = "science_flight_planner/sensors"
+
+PLUGIN_OVERLAP_SETTINGS_PATH = "science_flight_planner/overlap"
+
+PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH = "science_flight_planner/overlap_rotation"
+
 PLUGIN_TOOLBAR_NAME = "ScienceFlightPlanner Toolbar"
 
 Q_TOOL_TIP_STYLE_SHEET = """

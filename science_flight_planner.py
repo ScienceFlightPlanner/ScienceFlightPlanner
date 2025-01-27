@@ -47,7 +47,8 @@ from .constants import (
     RACETRACK_ACTION_NAME,
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
-    SENSOR_COVERAGE_ACTION_NAME
+    SENSOR_COVERAGE_ACTION_NAME,
+    PLUGIN_ICON_PATH
 )
 from .cut_flowline_module import CutFlowlineModule
 from .racetrack_module import RacetrackModule
@@ -113,7 +114,7 @@ class ScienceFlightPlanner:
         # Declare instance attributes
         self.toolbar_items = []
         self.options_factory = None
-        self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), PLUGIN_NAME)
+        self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(PLUGIN_ICON_PATH), PLUGIN_NAME)
         self.toolbar = self.iface.addToolBar(PLUGIN_TOOLBAR_NAME)
         if self.toolbar:
             self.toolbar.setObjectName(PLUGIN_TOOLBAR_NAME)
@@ -308,7 +309,7 @@ class ScienceFlightPlanner:
         )
 
         self.help_action = QAction(
-            QIcon(os.path.join(":icon.png")),
+            QIcon(os.path.join(PLUGIN_ICON_PATH)),
             PLUGIN_HELP_MANUAL_TITLE,
             self.iface.mainWindow()
         )

@@ -15,6 +15,7 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QTimer
 from qgis.PyQt.QtWidgets import QHBoxLayout, QLabel, QToolBar, QWidget
 
+from .constants import PLUGIN_NAME
 from .utils import LayerUtils
 
 
@@ -130,7 +131,7 @@ class FlightDistanceDurationModule:
         if self.is_displaying_flight_duration:
             try:
                 flight_speed = self.proj.readDoubleEntry(
-                    "ScienceFlightPlanner", "flight_speed", default_speed
+                    PLUGIN_NAME, "flight_speed", default_speed
                 )[0]
             except:
                 self.iface.messageBar().pushMessage(

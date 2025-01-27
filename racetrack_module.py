@@ -21,7 +21,10 @@ from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
     PLUGIN_NAME,
-    SENSOR_COMBOBOX_DEFAULT_VALUE
+    SENSOR_COMBOBOX_DEFAULT_VALUE,
+    PLUGIN_SENSOR_SETTINGS_PATH,
+    PLUGIN_OVERLAP_SETTINGS_PATH,
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH
 )
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
@@ -149,7 +152,7 @@ class RacetrackModule:
 
         try:
             sensor_opening_angle = float(
-                self.settings.value("science_flight_planner/sensors", {})[sensor]
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[sensor]
             )
             return sensor, sensor_opening_angle
         except:
@@ -187,7 +190,7 @@ class RacetrackModule:
 
         default_overlap = 0
         overlap = float(
-            self.settings.value("science_flight_planner/overlap", default_overlap)
+            self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, default_overlap)
         )
 
         return FlightParameters(
@@ -233,7 +236,7 @@ class RacetrackModule:
 
         # Determine flight direction
         draw_horizontal_lines = horizontal_vec.length() > vertical_vec.length()
-        if int(self.settings.value("science_flight_planner/overlap_rotation", 0)):
+        if int(self.settings.value(PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH, 0)):
             draw_horizontal_lines = not draw_horizontal_lines
 
         if draw_horizontal_lines:
@@ -258,10 +261,10 @@ class RacetrackModule:
             'point_start': point_start,
             'point_end': point_end,
             'coverage_range': self.coverage_module.compute_sensor_coverage_in_meters(
-                float(self.settings.value("science_flight_planner/sensors", {})[self.sensor_combobox.currentText()]),
+                float(self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[self.sensor_combobox.currentText()]),
                 self.flight_altitude_spinbox.value()
             ) * unit_factor,
-            'overlap_factor': 1 - float(self.settings.value("science_flight_planner/overlap", 0)),
+            'overlap_factor': 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0)),
             'max_turn_distance': float(self.settings.value("science_flight_planner/max_turn_distance", 1000))
         }
 
