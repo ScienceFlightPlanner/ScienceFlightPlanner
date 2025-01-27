@@ -163,7 +163,11 @@ class WaypointReductionModule:
             valid = self._check_significance_field(layer)
             # prompt user to delete field if not valid
             if not valid:
-                deleted = self._delete_field_from_layer_action(layer, QGIS_FIELD_NAME_SIG)
+                deleted = self.layer_utils.delete_field_from_layer(
+                    layer,
+                    QGIS_FIELD_NAME_SIG,
+                    f"If '{QGIS_FIELD_NAME_SIG}' is not deleted,\nselected points cannot be highlighted."
+                )
                 if not deleted:
                     self.iface.messageBar().pushMessage(
                         "Features could not be highlighted since field for significance filtering is invalid but could "
@@ -234,31 +238,6 @@ class WaypointReductionModule:
         layer.commitChanges()
         layer.reload()
         return new_significance_dic
-
-    def _delete_field_from_layer_action(
-        self, layer: QgsMapLayer, field_name: str
-    ) -> bool:
-        """Deletes field with specified name from given layer depending on user prompt"""
-        fields = layer.fields()
-        index = fields.indexFromName(field_name)
-        if index < 0:
-            return False
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Delete field {field_name} from layer {layer.name()}?",
-            f"Delete field '{field_name}' from layer {layer.name()}?\n\n"
-            f"If '{field_name}' is not deleted,\nselected points cannot be "
-            f"highlighted.",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.Yes:
-            deleted = layer.dataProvider().deleteAttributes([index])
-            if deleted:
-                layer.updateFields()
-            return deleted
-        else:
-            return False
 
     def set_read_only_config_for_field(
         self, layer: QgsMapLayer, field_name: str, read_only: bool

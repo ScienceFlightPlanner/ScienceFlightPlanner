@@ -334,7 +334,7 @@ class LayerUtils:
         return added
 
     def delete_field_from_layer(
-        self, layer: QgsMapLayer, field_name: str
+        self, layer: QgsMapLayer, field_name: str, message: str
     ) -> bool:
         """Deletes field with specified name from given layer depending on user prompt"""
         fields = layer.fields()
@@ -345,18 +345,18 @@ class LayerUtils:
             self.iface.mainWindow(),
             f"Delete field {field_name} from layer {layer.name()}?",
             f"Delete field '{field_name}' from layer {layer.name()}?\n\n"
-            f"If '{field_name}' is not deleted,\nselected points cannot be "
-            f"highlighted.",
+            f"{message}",
             QMessageBox.No,
             QMessageBox.Yes,
         )
-        if reply:
-            deleted = layer.dataProvider().deleteAttributes([index])
-            if deleted:
-                layer.updateFields()
-            return deleted
-        else:
+        if reply == QMessageBox.No:
             return False
+
+        deleted = layer.dataProvider().deleteAttributes([index])
+        if deleted:
+            layer.updateFields()
+
+        return deleted
 
 def get_geometry_type_from_string(geom_string: str) -> QgsWkbTypes.GeometryType:
     """Returns Geometry Type for a given string (assumes valid geometry type)"""
