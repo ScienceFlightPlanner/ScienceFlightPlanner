@@ -181,7 +181,13 @@ class WaypointReductionModule:
         # if user selects 'yes' field is added to currently selected layer
         if index < 0:
             valid = False
-            added = self._add_field_to_layer_action(layer, QGIS_FIELD_NAME_SIG, QVariant.Bool)
+            added = self.layer_utils.add_field_to_layer(
+                layer,
+                QGIS_FIELD_NAME_SIG,
+                QVariant.Bool,
+                None,
+                f"If '{QGIS_FIELD_NAME_SIG}' is not added ,\nselected Points cannot be highlighted."
+            )
             if not added:
                 self.iface.messageBar().pushMessage(
                     f"Features could not be highlighted since field {QGIS_FIELD_NAME_SIG} could not be added to layer",
@@ -232,7 +238,7 @@ class WaypointReductionModule:
     def _delete_field_from_layer_action(
         self, layer: QgsMapLayer, field_name: str
     ) -> bool:
-        """Deletes field of specified type from given layer depending on user prompt"""
+        """Deletes field with specified name from given layer depending on user prompt"""
         fields = layer.fields()
         index = fields.indexFromName(field_name)
         if index < 0:
@@ -251,29 +257,6 @@ class WaypointReductionModule:
             if deleted:
                 layer.updateFields()
             return deleted
-        else:
-            return False
-
-    def _add_field_to_layer_action(
-        self, layer: QgsMapLayer, field_name: str, field_type: QVariant
-    ) -> bool:
-        """Adds field of specified type to given layer depending on user prompt"""
-        # prompt user
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Add Field {field_name} to Layer {layer.name()}?",
-            f"Add Field '{field_name}' to Layer {layer.name()}?\n\n"
-            f"If '{field_name}' is not added ,\nselected Points cannot be highlighted.",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.Yes:
-            # add field to layer
-            new_field = QgsField(field_name, field_type)
-            added = layer.dataProvider().addAttributes([new_field])
-            if added:
-                layer.updateFields()
-            return added
         else:
             return False
 

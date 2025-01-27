@@ -302,7 +302,10 @@ class LayerUtils:
             feature = selected_features[0]
         return feature
 
-    def add_field_to_layer(self, layer, qgis_field_name, field_type, default_field_value, message):
+    def add_field_to_layer(
+            self, layer, qgis_field_name, field_type, default_field_value, message
+    ) -> bool:
+        """Adds field with specified name and type to given layer depending on user prompt"""
         reply = QMessageBox.question(
             self.iface.mainWindow(),
             f"Add Field {qgis_field_name} to Layer {layer.name()}?",
@@ -319,14 +322,41 @@ class LayerUtils:
         if added:
             layer.updateFields()
 
-        attr_map = {}
-        field_id = layer.fields().indexFromName(qgis_field_name)
-        for feature in layer.getFeatures():
-            attr_map[feature.id()] = {field_id: default_field_value}
+        if default_field_value is not None:
+            attr_map = {}
+            field_id = layer.fields().indexFromName(qgis_field_name)
+            for feature in layer.getFeatures():
+                attr_map[feature.id()] = {field_id: default_field_value}
 
-        layer.dataProvider().changeAttributeValues(attr_map)
-        layer.updateFields()
+            layer.dataProvider().changeAttributeValues(attr_map)
+            layer.updateFields()
+
         return added
+
+    def delete_field_from_layer(
+        self, layer: QgsMapLayer, field_name: str
+    ) -> bool:
+        """Deletes field with specified name from given layer depending on user prompt"""
+        fields = layer.fields()
+        index = fields.indexFromName(field_name)
+        if index < 0:
+            return False
+        reply = QMessageBox.question(
+            self.iface.mainWindow(),
+            f"Delete field {field_name} from layer {layer.name()}?",
+            f"Delete field '{field_name}' from layer {layer.name()}?\n\n"
+            f"If '{field_name}' is not deleted,\nselected points cannot be "
+            f"highlighted.",
+            QMessageBox.No,
+            QMessageBox.Yes,
+        )
+        if reply:
+            deleted = layer.dataProvider().deleteAttributes([index])
+            if deleted:
+                layer.updateFields()
+            return deleted
+        else:
+            return False
 
 def get_geometry_type_from_string(geom_string: str) -> QgsWkbTypes.GeometryType:
     """Returns Geometry Type for a given string (assumes valid geometry type)"""
