@@ -11,7 +11,8 @@ from .constants import (
     PLUGIN_OVERLAP_SETTINGS_PATH,
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
     PLUGIN_NAME,
-    PLUGIN_ICON_PATH
+    PLUGIN_ICON_PATH,
+    DEFAULT_PUSH_MESSAGE_DURATION
 )
 from .coverage_module import CoverageModule
 from .flight_distance_duration_module import FlightDistanceDurationModule
@@ -66,7 +67,7 @@ class SfpConfigOptionsPage(QgsOptionsPageWidget):
                 "Couldn't save changes",
                 str(err.args[0]),
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
         self.flight_distance_duration_module.update_flight_distance_duration_widgets()
 

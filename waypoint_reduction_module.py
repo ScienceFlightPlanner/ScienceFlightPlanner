@@ -20,7 +20,8 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 from .constants import (
     QGIS_FIELD_NAME_ID,
-    QGIS_FIELD_NAME_SIG
+    QGIS_FIELD_NAME_SIG,
+    DEFAULT_PUSH_MESSAGE_DURATION
 )
 from .utils import LayerUtils, show_checkable_info_message_box
 
@@ -60,7 +61,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "There are no features in the currently selected layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -74,7 +75,7 @@ class WaypointReductionModule:
                 self.iface.messageBar().pushMessage(
                     "No features selected in currently selected layer. Please select one/multiple features.",
                     level=Qgis.Info,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
             return
 
@@ -88,7 +89,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "Please select layer where all features are of single geometry type.",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -173,7 +174,7 @@ class WaypointReductionModule:
                         "Features could not be highlighted since field for significance filtering is invalid but could "
                         "not be deleted from layer",
                         level=Qgis.Warning,
-                        duration=4,
+                        duration=DEFAULT_PUSH_MESSAGE_DURATION,
                     )
                     return valid, False
                 fields = layer.fields()
@@ -196,7 +197,7 @@ class WaypointReductionModule:
                 self.iface.messageBar().pushMessage(
                     f"Features could not be highlighted since field {QGIS_FIELD_NAME_SIG} could not be added to layer",
                     level=Qgis.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
                 return valid, False
             layer.updateExtents()
@@ -261,7 +262,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "Please select a vector layer compatible for significance filtering",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return [], []
         # reduce waypoints
@@ -274,7 +275,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "Layer does not have any waypoints marked as significant",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return [], []
 

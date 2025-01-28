@@ -1,12 +1,13 @@
 PLUGIN_NAME = "ScienceFlightPlanner"
 
+DEFAULT_PUSH_MESSAGE_DURATION = 4 # in seconds
+
 PLUGIN_ICON_PATH = ":icon.png"
 
 PLUGIN_SENSOR_SETTINGS_PATH = "science_flight_planner/sensors"
-
 PLUGIN_OVERLAP_SETTINGS_PATH = "science_flight_planner/overlap"
-
 PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH = "science_flight_planner/overlap_rotation"
+PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH = "science_flight_planner/max_turn_distance"
 
 PLUGIN_TOOLBAR_NAME = "ScienceFlightPlanner Toolbar"
 
@@ -18,7 +19,7 @@ Q_TOOL_TIP_STYLE_SHEET = """
 
 PLUGIN_HELP_MANUAL_TITLE = "Science Flight Planner - Help Manual"
 
-MAX_TAG_LENGTH = 10
+MAX_TAG_LENGTH = 10 # in chars
 
 QGIS_FIELD_NAME_TAG = "tag"
 

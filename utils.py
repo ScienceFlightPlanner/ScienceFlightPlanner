@@ -23,9 +23,18 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
-from qgis.PyQt.QtWidgets import QCheckBox, QFileDialog, QMessageBox
+from qgis.PyQt.QtWidgets import (
+    QCheckBox,
+    QFileDialog,
+    QMessageBox
+)
 
-from .constants import QGIS_FIELD_NAME_ID, PLUGIN_NAME
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    PLUGIN_NAME,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
+
 
 class LayerUtils:
     iface: QgisInterface
@@ -47,7 +56,9 @@ class LayerUtils:
         if len(selected_layers) != 1:
             if display_error_messages:
                 self.iface.messageBar().pushMessage(
-                    "Please select exactly one layer", level=Qgis.Warning, duration=4
+                    "Please select exactly one layer",
+                    level=Qgis.Warning,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION
                 )
             return
 
@@ -56,7 +67,9 @@ class LayerUtils:
         if selected_layer.type() != QgsMapLayer.VectorLayer:
             if display_error_messages:
                 self.iface.messageBar().pushMessage(
-                    "Please select a vector layer", level=Qgis.Warning, duration=4
+                    "Please select a vector layer",
+                    level=Qgis.Warning,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION
                 )
             return
         else:
@@ -73,7 +86,9 @@ class LayerUtils:
                     f" but required to be of type {accepted_type_str}"
                 )
                 self.iface.messageBar().pushMessage(
-                    error_str, level=Qgis.Warning, duration=4
+                    error_str,
+                    level=Qgis.Warning,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION
                 )
             return
 
@@ -111,7 +126,7 @@ class LayerUtils:
             self.iface.messageBar().pushMessage(
                 f"Please select vector layer where all features have an assigned '{field_name}'",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return None, None
         # check whether list of values contains duplicates
@@ -119,7 +134,7 @@ class LayerUtils:
             self.iface.messageBar().pushMessage(
                 f"Please select vector layer where all features have a unique '{field_name}'",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return None, None
         return attributes, reduction
@@ -134,7 +149,7 @@ class LayerUtils:
             self.iface.messageBar().pushMessage(
                 f"Please select a vector layer that has field '{QGIS_FIELD_NAME_ID}'",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         field_name = fields.at(index).name()
@@ -151,7 +166,7 @@ class LayerUtils:
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return True
         return False
@@ -281,7 +296,7 @@ class LayerUtils:
             self.iface.messageBar().pushMessage(
                 "There are no features in the currently selected layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return None
         else:
@@ -296,7 +311,7 @@ class LayerUtils:
                     self.iface.messageBar().pushMessage(
                         "Multiple features in the currently selected layer and no/multiple selected. Select exactly one feature.",
                         level=Qgis.Info,
-                        duration=4,
+                        duration=DEFAULT_PUSH_MESSAGE_DURATION,
                     )
                 return None
             feature = selected_features[0]

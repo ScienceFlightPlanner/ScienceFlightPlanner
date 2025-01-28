@@ -3,6 +3,7 @@ from typing import List
 from qgis.core import Qgis, QgsPointXY, QgsVectorLayer, QgsWkbTypes
 from qgis.gui import QgisInterface
 
+from .constants import DEFAULT_PUSH_MESSAGE_DURATION
 from .utils import LayerUtils
 
 
@@ -46,7 +47,7 @@ class WaypointGenerationModule:
             self.iface.messageBar().pushMessage(
                 "Please select a vector layer of type line",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 
@@ -57,7 +58,7 @@ class WaypointGenerationModule:
             self.iface.messageBar().pushMessage(
                 "There are no features in the currently selected layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 

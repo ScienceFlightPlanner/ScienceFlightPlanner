@@ -7,7 +7,8 @@ from .utils import LayerUtils
 from .constants import (
     MAX_TAG_LENGTH,
     QGIS_FIELD_NAME_TAG,
-    DEFAULT_TAG
+    DEFAULT_TAG,
+    DEFAULT_PUSH_MESSAGE_DURATION
 )
 
 class WaypointTagModule:
@@ -53,7 +54,7 @@ class WaypointTagModule:
             self.iface.messageBar().pushMessage(
                 "Tag must be less than 10 characters",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         self.tag(text)

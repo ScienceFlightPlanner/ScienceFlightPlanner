@@ -24,7 +24,9 @@ from .constants import (
     SENSOR_COMBOBOX_DEFAULT_VALUE,
     PLUGIN_SENSOR_SETTINGS_PATH,
     PLUGIN_OVERLAP_SETTINGS_PATH,
-    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
+    PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
+    DEFAULT_PUSH_MESSAGE_DURATION,
 )
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
@@ -146,7 +148,7 @@ class RacetrackModule:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return None
 
@@ -160,7 +162,7 @@ class RacetrackModule:
                 self.iface.messageBar().pushMessage(
                     f"Couldn't read sensor options for sensor {sensor}",
                     level=Qgis.MessageLevel.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
             return None
 
@@ -265,7 +267,7 @@ class RacetrackModule:
                 self.flight_altitude_spinbox.value()
             ) * unit_factor,
             'overlap_factor': 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0)),
-            'max_turn_distance': float(self.settings.value("science_flight_planner/max_turn_distance", 1000))
+            'max_turn_distance': float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
         }
 
     def _handle_remaining_tracks(self, j: int, number_of_lines: int,
@@ -349,7 +351,8 @@ class RacetrackModule:
         if os.path.exists(file_path):
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
-                level=Qgis.Warning, duration=4
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION
             )
             return None
 
@@ -569,7 +572,7 @@ class RacetrackModule:
             self.iface.messageBar().pushMessage(
                 "This algorithm is not implemented",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 

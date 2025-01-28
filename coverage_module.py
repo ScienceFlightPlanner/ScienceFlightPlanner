@@ -43,7 +43,8 @@ from .constants import (
     PLUGIN_SENSOR_SETTINGS_PATH,
     PLUGIN_OVERLAP_SETTINGS_PATH,
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
-    PLUGIN_NAME
+    PLUGIN_NAME,
+    DEFAULT_PUSH_MESSAGE_DURATION
 )
 
 class CoverageModule:
@@ -200,7 +201,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 "Couldn't read sensor options",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -313,7 +314,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 f"Couldn't read sensor options for sensor {current_sensor}",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -381,7 +382,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 "Sensor opening angle is not sensible",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return -1
         return math.tan(math.radians(sensor_opening_angle) / 2) * flight_altitude
@@ -634,7 +635,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -650,7 +651,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 f"Couldn't read sensor options for sensor {sensor}",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         crs = layer.crs()
