@@ -340,8 +340,8 @@ class RacetrackModule:
         del writer
         return layer
 
-    def _compute_back_and_forth_points(self, params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for back and forth algorithm - exact original implementation"""
+    def _compute_racetrack_algo_points(self, params: dict) -> List[QgsPointXY]:
+        """Compute waypoints for racetrack algorithm"""
         points = []
         forward = True
         number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2))
@@ -423,8 +423,8 @@ class RacetrackModule:
 
         return points
 
-    def _compute_fly_to_top_points(self, params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for fly to top and back algorithm - exact original implementation"""
+    def _compute_meander_points(self, params: dict) -> List[QgsPointXY]:
+        """Compute waypoints for meander algorithm"""
         points = []
         left_point = True
         forward = True
@@ -533,9 +533,9 @@ class RacetrackModule:
     def _compute_points_for_algorithm(self, params: dict) -> List[QgsPointXY]:
         """Compute waypoints based on selected algorithm"""
         if params['flight_params'].algorithm == "Back and Forth":
-            return self._compute_back_and_forth_points(params)
+            return self._compute_racetrack_algo_points(params)
         elif params['flight_params'].algorithm == "Fly to top and back":
-            return self._compute_fly_to_top_points(params)
+            return self._compute_meander_points(params)
         else:
             self.iface.messageBar().pushMessage(
                 "This algorithm is not implemented",
