@@ -309,8 +309,8 @@ class RacetrackModule:
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
         del writer
         return layer
-
-    def _compute_back_and_forth_points(self, params: dict) -> List[QgsPointXY]:
+    @staticmethod
+    def _compute_back_and_forth_points(params: dict) -> List[QgsPointXY]:
         """Compute waypoints for back and forth algorithm - exact original implementation"""
         points = []
         forward = True
