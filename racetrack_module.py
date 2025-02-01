@@ -256,8 +256,8 @@ class RacetrackModule:
             'overlap_factor': 1 - float(self.settings.value("science_flight_planner/overlap", 0)),
             'max_turn_distance': float(self.settings.value("science_flight_planner/max_turn_distance", 1000))
         }
-
-    def _get_save_file_path(self, base_path: str,
+    @staticmethod
+    def _get_save_file_path(base_path: str,
                             sensor_name: str,
                             flight_altitude: float,
                             overlap: float,
