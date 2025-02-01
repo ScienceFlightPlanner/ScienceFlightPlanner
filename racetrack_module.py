@@ -198,9 +198,6 @@ class RacetrackModule:
         transform_to_coverage_crs = QgsCoordinateTransform(
             crs, coverage_crs, QgsProject.instance()
         )
-        transform_from_coverage_crs = QgsCoordinateTransform(
-            coverage_crs, crs, QgsProject.instance()
-        )
 
         # Transform geometry and get bounding box
         geometry = QgsGeometry(feature.geometry())
