@@ -1,31 +1,12 @@
 from PyQt5.QtCore import QVariant
 from qgis._core import QgsWkbTypes, Qgis, QgsVectorLayer, QgsField, QgsProject, QgsFeature
 from qgis._gui import QgisInterface
-
 from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
     DEFAULT_TAG
 )
-
 from .utils import LayerUtils
-
-
-def delete_points_outside_range(min_id, max_id, point_layer):
-    """
-    Deletes points outside the selected ID range.
-
-    Args:
-        min_id (int): Minimum ID in the range
-        max_id (int): Maximum ID in the range
-        point_layer (QgsVectorLayer): The layer containing the points
-    """
-    point_layer.startEditing()
-    for feature in point_layer.getFeatures():
-        point_id = feature[QGIS_FIELD_NAME_ID]
-        if not (min_id <= point_id <= max_id):
-            point_layer.dataProvider().deleteFeature(feature.id())
-
 
 class CutFlowlineModule:
     qgis_field_name = "cut_flowline"

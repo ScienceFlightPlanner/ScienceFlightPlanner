@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QSpinBox, QComboBox, QFileDialog, QDialog,
     QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
 )
-from qgis._core import (
+from qgis.core import (
     QgsWkbTypes, Qgis,
     QgsGeometry, QgsVector, QgsPointXY,
     QgsFeature, QgsExpressionContextUtils,
@@ -47,9 +47,9 @@ class RacetrackDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Get the saved max turn distance or use default value 1000
-        self.max_turn_distance = QgsProject.instance().readDoubleEntry(
+        self.max_turn_distance, _ = QgsProject.instance().readDoubleEntry(
             PLUGIN_NAME, "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
-        )[0]
+        )
         self._init_ui()
 
     def _add_turning_distance_input(self):
@@ -152,12 +152,8 @@ class RacetrackModule:
             )
             return None
 
-        try:
-            sensor_opening_angle = float(
-                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[sensor]
-            )
-            return sensor, sensor_opening_angle
-        except:
+        sensor_settings_dict: dict = self.settings.value("science_flight_planner/sensors", {})
+        if sensor not in sensor_settings_dict:
             if sensor:
                 self.iface.messageBar().pushMessage(
                     f"Couldn't read sensor options for sensor {sensor}",
@@ -166,7 +162,10 @@ class RacetrackModule:
                 )
             return None
 
-    def _get_flight_parameters(self, layer: QgsVectorLayer) -> Union[FlightParameters, None]:
+        sensor_opening_angle = float(sensor_settings_dict[sensor])
+        return sensor, sensor_opening_angle
+
+    def _get_flight_parameters(self) -> Union[FlightParameters, None]:
         """Get flight-related parameters including sensor settings"""
         # First check sensor parameters
         sensor_params = self._get_sensor_parameters()
@@ -210,9 +209,6 @@ class RacetrackModule:
         """Prepare geometry-related parameters for computation"""
         transform_to_coverage_crs = QgsCoordinateTransform(
             crs, coverage_crs, QgsProject.instance()
-        )
-        transform_from_coverage_crs = QgsCoordinateTransform(
-            coverage_crs, crs, QgsProject.instance()
         )
 
         # Transform geometry and get bounding box
@@ -269,56 +265,8 @@ class RacetrackModule:
             'overlap_factor': 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0)),
             'max_turn_distance': float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
         }
-
-    def _handle_remaining_tracks(self, j: int, number_of_lines: int,
-                                 max_flyover: int, inner_iteration: int,
-                                 left_point: bool, params: dict) -> List[QgsPointXY]:
-        """Handle the remaining tracks for back and forth algorithm"""
-        points = []
-        forward = True
-        remaining_tracks = (
-            number_of_lines - j if inner_iteration == 0
-            else int((((2 * max_flyover) - inner_iteration) - 2) / 2)
-        )
-
-        for i in range(remaining_tracks):
-            if forward:
-                j = j + remaining_tracks
-            else:
-                j = j - remaining_tracks
-
-            points.extend(self._compute_line_points(
-                j, left_point, params['point_start'], params['point_end'],
-                params['vec_normalized'], params['coverage_range'],
-                params['overlap_factor']
-            ))
-            left_point = not left_point
-            remaining_tracks = remaining_tracks - 1
-            forward = not forward
-            left_point = not left_point
-
-        return points
-
-    def _update_position(self, j: int, forward: bool, max_flyover: int,
-                         line_from_bottom: int, number_of_lines: int) -> int:
-        """Update position for fly to top algorithm"""
-        if forward:
-            if j + max_flyover > number_of_lines:
-                if j + 1 <= number_of_lines:
-                    return j + 1
-                else:
-                    return j + 1 - max_flyover
-            else:
-                return j + max_flyover
-        else:
-            if j == line_from_bottom:
-                return j + 1
-            elif j - max_flyover < line_from_bottom:
-                return line_from_bottom
-            else:
-                return j - max_flyover
-
-    def _get_save_file_path(self, base_path: str,
+    @staticmethod
+    def _get_save_file_path(base_path: str,
                             sensor_name: str,
                             flight_altitude: float,
                             overlap: float,
@@ -371,8 +319,8 @@ class RacetrackModule:
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
         del writer
         return layer
-
-    def _compute_back_and_forth_points(self, params: dict) -> List[QgsPointXY]:
+    @staticmethod
+    def _compute_back_and_forth_points(params: dict) -> List[QgsPointXY]:
         """Compute waypoints for back and forth algorithm - exact original implementation"""
         points = []
         forward = True
@@ -454,8 +402,8 @@ class RacetrackModule:
                 break
 
         return points
-
-    def _compute_fly_to_top_points(self, params: dict) -> List[QgsPointXY]:
+    @staticmethod
+    def _compute_fly_to_top_points(params: dict) -> List[QgsPointXY]:
         """Compute waypoints for fly to top and back algorithm - exact original implementation"""
         points = []
         left_point = True

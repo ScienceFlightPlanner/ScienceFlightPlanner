@@ -339,7 +339,7 @@ class ScienceFlightPlanner:
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin is closed"""
         # disconnects
-        print("test")
+        # print("test")
         self.help_module.close()
         self.coverage_module.close()
         self.racetrack_module.close()

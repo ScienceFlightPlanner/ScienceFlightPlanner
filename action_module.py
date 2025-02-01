@@ -45,6 +45,7 @@ class ActionModule:
         ],
         CUT_FLOWLINE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PointGeometry,
+            QgsWkbTypes.GeometryType.LineGeometry,
         ],
         RACETRACK_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
