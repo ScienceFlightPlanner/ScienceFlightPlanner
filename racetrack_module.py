@@ -16,6 +16,18 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
+
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    QGIS_FIELD_NAME_TAG,
+    PLUGIN_NAME,
+    SENSOR_COMBOBOX_DEFAULT_VALUE,
+    PLUGIN_SENSOR_SETTINGS_PATH,
+    PLUGIN_OVERLAP_SETTINGS_PATH,
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
+    PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
+    DEFAULT_PUSH_MESSAGE_DURATION,
+)
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
 
@@ -35,8 +47,8 @@ class RacetrackDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         # Get the saved max turn distance or use default value 1000
-        self.max_turn_distance, _= QgsProject.instance().readDoubleEntry(
-            "ScienceFlightPlanner", "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
+        self.max_turn_distance, _ = QgsProject.instance().readDoubleEntry(
+            PLUGIN_NAME, "max_turn_distance", DEFAULT_MAX_TURN_DISTANCE
         )
         self._init_ui()
 
@@ -132,11 +144,11 @@ class RacetrackModule:
     def _get_sensor_parameters(self) -> Union[Tuple[str, float], None]:
         """Get and validate sensor parameters"""
         sensor = self.sensor_combobox.currentText()
-        if sensor == "No sensor":
+        if sensor == SENSOR_COMBOBOX_DEFAULT_VALUE:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return None
 
@@ -146,7 +158,7 @@ class RacetrackModule:
                 self.iface.messageBar().pushMessage(
                     f"Couldn't read sensor options for sensor {sensor}",
                     level=Qgis.MessageLevel.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
             return None
 
@@ -179,7 +191,7 @@ class RacetrackModule:
 
         default_overlap = 0
         overlap = float(
-            self.settings.value("science_flight_planner/overlap", default_overlap)
+            self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, default_overlap)
         )
 
         return FlightParameters(
@@ -222,7 +234,7 @@ class RacetrackModule:
 
         # Determine flight direction
         draw_horizontal_lines = horizontal_vec.length() > vertical_vec.length()
-        if int(self.settings.value("science_flight_planner/overlap_rotation", 0)):
+        if int(self.settings.value(PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH, 0)):
             draw_horizontal_lines = not draw_horizontal_lines
 
         if draw_horizontal_lines:
@@ -247,11 +259,11 @@ class RacetrackModule:
             'point_start': point_start,
             'point_end': point_end,
             'coverage_range': self.coverage_module.compute_sensor_coverage_in_meters(
-                float(self.settings.value("science_flight_planner/sensors", {})[self.sensor_combobox.currentText()]),
+                float(self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[self.sensor_combobox.currentText()]),
                 self.flight_altitude_spinbox.value()
             ) * unit_factor,
-            'overlap_factor': 1 - float(self.settings.value("science_flight_planner/overlap", 0)),
-            'max_turn_distance': float(self.settings.value("science_flight_planner/max_turn_distance", 1000))
+            'overlap_factor': 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0)),
+            'max_turn_distance': float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
         }
     @staticmethod
     def _get_save_file_path(base_path: str,
@@ -287,7 +299,8 @@ class RacetrackModule:
         if os.path.exists(file_path):
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
-                level=Qgis.Warning, duration=4
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION
             )
             return None
 
@@ -296,8 +309,8 @@ class RacetrackModule:
     def _create_point_layer(self, file_path: str, crs: QgsCoordinateReferenceSystem) -> Union[QgsVectorLayer, None]:
         """Create and return a new point layer"""
         fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-        fields.append(QgsField("tag", QVariant.String))
+        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
+        fields.append(QgsField(QGIS_FIELD_NAME_TAG, QVariant.String))
 
         writer = self.layer_utils.create_vector_file_write(
             file_path, fields, QgsWkbTypes.Point, crs
@@ -507,7 +520,7 @@ class RacetrackModule:
             self.iface.messageBar().pushMessage(
                 "This algorithm is not implemented",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 

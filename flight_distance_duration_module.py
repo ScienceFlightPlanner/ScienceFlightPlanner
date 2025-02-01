@@ -15,6 +15,10 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QTimer
 from qgis.PyQt.QtWidgets import QHBoxLayout, QLabel, QToolBar, QWidget
 
+from .constants import (
+    PLUGIN_NAME,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 from .utils import LayerUtils
 
 
@@ -78,7 +82,7 @@ class FlightDistanceDurationModule:
                 "Couldn't perform calculation",
                 f"Selected feature is of type {QgsWkbTypes.displayString(feature.geometry().wkbType())} but needs to be of type {QgsWkbTypes.displayString(QgsWkbTypes.Type.LineString)}.",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return 0
 
@@ -108,7 +112,7 @@ class FlightDistanceDurationModule:
                 "Couldn't perform calculation",
                 "Flight speed must be greater than zero.",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return 0
 
@@ -130,14 +134,14 @@ class FlightDistanceDurationModule:
         if self.is_displaying_flight_duration:
             try:
                 flight_speed = self.proj.readDoubleEntry(
-                    "ScienceFlightPlanner", "flight_speed", default_speed
+                    PLUGIN_NAME, "flight_speed", default_speed
                 )[0]
             except:
                 self.iface.messageBar().pushMessage(
                     "Couldn't update flight duration",
                     "The flight speed setting is invalid.",
                     level=Qgis.MessageLevel.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
                 return
             duration = self.compute_flight_duration(

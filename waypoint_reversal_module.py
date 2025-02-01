@@ -10,6 +10,10 @@ from qgis.core import (
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtWidgets import QMessageBox
 
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 from .utils import LayerUtils
 
 
@@ -36,7 +40,7 @@ class WaypointReversalModule:
         # sort features permanently according to reversal order
         if is_reserved:
             self._sort_layer_by_field_permanently(
-                selected_layer, self.layer_utils.get_id_field_name()
+                selected_layer, QGIS_FIELD_NAME_ID
             )
             QMessageBox.information(
                 self.iface.mainWindow(),
@@ -55,7 +59,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There are no Features in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return False
         if (
@@ -65,7 +69,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There is only one Point Feature in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return False
         (
@@ -138,7 +142,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There are no Features in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         for feature in features:

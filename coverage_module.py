@@ -29,7 +29,6 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import (
     QComboBox,
-    QFileDialog,
     QHBoxLayout,
     QLabel,
     QMessageBox,
@@ -38,7 +37,15 @@ from qgis.PyQt.QtWidgets import (
 )
 
 from .utils import LayerUtils
-
+from .constants import (
+    SENSOR_COMBOBOX_DEFAULT_VALUE,
+    QGIS_FIELD_NAME_ID,
+    PLUGIN_SENSOR_SETTINGS_PATH,
+    PLUGIN_OVERLAP_SETTINGS_PATH,
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
+    PLUGIN_NAME,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 
 class CoverageModule:
     iface: QgisInterface
@@ -49,8 +56,9 @@ class CoverageModule:
     flight_altitude_spinbox: QSpinBox
     sensor_combobox: QComboBox
 
-    default_flight_altitude: int = 2000
-    flight_altitude_maximum: int = 9999
+    SPINBOX_LABEL: str = "Flight altitude (AGL) in m:"
+    DEFAULT_FLIGHT_ALTITUDE: int = 2000
+    FLIGHT_ALTITUDE_MAXIMUM: int = 9999
 
     def __init__(self, iface: QgisInterface):
         self.iface = iface
@@ -62,8 +70,8 @@ class CoverageModule:
         self.sensor_combobox = QComboBox(self.iface.mainWindow())
 
     def init_gui(self, toolbar: QToolBar):
-        self.flight_altitude_spinbox.setMaximum(self.flight_altitude_maximum)
-        self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+        self.flight_altitude_spinbox.setMaximum(self.FLIGHT_ALTITUDE_MAXIMUM)
+        self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
         self.flight_altitude_spinbox.setSingleStep(10)
         self.flight_altitude_spinbox.valueChanged.connect(
             self.flight_altitude_value_changed
@@ -76,7 +84,7 @@ class CoverageModule:
         )
 
         layout = QHBoxLayout()
-        layout.addWidget(QLabel("Flight altitude (AGL) in m:"))
+        layout.addWidget(QLabel(self.SPINBOX_LABEL))
         layout.addWidget(self.flight_altitude_spinbox)
         layout.setContentsMargins(5, 0, 5, 0)
         self.flight_altitude_widget.setLayout(layout)
@@ -163,7 +171,7 @@ class CoverageModule:
         flight_altitude = QgsExpression("@sfp_flight_altitude").evaluate(context)
         self.flight_altitude_spinbox.blockSignals(True)
         if not flight_altitude:
-            self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+            self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
             self.flight_altitude_spinbox.blockSignals(False)
             return
 
@@ -171,29 +179,29 @@ class CoverageModule:
             flight_altitude_number = int(flight_altitude)
             if (
                 flight_altitude_number < 0
-                or flight_altitude_number > self.flight_altitude_maximum
+                or flight_altitude_number > self.FLIGHT_ALTITUDE_MAXIMUM
             ):
-                self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+                self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
             else:
                 self.flight_altitude_spinbox.setValue(flight_altitude_number)
         except ValueError:
-            self.flight_altitude_spinbox.setValue(self.default_flight_altitude)
+            self.flight_altitude_spinbox.setValue(self.DEFAULT_FLIGHT_ALTITUDE)
 
         self.flight_altitude_spinbox.blockSignals(False)
 
     def set_sensor_combobox_entries(self):
         """Sets the entries in the comboBox for the sensors"""
         self.sensor_combobox.clear()
-        self.sensor_combobox.addItem("No sensor")
+        self.sensor_combobox.addItem(SENSOR_COMBOBOX_DEFAULT_VALUE)
         try:
             sensor_names = list(
-                self.settings.value("science_flight_planner/sensors", {}).keys()
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {}).keys()
             )
         except:
             self.iface.messageBar().pushMessage(
                 "Couldn't read sensor options",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -202,7 +210,7 @@ class CoverageModule:
     def sensor_selection_changed(self):
         """Updates the sensor coverage layer after sensor selection changed"""
         current_sensor = self.sensor_combobox.currentText()
-        if current_sensor == "No sensor" or current_sensor == "":
+        if current_sensor == SENSOR_COMBOBOX_DEFAULT_VALUE or current_sensor == "":
             return
 
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -222,7 +230,7 @@ class CoverageModule:
 
     def sensor_coverage_layer_changed(self, layer: QgsMapLayer):
         """Updates the sensor selection after the selected layer changed"""
-        self.sensor_combobox.setCurrentText("No sensor")
+        self.sensor_combobox.setCurrentText(SENSOR_COMBOBOX_DEFAULT_VALUE)
         if (
             not layer
             or layer.type() != QgsMapLayer.VectorLayer
@@ -289,12 +297,12 @@ class CoverageModule:
         flight_altitude = self.flight_altitude_spinbox.value()
 
         current_sensor = sensor or self.sensor_combobox.currentText()
-        if current_sensor == "No sensor" or current_sensor == "":
+        if current_sensor == SENSOR_COMBOBOX_DEFAULT_VALUE or current_sensor == "":
             return
 
         try:
             sensor_opening_angle = float(
-                self.settings.value("science_flight_planner/sensors", {})[
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[
                     current_sensor
                 ]
             )
@@ -306,7 +314,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 f"Couldn't read sensor options for sensor {current_sensor}",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -344,7 +352,7 @@ class CoverageModule:
             )
 
             if not coverage_layer:
-                self.sensor_combobox.setCurrentText("No sensor")
+                self.sensor_combobox.setCurrentText(SENSOR_COMBOBOX_DEFAULT_VALUE)
                 return
 
             QgsExpressionContextUtils.setLayerVariable(
@@ -374,7 +382,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 "Sensor opening angle is not sensible",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return -1
         return math.tan(math.radians(sensor_opening_angle) / 2) * flight_altitude
@@ -392,48 +400,22 @@ class CoverageModule:
 
     def generate_coverage_shp_file(
         self,
-        path_of_line: str,
+        current_layer_path: str,
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
         """Generates an SHP-File for the sensor coverage"""
-        # select file path of shp-file
-        file_dialog = QFileDialog()
-        title = "Save Waypoint Layer As"
-        suggested_file_path, _ = os.path.splitext(path_of_line)
-        suggested_file_path += f"_coverage_{sensor_name}.shp"
-        filter = "ESRI Shapefile (*.shp *.SHP)"
-        file_path, _ = QFileDialog.getSaveFileName(
-            file_dialog, title, suggested_file_path, filter
-        )
-
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(".shp"):
-            file_path += ".shp"
-
-        if os.path.exists(file_path):
-            self.iface.messageBar().pushMessage(
-                "Please select a file path that does not already exist",
-                level=Qgis.Warning,
-                duration=4,
-            )
-            return
-
-        fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-
-        # create the File Writer
-        writer = self.layer_utils.create_vector_file_write(
-            file_path,
-            fields,
+        path_suffix = f"_coverage_{sensor_name}.shp"
+        writer_layer_tuple = self.generate_shp_file(
+            current_layer_path,
+            path_suffix,
             QgsWkbTypes.Polygon,
-            crs,
+            crs
         )
+        if writer_layer_tuple is None:
+            return
 
-        # add vector as layer
-        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+        writer, layer = writer_layer_tuple
 
         render_context = QgsRenderContext.fromMapSettings(
             self.iface.mapCanvas().mapSettings()
@@ -582,54 +564,56 @@ class CoverageModule:
             sensor_coverage * normalized_perpendicular.y(),
         )
 
+    def generate_shp_file(
+            self,
+            current_layer_path: str,
+            path_suffix: str,
+            geometry_type: QgsWkbTypes,
+            crs: QgsCoordinateReferenceSystem,
+    ):
+        dialog_title = "Save Waypoint Layer As"
+        # select file path of shp-file
+        file_path = self.layer_utils.get_shp_file_path(dialog_title, current_layer_path, path_suffix)
+
+        if not file_path:
+            return
+
+        fields = QgsFields()
+        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
+
+        # create the File Writer
+        writer = self.layer_utils.create_vector_file_write(
+            file_path,
+            fields,
+            geometry_type,
+            crs,
+        )
+
+        # add vector as layer
+        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+
+        return writer, layer
+
     def generate_lines_shp_file(
         self,
-        path_of_line: str,
+        current_layer_path: str,
         flight_altitude: float,
         overlap: float,
         crs: QgsCoordinateReferenceSystem,
         sensor_name: str,
     ) -> Union[QgsVectorLayer, None]:
         """Generates an SHP-File for the sensor coverage lines"""
-        # select file path of shp-file
-        file_dialog = QFileDialog()
-        title = "Save Waypoint Layer As"
-        suggested_file_path, _ = os.path.splitext(path_of_line)
-        suggested_file_path += (
-            f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
-        )
-        filter = "ESRI Shapefile (*.shp *.SHP)"
-        file_path, _ = QFileDialog.getSaveFileName(
-            file_dialog, title, suggested_file_path, filter
-        )
-
-        if not file_path:
-            return
-
-        if not file_path.lower().endswith(".shp"):
-            file_path += ".shp"
-
-        if os.path.exists(file_path):
-            self.iface.messageBar().pushMessage(
-                "Please select a file path that does not already exist",
-                level=Qgis.Warning,
-                duration=4,
-            )
-            return
-
-        fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-
-        # create the File Writer
-        writer = self.layer_utils.create_vector_file_write(
-            file_path,
-            fields,
+        path_suffix = f"_{sensor_name}_{flight_altitude}m_{overlap}overlap_coverage_lines.shp"
+        writer_layer_tuple = self.generate_shp_file(
+            current_layer_path,
+            path_suffix,
             QgsWkbTypes.LineString,
-            crs,
+            crs
         )
+        if writer_layer_tuple is None:
+            return
 
-        # add vector as layer
-        layer = self.iface.addVectorLayer(file_path, "", "ogr")
+        writer, layer = writer_layer_tuple
 
         del writer
         return layer
@@ -647,17 +631,17 @@ class CoverageModule:
             return
 
         sensor = self.sensor_combobox.currentText()
-        if sensor == "No sensor":
+        if sensor == SENSOR_COMBOBOX_DEFAULT_VALUE:
             self.iface.messageBar().pushMessage(
                 "No sensor selected",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
         try:
             sensor_opening_angle = float(
-                self.settings.value("science_flight_planner/sensors", {})[sensor]
+                self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[sensor]
             )
         except:
             # Return if the coverage layer was deleted when updating it
@@ -667,7 +651,7 @@ class CoverageModule:
             self.iface.messageBar().pushMessage(
                 f"Couldn't read sensor options for sensor {sensor}",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         crs = layer.crs()
@@ -700,7 +684,7 @@ class CoverageModule:
 
         default_overlap = 0
         overlap = float(
-            self.settings.value("science_flight_planner/overlap", default_overlap)
+            self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, default_overlap)
         )
         overlap_factor = 1 - overlap
         # create bounding box and extract its corners
@@ -720,7 +704,7 @@ class CoverageModule:
             bottom_left.x() - bottom_right.x(), bottom_left.y() - bottom_right.y()
         )
         draw_horizontal_lines = horizontal_vec.length() > vertical_vec.length()
-        if int(self.settings.value("science_flight_planner/overlap_rotation", 0)):
+        if int(self.settings.value(PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH, 0)):
             draw_horizontal_lines = not draw_horizontal_lines
         if draw_horizontal_lines:
             vec = vertical_vec
@@ -779,7 +763,7 @@ class CoverageModule:
         """Returns the coverage crs as set in the plugin settings. If no crs is set, an according warning is thrown."""
         coverage_crs = QgsCoordinateReferenceSystem(
             QgsProject.instance().readEntry(
-                "ScienceFlightPlanner", "coverage_crs", None
+                PLUGIN_NAME, "coverage_crs", None
             )[0]
         )
         if not coverage_crs.isValid():

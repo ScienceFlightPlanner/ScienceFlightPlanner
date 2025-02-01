@@ -1,8 +1,12 @@
 from PyQt5.QtCore import QVariant
-from qgis.core import QgsWkbTypes, Qgis, QgsVectorLayer, QgsField, QgsProject, QgsFeature
-from qgis.gui import QgisInterface
+from qgis._core import QgsWkbTypes, Qgis, QgsVectorLayer, QgsField, QgsProject, QgsFeature
+from qgis._gui import QgisInterface
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    QGIS_FIELD_NAME_TAG,
+    DEFAULT_TAG
+)
 from .utils import LayerUtils
-
 
 class CutFlowlineModule:
     qgis_field_name = "cut_flowline"
@@ -31,8 +35,8 @@ class CutFlowlineModule:
 
         # Add fields: 'id' (Int), 'tag' (String)
         provider.addAttributes([
-            QgsField("id", QVariant.Int),
-            QgsField("tag", QVariant.String)
+            QgsField(QGIS_FIELD_NAME_ID, QVariant.Int),
+            QgsField(QGIS_FIELD_NAME_TAG, QVariant.String)
         ])
         cut_layer.updateFields()
 
@@ -42,7 +46,7 @@ class CutFlowlineModule:
             new_feature = QgsFeature()
             new_feature.setGeometry(original_feature.geometry())
             # 'id' -> i; 'tag' -> "fly-over"
-            new_feature.setAttributes([i, "fly-over"])
+            new_feature.setAttributes([i, DEFAULT_TAG])
             new_features.append(new_feature)
 
         # Add new features to the layer
@@ -78,8 +82,8 @@ class CutFlowlineModule:
             )
             return None
 
-        point1_id = features[0]["id"]
-        point2_id = features[1]["id"]
+        point1_id = features[0][QGIS_FIELD_NAME_ID]
+        point2_id = features[1][QGIS_FIELD_NAME_ID]
 
         # Return IDs in order (smaller, larger)
         return (min(point1_id, point2_id), max(point1_id, point2_id))
@@ -106,7 +110,7 @@ class CutFlowlineModule:
         # Create a list of features within the ID range
         cut_features = []
         for feature in point_layer.getFeatures():
-            point_id = feature["id"]
+            point_id = feature[QGIS_FIELD_NAME_ID]
             if min_id <= point_id <= max_id:
                 cut_features.append(feature)
 

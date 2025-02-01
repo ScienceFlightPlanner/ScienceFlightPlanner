@@ -27,6 +27,29 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
 
+from .constants import (
+    TAGS,
+    CUSTOM_TAG,
+    PLUGIN_NAME,
+    PLUGIN_TOOLBAR_NAME,
+    Q_TOOL_TIP_STYLE_SHEET,
+    PLUGIN_HELP_MANUAL_TITLE,
+    DISTANCE_ACTION_NAME,
+    DURATION_ACTION_NAME,
+    WAYPOINT_GENERATION_ACTION_NAME,
+    EXPORT_ACTION_NAME,
+    TAG_ACTION_NAME,
+    REDUCED_WAYPOINT_SELECTION_ACTION_NAME,
+    REDUCED_WAYPOINT_GENERATION_ACTION_NAME,
+    REVERSAL_ACTION_NAME,
+    COVERAGE_LINES_ACTION_NAME,
+    CUT_FLOWLINE_ACTION_NAME,
+    RACETRACK_ACTION_NAME,
+    HELP_MANUAL_ACTION_NAME,
+    FLIGHT_ALTITUDE_ACTION_NAME,
+    SENSOR_COVERAGE_ACTION_NAME,
+    PLUGIN_ICON_PATH
+)
 from .cut_flowline_module import CutFlowlineModule
 from .racetrack_module import RacetrackModule
 from .action_module import ActionModule
@@ -91,17 +114,12 @@ class ScienceFlightPlanner:
         # Declare instance attributes
         self.toolbar_items = []
         self.options_factory = None
-        self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(":icon.png"), "&ScienceFlightPlanner")
-        self.toolbar = self.iface.addToolBar("ScienceFlightPlanner Toolbar")
+        self.pluginMenu = self.iface.pluginMenu().addMenu(QIcon(PLUGIN_ICON_PATH), PLUGIN_NAME)
+        self.toolbar = self.iface.addToolBar(PLUGIN_TOOLBAR_NAME)
         if self.toolbar:
-            self.toolbar.setObjectName("ScienceFlightPlanner")
+            self.toolbar.setObjectName(PLUGIN_TOOLBAR_NAME)
 
-        app = QApplication.instance()
-        app.setStyleSheet("""
-                        QToolTip {
-                            font-weight: bold;
-                        }
-                    """)
+        self.toolbar.setStyleSheet(Q_TOOL_TIP_STYLE_SHEET)
 
         self.pluginIsActive = False
 
@@ -180,8 +198,7 @@ class ScienceFlightPlanner:
 
     def add_popup_menu_button(self):
         self.popupMenu = QMenu()
-        tag_list = self.waypoint_tag_module.tags
-        for tag in tag_list[0:len(tag_list) - 1]:
+        for tag in TAGS:
             action = self.add_action(
                         icon="icon_tag.png",
                         text=tag,
@@ -189,26 +206,26 @@ class ScienceFlightPlanner:
                         add_to_toolbar=False,
                         parent=self.popupMenu
                     )
-            action.setToolTip(self.action_module.tag)
+            action.setToolTip(TAG_ACTION_NAME)
             self.popupMenu.addAction(action)
 
         self.popupMenu.addSeparator()
 
         action = self.add_action(
             icon="icon_custom_tag.png",
-            text=tag_list[-1],
+            text=CUSTOM_TAG,
             callback=partial(self.waypoint_tag_module.new_tag, self.popupMenu),
             add_to_toolbar=False,
             parent=self.popupMenu
         )
-        action.setToolTip(self.action_module.tag)
+        action.setToolTip(TAG_ACTION_NAME)
         self.popupMenu.addAction(action)
 
         self.toolButton = QToolButton(self.iface.mainWindow())
         icon_path = os.path.join(icon_folder_path, "icon_tag.png")
         self.toolButton.setIcon(QIcon(icon_path))
-        self.toolButton.setText(self.action_module.tag)
-        self.toolButton.setToolTip(self.action_module.tag)
+        self.toolButton.setText(TAG_ACTION_NAME)
+        self.toolButton.setToolTip(TAG_ACTION_NAME)
         self.toolButton.setMenu(self.popupMenu)
         self.toolButton.installEventFilter(self.toolbar)
         self.toolButton.setPopupMode(QToolButton.InstantPopup)
@@ -222,78 +239,78 @@ class ScienceFlightPlanner:
         """Add toolbar buttons"""
         self.add_action(
             icon="icon_distance.png",
-            text=self.action_module.distance,
+            text=DISTANCE_ACTION_NAME,
             callback=self.flight_distance_duration_module.toggle_display_flight_distance,
             parent=self.toolbar,
             is_checkable=True,
         )
         self.add_action(
             icon="icon_duration.png",
-            text=self.action_module.duration,
+            text=DURATION_ACTION_NAME,
             callback=self.flight_distance_duration_module.toggle_display_flight_duration,
             parent=self.toolbar,
             is_checkable=True,
         )
         self.add_action(
             icon="icon_file.png",
-            text=self.action_module.waypoint_generation,
+            text=WAYPOINT_GENERATION_ACTION_NAME,
             callback=self.waypoint_generation_module.generate_waypoints_shp_file_action,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_export.png",
-            text=self.action_module.export,
+            text=EXPORT_ACTION_NAME,
             callback=self.export_module.shapefile_to_wpt_and_gfp,
             parent=self.toolbar,
         )
         self.add_popup_menu_button()
         self.add_action(
             icon="icon_highlight.png",
-            text=self.action_module.reduced_waypoint_selection,
+            text=REDUCED_WAYPOINT_SELECTION_ACTION_NAME,
             callback=self.waypoint_reduction_module.highlight_selected_waypoints,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_labels.png",
-            text=self.action_module.reduced_waypoint_generation,
+            text=REDUCED_WAYPOINT_GENERATION_ACTION_NAME,
             callback=self.waypoint_reduction_module.generate_significant_waypoints_shp_file_action,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_reverse.png",
-            text=self.action_module.reversal,
+            text=REVERSAL_ACTION_NAME,
             callback=self.waypoint_reversal_module.reverse_waypoints_action,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_coverage_lines.png",
-            text=self.action_module.coverage_lines,
+            text=COVERAGE_LINES_ACTION_NAME,
             callback=self.coverage_module.compute_optimal_coverage_lines,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_cut_flowline.png",
-            text=self.action_module.cut_flowline,
+            text=CUT_FLOWLINE_ACTION_NAME,
             callback=self.cut_flowline_module.cut_action,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_racetrack.png",
-            text=self.action_module.racetrack,
+            text=RACETRACK_ACTION_NAME,
             callback=self.racetrack_module.compute_way_points,
             parent=self.toolbar,
         )
         self.add_action(
             icon="icon_help.png",
-            text=self.action_module.help_manual,
+            text=HELP_MANUAL_ACTION_NAME,
             callback=self.help_module.open_help_manual,
             parent=self.toolbar,
             is_checkable=True,
         )
 
         self.help_action = QAction(
-            QIcon(os.path.join(":icon.png")),
-            "Science Flight Planner",
+            QIcon(os.path.join(PLUGIN_ICON_PATH)),
+            PLUGIN_HELP_MANUAL_TITLE,
             self.iface.mainWindow()
         )
         self.iface.pluginHelpMenu().addAction(self.help_action)
@@ -307,14 +324,10 @@ class ScienceFlightPlanner:
         self.flight_distance_duration_module.init_gui(self.toolbar)
 
         self.coverage_module.init_gui(self.toolbar)
-        self.coverage_module.flight_altitude_spinbox.setToolTip(
-            self.action_module.flight_altitude
-        )
+        self.coverage_module.flight_altitude_spinbox.setToolTip(FLIGHT_ALTITUDE_ACTION_NAME)
         self.toolbar_items.append(self.coverage_module.flight_altitude_spinbox)
 
-        self.coverage_module.sensor_combobox.setToolTip(
-            self.action_module.sensor_coverage
-        )
+        self.coverage_module.sensor_combobox.setToolTip(SENSOR_COVERAGE_ACTION_NAME)
         self.toolbar_items.append(self.coverage_module.sensor_combobox)
 
         self.action_module.connect(self.toolbar_items)

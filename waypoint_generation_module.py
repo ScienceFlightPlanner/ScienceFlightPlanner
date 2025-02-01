@@ -3,6 +3,7 @@ from typing import List
 from qgis.core import Qgis, QgsPointXY, QgsVectorLayer, QgsWkbTypes
 from qgis.gui import QgisInterface
 
+from .constants import DEFAULT_PUSH_MESSAGE_DURATION
 from .utils import LayerUtils
 
 
@@ -29,12 +30,12 @@ class WaypointGenerationModule:
         if not waypoints:
             return
 
-        path_of_line = selected_layer.dataProvider().dataSourceUri()
+        current_layer_path = selected_layer.dataProvider().dataSourceUri()
 
         waypoint_ids = list(range(1, len(waypoints) + 1))
         # generate shp-file
         self.layer_utils.generate_shp_file(
-            path_of_line, "_wp", waypoints, waypoint_ids, selected_layer.crs()
+            current_layer_path, "_wp", waypoints, waypoint_ids, selected_layer.crs()
         )
 
     def _get_waypoints_of_layer(
@@ -46,7 +47,7 @@ class WaypointGenerationModule:
             self.iface.messageBar().pushMessage(
                 "Please select a vector layer of type line",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 
@@ -57,7 +58,7 @@ class WaypointGenerationModule:
             self.iface.messageBar().pushMessage(
                 "There are no features in the currently selected layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return []
 
