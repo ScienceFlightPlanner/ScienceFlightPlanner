@@ -153,7 +153,7 @@ class RacetrackModule:
         sensor_opening_angle = float(sensor_settings_dict[sensor])
         return sensor, sensor_opening_angle
 
-    def _get_flight_parameters(self, layer: QgsVectorLayer) -> Union[FlightParameters, None]:
+    def _get_flight_parameters(self) -> Union[FlightParameters, None]:
         """Get flight-related parameters including sensor settings"""
         # First check sensor parameters
         sensor_params = self._get_sensor_parameters()
