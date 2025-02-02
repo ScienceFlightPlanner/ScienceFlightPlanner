@@ -28,12 +28,12 @@ QGIS_FIELD_NAME_ID = "id"
 QGIS_FIELD_NAME_SIG = "sig"
 
 TAGS = [
-    "fly-over",
-    "fly-by",
-    "RH 180",
-    "RH 270",
-    "LH 180",
-    "LH 270",
+    "FLYOVER",
+    "FLYBY",
+    "RH180",
+    "RH270",
+    "LH180",
+    "LH270",
 ]
 
 CUSTOM_TAG = "Custom tag"
