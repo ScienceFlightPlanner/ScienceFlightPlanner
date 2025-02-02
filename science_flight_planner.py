@@ -37,6 +37,7 @@ from .constants import (
     DISTANCE_ACTION_NAME,
     DURATION_ACTION_NAME,
     WAYPOINT_GENERATION_ACTION_NAME,
+    COMBINE_FLIGHT_PLANS_ACTION_NAME,
     EXPORT_ACTION_NAME,
     TAG_ACTION_NAME,
     REDUCED_WAYPOINT_SELECTION_ACTION_NAME,
@@ -66,6 +67,7 @@ from .help_module import HelpManualModule
 from .options_widget import SfpOptionsFactory
 from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
+from .combine_flightplans_module import CombineFlightplansModule
 from .export_module import ExportModule
 from .waypoint_tag_module import WaypointTagModule
 from functools import partial
@@ -88,6 +90,7 @@ class ScienceFlightPlanner:
     layer_utils: LayerUtils
     flight_distance_duration_module: FlightDistanceDurationModule
     waypoint_generation_module: WaypointGenerationModule
+    combine_flightplans_module: CombineFlightplansModule
     export_module: ExportModule
     waypoint_tag_module: WaypointTagModule
     waypoint_reduction_module: WaypointReductionModule
@@ -126,6 +129,7 @@ class ScienceFlightPlanner:
         self.layer_utils = LayerUtils(iface)
         self.flight_distance_duration_module = FlightDistanceDurationModule(iface)
         self.waypoint_generation_module = WaypointGenerationModule(iface)
+        self.combine_flightplans_module = CombineFlightplansModule(iface)
         self.export_module = ExportModule(iface)
         self.waypoint_tag_module = WaypointTagModule(iface)
         self.waypoint_reduction_module = WaypointReductionModule(iface)
@@ -255,6 +259,12 @@ class ScienceFlightPlanner:
             icon="icon_file.png",
             text=WAYPOINT_GENERATION_ACTION_NAME,
             callback=self.waypoint_generation_module.generate_waypoints_shp_file_action,
+            parent=self.toolbar,
+        )
+        self.add_action(
+            icon="icon_combine.png",
+            text=COMBINE_FLIGHT_PLANS_ACTION_NAME,
+            callback=self.combine_flightplans_module.combine,
             parent=self.toolbar,
         )
         self.add_action(

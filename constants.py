@@ -43,6 +43,7 @@ DEFAULT_TAG = TAGS[0]
 DISTANCE_ACTION_NAME = "Display Flight Distance"
 DURATION_ACTION_NAME = "Display Expected Flight Duration"
 WAYPOINT_GENERATION_ACTION_NAME = "Generate Waypoints for Flightplan"
+COMBINE_FLIGHT_PLANS_ACTION_NAME = "Combine Flightplans"
 EXPORT_ACTION_NAME = "Export to Garmin"
 TAG_ACTION_NAME = "Add tag to selected waypoints"
 REDUCED_WAYPOINT_SELECTION_ACTION_NAME = "Mark Selected Waypoints as Significant"
