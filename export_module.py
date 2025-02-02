@@ -1,7 +1,12 @@
 import os
 
 from PyQt5.QtCore import QVariant
-from qgis.core import QgsWkbTypes
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
+    QgsWkbTypes
+)
 from qgis.gui import QgisInterface
 
 import tempfile
@@ -30,13 +35,20 @@ def pad_with_zeros(number, expected_decimal_places):
     return number_str + str(0) * (expected_decimal_places - current_decimal_places)
 
 def shapefile_to_wpt(selected_layer, file_path):
+    source_crs = selected_layer.crs()
+    destination_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+    crs_translator = QgsCoordinateTransform(
+        source_crs, destination_crs, QgsProject.instance()
+    )
+
     with open(file_path, "w") as file:
         for f in selected_layer.getFeatures():
             id = "{:02d}".format(f.attribute(QGIS_FIELD_NAME_ID))
             comment = f.attribute(QGIS_FIELD_NAME_TAG)
             point = f.geometry().asPoint()
-            latitude = round(point.y(), 9)
-            longitude = round(point.x(), 8)
+            transformed_point = crs_translator.transform(point)
+            latitude = round(transformed_point.y(), 9)
+            longitude = round(transformed_point.x(), 8)
             latitude_padded = pad_with_zeros(latitude, 9)
             longitude_padded = pad_with_zeros(longitude, 8)
 
