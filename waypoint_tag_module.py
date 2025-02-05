@@ -1,3 +1,4 @@
+import re
 from PyQt5.QtCore import QVariant
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import Qgis, QgsWkbTypes
@@ -50,11 +51,30 @@ class WaypointTagModule:
 
     def new_tag(self, parent):
         text, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
+        if self.tag_is_valid(text):
+            self.tag(text)
+
+    def tag_is_valid(self, text):
+        """
+        Check if tag only consists of capital letters, spaces, or forward slash (/).
+        https://atlaske-content.garmin.com/filestorage//email/outbound/attachments/GTN_Flight_Plan_and_User_Waypoint_transfer_Time1712844670119.pdf Section 3.2
+        And also if it has 10 characters at most.
+        """
         if len(text) > MAX_TAG_LENGTH:
             self.iface.messageBar().pushMessage(
                 "Tag must be less than 10 characters",
                 level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
-            return
-        self.tag(text)
+            return False
+
+        pattern = r'^[A-Z0-9 /]$'
+        if re.fullmatch(pattern, text) is None:
+            self.iface.messageBar().pushMessage(
+                "Tag may only consist of capital letters, spaces, or forward slash (/)",
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return False
+
+        return True
