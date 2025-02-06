@@ -32,7 +32,9 @@ from qgis.PyQt.QtWidgets import (
 from .constants import (
     QGIS_FIELD_NAME_ID,
     PLUGIN_NAME,
-    DEFAULT_PUSH_MESSAGE_DURATION
+    DEFAULT_PUSH_MESSAGE_DURATION,
+    QGIS_FIELD_NAME_TAG,
+    DEFAULT_TAG
 )
 
 
@@ -233,7 +235,10 @@ class LayerUtils:
             waypoints[index] = crs_translator.transform(waypoints[index])
 
         fields = QgsFields()
-        fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
+        id_field = QgsField(QGIS_FIELD_NAME_ID, QVariant.Int)
+        tag_field = QgsField(QGIS_FIELD_NAME_TAG, QVariant.String)
+        fields.append(id_field)
+        fields.append(tag_field)
 
         # create the File Writer
         writer = self.create_vector_file_write(
@@ -247,7 +252,7 @@ class LayerUtils:
         for index, point in zip(waypoint_ids, waypoints):
             feature = QgsFeature()
             feature.setGeometry(QgsGeometry.fromPointXY(point))
-            feature.setAttributes([index])
+            feature.setAttributes([index, DEFAULT_TAG])
             writer.addFeature(feature)
 
         # add vector as layer
