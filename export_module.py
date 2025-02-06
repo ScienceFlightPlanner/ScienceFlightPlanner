@@ -67,6 +67,9 @@ class ExportModule:
             [QgsWkbTypes.GeometryType.PointGeometry]
         )
 
+        if selected_layer is None:
+            return
+
         if selected_layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
             added = self.layer_utils.add_field_to_layer(
                 selected_layer,
