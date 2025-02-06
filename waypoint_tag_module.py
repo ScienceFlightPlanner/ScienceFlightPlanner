@@ -22,15 +22,41 @@ class WaypointTagModule:
         self.layer_utils = LayerUtils(iface)
 
     def tag(self, tag):
+        selected_layer = self.get_selected_layer_with_selected_features()
+
+        if selected_layer is None:
+            return
+
+        self.add_tag_to_selected_features(selected_layer, tag)
+
+    def new_tag(self, parent):
+        selected_layer = self.get_selected_layer_with_selected_features()
+
+        if selected_layer is None:
+            return
+
+        tag, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
+        if self.tag_is_valid(tag):
+            self.tag(tag)
+
+        self.add_tag_to_selected_features(selected_layer, tag)
+
+    def get_selected_layer_with_selected_features(self):
         selected_layer = self.layer_utils.get_valid_selected_layer(
             [QgsWkbTypes.GeometryType.PointGeometry]
         )
         if selected_layer is None:
             return
 
-        if selected_layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
+        if not self.at_least_one_feature_selected(selected_layer):
+            return
+
+        return selected_layer
+
+    def add_tag_to_selected_features(self, layer, tag):
+        if layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
             added = self.layer_utils.add_field_to_layer(
-                selected_layer,
+                layer,
                 QGIS_FIELD_NAME_TAG,
                 QVariant.String,
                 DEFAULT_TAG,
@@ -39,20 +65,26 @@ class WaypointTagModule:
             if not added:
                 return
 
-        selected_features = selected_layer.getSelectedFeatures()
-        selected_layer.startEditing()
-        selected_layer.beginEditCommand("Add Tag for Waypoints")
+        selected_features = layer.getSelectedFeatures()
+        layer.startEditing()
+        layer.beginEditCommand("Add Tag for Waypoints")
         for feature in selected_features:
             feature.setAttribute(QGIS_FIELD_NAME_TAG, tag)
-            selected_layer.updateFeature(feature)
+            layer.updateFeature(feature)
 
-        selected_layer.removeSelection()
-        selected_layer.endEditCommand() #"Add Tag for Waypoints"
+        layer.removeSelection()
+        layer.endEditCommand() #"Add Tag for Waypoints"
 
-    def new_tag(self, parent):
-        text, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
-        if self.tag_is_valid(text):
-            self.tag(text)
+    def at_least_one_feature_selected(self, layer):
+        if layer.selectedFeatureCount() < 1:
+            self.iface.messageBar().pushMessage(
+                "Please select at least one waypoint",
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return False
+
+        return True
 
     def tag_is_valid(self, text):
         """
@@ -68,7 +100,7 @@ class WaypointTagModule:
             )
             return False
 
-        pattern = r'^[A-Z0-9 /]$'
+        pattern = fr'^[A-Z0-9 /]{{1,{MAX_TAG_LENGTH}}}$' # = r'^[A-Z0-9 /]{1,<MAX_TAG_LENGTH>}$'
         if re.fullmatch(pattern, text) is None:
             self.iface.messageBar().pushMessage(
                 "Tag may only consist of capital letters, spaces, or forward slash (/)",
