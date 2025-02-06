@@ -52,8 +52,7 @@ def shapefile_to_wpt(selected_layer, file_path):
             latitude_padded = pad_with_zeros(latitude, 9)
             longitude_padded = pad_with_zeros(longitude, 8)
 
-            file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\n")
-
+            file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\r\n")
 
 class ExportModule:
     iface: QgisInterface
