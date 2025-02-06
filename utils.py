@@ -175,7 +175,8 @@ class LayerUtils:
             self,
             dialog_title,
             path_of_current_layer,
-            filter, path_suffix
+            filter,
+            path_suffix
     ):
         suggested_path, _ = os.path.splitext(path_of_current_layer)
         suggested_path += path_suffix
