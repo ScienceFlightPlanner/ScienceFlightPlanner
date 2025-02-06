@@ -13,7 +13,7 @@ from unittest.mock import patch
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
 # noinspection PyUnresolvedReferences
-from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros, validate_file_path
+from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.tests.test_tags import load_project, select_layer
 
@@ -33,7 +33,7 @@ class TestExport(unittest.TestCase):
     def compare_wpt_files(self, file1, file2):
         self.assertTrue(os.path.exists(file1), f"File path {file1} does not exist.")
 
-        with open(file1, 'r') as f1, open(file2, 'r') as f2:
+        with open(file1, 'rb') as f1, open(file2, 'rb') as f2:
             lines1 = f1.readlines()
             lines2 = f2.readlines()
 
@@ -112,9 +112,9 @@ class TestExport(unittest.TestCase):
         ["Flight3", "Flight3_wp", "resources/Flight3", "resources/Flight3/Flight3_test_wpt_QFileDialog_closed.gfp", "resources/Flight3/Flight3_reference.gfp"],
         ["Flight4", "Flight4_wp", "resources/Flight4", "resources/Flight4/Flight4_test_wpt_QFileDialog_closed.gfp", "resources/Flight4/Flight4_reference.gfp"],
     ])
-    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    @patch("ScienceFlightPlanner.utils.LayerUtils.create_file_dialog")
     def test_wpt_QFileDialog_closed(self, name, layer, output_directory, output_file, expected, mock_create_file_dialog):
-        def side_effect(_0, filter, _1):
+        def side_effect(_0, _1, filter, _2):
             if filter == "Garmin Waypoint File (*.wpt)":
                 return ""
             elif filter == "Garmin Flightplan (*.gfp)":
@@ -144,10 +144,10 @@ class TestExport(unittest.TestCase):
         ["Flight4", "Flight4_wp", "resources/Flight4", "resources/Flight4/Flight4_test_gfp_QFileDialog_closed.wpt",
          "resources/Flight4/Flight4_user_reference.wpt"],
     ])
-    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    @patch("ScienceFlightPlanner.utils.LayerUtils.create_file_dialog")
     def test_gfp_QFileDialog_closed(self, name, layer, output_directory, output_file, expected,
                                     mock_create_file_dialog):
-        def side_effect(_0, filter, _1):
+        def side_effect(_0, _1, filter, _2):
             if filter == "Garmin Waypoint File (*.wpt)":
                 return output_file
             elif filter == "Garmin Flightplan (*.gfp)":
@@ -174,9 +174,9 @@ class TestExport(unittest.TestCase):
         ["Flight3", "Flight3_wp", "resources/Flight3"],
         ["Flight4", "Flight4_wp", "resources/Flight4"],
     ])
-    @patch("ScienceFlightPlanner.export_module.ExportModule.create_file_dialog")
+    @patch("ScienceFlightPlanner.utils.LayerUtils.create_file_dialog")
     def test_wpt_and_gfp_QFileDialog_closed(self, name, layer, output_directory, mock_create_file_dialog):
-        def side_effect(_0, filter, _1):
+        def side_effect(_0, _1, filter, _2):
             if filter == "Garmin Waypoint File (*.wpt)":
                 return ""
             elif filter == "Garmin Flightplan (*.gfp)":
@@ -214,7 +214,7 @@ class TestExport(unittest.TestCase):
         ("empty_file_name", "", ".txt", ".txt"),
     ])
     def test_validate_file_path(self, name, file_path, file_type, expected_result):
-        self.assertEqual(validate_file_path(file_path, file_type), expected_result)
+        self.assertEqual(self.plugin_instance.layer_utils.validate_file_path(file_path, file_type), expected_result)
 
     # TODO
     @parameterized.expand([

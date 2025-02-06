@@ -37,9 +37,7 @@ class WaypointTagModule:
 
         tag, _ = QInputDialog.getText(parent, "Custom tag", "Enter name for custom tag:")
         if self.tag_is_valid(tag):
-            self.tag(tag)
-
-        self.add_tag_to_selected_features(selected_layer, tag)
+            self.add_tag_to_selected_features(selected_layer, tag)
 
     def get_selected_layer_with_selected_features(self):
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -99,6 +97,8 @@ class WaypointTagModule:
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return False
+
+        return True
 
         pattern = fr'^[A-Z0-9 /]{{1,{MAX_TAG_LENGTH}}}$' # = r'^[A-Z0-9 /]{1,<MAX_TAG_LENGTH>}$'
         if re.fullmatch(pattern, text) is None:
