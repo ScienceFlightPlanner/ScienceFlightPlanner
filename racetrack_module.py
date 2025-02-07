@@ -359,7 +359,7 @@ class RacetrackModule:
 
     @staticmethod
     def _compute_racetrack_algo_points(params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for racetrack algorithm - exact original implementation"""
+        """Compute waypoints for racetrack algorithm"""
         points = []
         forward = True
         number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
@@ -443,7 +443,7 @@ class RacetrackModule:
 
     @staticmethod
     def _compute_meander_algo_points(params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for meander algorithm - exact original implementation"""
+        """Compute waypoints for meander algorithm"""
         points = []
         left_point = True
         forward = True
