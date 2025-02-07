@@ -98,8 +98,6 @@ class WaypointTagModule:
             )
             return False
 
-        return True
-
         pattern = fr'^[A-Z0-9 /]{{1,{MAX_TAG_LENGTH}}}$' # = r'^[A-Z0-9 /]{1,<MAX_TAG_LENGTH>}$'
         if re.fullmatch(pattern, text) is None:
             self.iface.messageBar().pushMessage(
