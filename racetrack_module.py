@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
     QSpinBox, QComboBox, QFileDialog, QDialog,
     QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
 )
+from qgis._core import QgsVectorFileWriter
 from qgis.core import (
     QgsWkbTypes, Qgis,
     QgsGeometry, QgsVector, QgsPointXY,
@@ -299,7 +300,7 @@ class RacetrackModule:
         if os.path.exists(file_path):
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
-                level=Qgis.Warning,
+                level=Qgis.MessageLevel.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION
             )
             return None
@@ -307,18 +308,55 @@ class RacetrackModule:
         return self._create_point_layer(file_path, crs)
 
     def _create_point_layer(self, file_path: str, crs: QgsCoordinateReferenceSystem) -> Union[QgsVectorLayer, None]:
-        """Create and return a new point layer"""
+        """Create and return a new point layer by writing an empty shapefile to disk."""
+        # Define the fields for the new layer
         fields = QgsFields()
         fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
         fields.append(QgsField(QGIS_FIELD_NAME_TAG, QVariant.String))
 
-        writer = self.layer_utils.create_vector_file_write(
-            file_path, fields, QgsWkbTypes.Point, crs
+        # Create an empty in‑memory layer with the desired geometry type and CRS.
+        # The URI "Point?crs=EPSG:XXXX" is built from the CRS's auth id.
+        mem_layer = QgsVectorLayer("Point?crs=" + crs.authid(), "temporary", "memory")
+        if not mem_layer.isValid():
+            self.iface.messageBar().pushMessage("Error", "Could not create in‑memory layer", level=Qgis.MessageLevel.Critical)
+            return None
+
+        # Add the fields to the in‑memory layer
+        mem_provider = mem_layer.dataProvider()
+        mem_provider.addAttributes(fields)
+        mem_layer.updateFields()
+
+        # Use QgsVectorFileWriter to write the in‑memory layer to disk as a shapefile.
+        # This ensures that all the required shapefile components (.shp, .shx, .dbf, .prj) are created.
+        error = QgsVectorFileWriter.writeAsVectorFormat(
+            mem_layer,  # layer to write (empty, but with proper structure)
+            file_path,  # output file path
+            "utf-8",  # file encoding
+            crs,  # CRS for the output layer
+            "ESRI Shapefile"  # output format
         )
 
+        # Check if writing the file was successful
+        if error[0] != QgsVectorFileWriter.NoError:
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "Failed to create shapefile: " + str(error),
+                level=Qgis.MessageLevel.Critical
+            )
+            return None
+
+        # Now that the shapefile exists and is finalized, load it using OGR
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
-        del writer
+        if not layer or not layer.isValid():
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "The created shapefile is not a valid data source.",
+                level=Qgis.MessageLevel.Critical
+            )
+            return None
+
         return layer
+
     @staticmethod
     def _compute_back_and_forth_points(params: dict) -> List[QgsPointXY]:
         """Compute waypoints for back and forth algorithm - exact original implementation"""
@@ -499,7 +537,7 @@ class RacetrackModule:
         if not layer_params:
             return None
 
-        flight_params = self._get_flight_parameters(layer_params['layer'])
+        flight_params = self._get_flight_parameters()
         if not flight_params:
             return None
 
