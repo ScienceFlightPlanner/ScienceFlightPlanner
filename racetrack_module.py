@@ -440,6 +440,7 @@ class RacetrackModule:
                 break
 
         return points
+
     @staticmethod
     def _compute_fly_to_top_points(params: dict) -> List[QgsPointXY]:
         """Compute waypoints for fly to top and back algorithm - exact original implementation"""
