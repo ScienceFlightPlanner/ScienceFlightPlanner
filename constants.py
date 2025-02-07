@@ -19,6 +19,8 @@ Q_TOOL_TIP_STYLE_SHEET = """
 
 PLUGIN_HELP_MANUAL_TITLE = "Science Flight Planner - Help Manual"
 
+# tag/comments in the .wpt file can be longer than 10 characters,
+# but the GARMIN GTN750 Xi may be not able to fully display them
 MAX_TAG_LENGTH = 10 # in chars
 
 QGIS_FIELD_NAME_TAG = "tag"

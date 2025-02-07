@@ -52,8 +52,7 @@ def shapefile_to_wpt(selected_layer, file_path):
             latitude_padded = pad_with_zeros(latitude, 9)
             longitude_padded = pad_with_zeros(longitude, 8)
 
-            file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\n")
-
+            file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\r\n")
 
 class ExportModule:
     iface: QgisInterface
@@ -67,6 +66,9 @@ class ExportModule:
         selected_layer = self.layer_utils.get_valid_selected_layer(
             [QgsWkbTypes.GeometryType.PointGeometry]
         )
+
+        if selected_layer is None:
+            return
 
         if selected_layer.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1:
             added = self.layer_utils.add_field_to_layer(
