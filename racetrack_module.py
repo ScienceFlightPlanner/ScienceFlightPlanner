@@ -18,6 +18,7 @@ from qgis.core import (
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
 
+from constants import SECOND_ALGO_NAME, FIRST_ALGO_NAME
 from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
@@ -81,7 +82,7 @@ class RacetrackDialog(QDialog):
         algo_layout = QHBoxLayout()
         algo_label = QLabel("Algorithm:")
         self.algo_combo = QComboBox()
-        self.algo_combo.addItems(["Fly to top and back", "Back and Forth"])
+        self.algo_combo.addItems([FIRST_ALGO_NAME, SECOND_ALGO_NAME])
         algo_layout.addWidget(algo_label)
         algo_layout.addWidget(self.algo_combo)
         self.layout.addLayout(algo_layout)
@@ -551,9 +552,9 @@ class RacetrackModule:
 
     def _compute_points_for_algorithm(self, params: dict) -> List[QgsPointXY]:
         """Compute waypoints based on selected algorithm"""
-        if params['flight_params'].algorithm == "Racetrack":
+        if params['flight_params'].algorithm == SECOND_ALGO_NAME:
             return self._compute_racetrack_algo_points(params)
-        elif params['flight_params'].algorithm == "Meander":
+        elif params['flight_params'].algorithm == FIRST_ALGO_NAME:
             return self._compute_meander_algo_points(params)
         else:
             self.iface.messageBar().pushMessage(
