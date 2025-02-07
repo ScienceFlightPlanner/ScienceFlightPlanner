@@ -362,8 +362,8 @@ class RacetrackModule:
         """Compute waypoints for back and forth algorithm - exact original implementation"""
         points = []
         forward = True
-        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2))
-        max_flyover = math.floor(params['max_turn_distance'] / params['coverage_range'] * 2)
+        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
+        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
         j = 1
         left_point = True
         reached_end = False
@@ -447,9 +447,9 @@ class RacetrackModule:
         points = []
         left_point = True
         forward = True
-        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2))
+        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
         j = 1
-        max_flyover = math.floor(params['max_turn_distance'] / params['coverage_range'] * 2)
+        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
         line_from_bottom = 2
 
         for k in range(number_of_lines):
