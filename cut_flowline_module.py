@@ -35,6 +35,7 @@ class CutFlowlineModule:
 
         # Add fields: 'id' (Int), 'tag' (String)
         provider.addAttributes([
+            QgsField(QGIS_FIELD_NAME_ID, QVariant.Int),
             QgsField(QGIS_FIELD_NAME_TAG, QVariant.String)
         ])
         cut_layer.updateFields()
