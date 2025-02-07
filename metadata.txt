@@ -6,8 +6,8 @@
 name=ScienceFlightPlanner
 qgisMinimumVersion=3.4
 description=This plugin helps to create scientific flight plans.
-version=2.0.0
-author=Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm, Maxim Poliakov, Abraham Wondimu, SGESissyphus, Anna Menshikova, Moritz Paul
+version=1.1
+author=Abraham Wondimu, Anna Menshikova, Maxim Poliakov, Moritz Paul, Simon Povh, Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm
 email=scienceflightplanner@gmail.com
 
 about=ScienceFlightPlanner helps to create flight plans for scientific purposes by adding useful functionality.
