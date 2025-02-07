@@ -3,6 +3,7 @@ import re
 from PyQt5.QtCore import QVariant
 from PyQt5.QtWidgets import QMessageBox
 from qgis.core import (
+    Qgis,
     QgsField,
     QgsWkbTypes,
     QgsFeature,
@@ -13,6 +14,8 @@ from qgis.core import (
     QgsProject
 )
 from qgis.gui import QgisInterface
+
+from .constants import DEFAULT_PUSH_MESSAGE_DURATION
 from .utils import LayerUtils
 
 class CombineFlightplansModule:
@@ -31,12 +34,14 @@ class CombineFlightplansModule:
         layers_with_selected_features = [layer for layer in vector_layers if layer.selectedFeatureCount() > 0]
 
         if len(layers_with_selected_features) != 2:
-            print("Please select exactly 2 coordinates in 2 different layers")
+            self.iface.messageBar().pushMessage(
+                "Please select exactly 2 coordinates in 2 different layers",
+                level=Qgis.Info,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
             return
 
         layer1, layer2 = layers_with_selected_features
-
-        print(layer1, layer2)
 
         waypoints1 = [feature.geometry().asPoint() for feature in layer1.getFeatures()]
         waypoints2 = [feature.geometry().asPoint() for feature in layer2.getFeatures()]
@@ -45,15 +50,15 @@ class CombineFlightplansModule:
         selected_features2 = list(layer2.getSelectedFeatures())
 
         if len(selected_features1) != 1 or len(selected_features2) != 1:
-            print("Please select exactly 2 coordinates in 2 different layers")
+            self.iface.messageBar().pushMessage(
+                "Please select exactly 2 coordinates in 2 different layers",
+                level=Qgis.Info,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
             return
 
         merge_waypoint1_id = selected_features1[0].attribute("id")
-        print(selected_features1[0].attribute("id"))
-        print(merge_waypoint1_id)
         merge_waypoint2_id = selected_features2[0].attribute("id")
-        print(selected_features2[0].attribute("id"))
-        print(merge_waypoint2_id)
 
         reply = QMessageBox.question(
             self.iface.mainWindow(),
@@ -77,8 +82,6 @@ class CombineFlightplansModule:
         if layer2_flight_number_match is not None:
             layer2_flight_number_index = layer2_flight_number_match.end() - 1
             layer2_flight_number = layer2_path[layer2_flight_number_index]
-
-        print(layer2_flight_number)
 
         path_suffix = "_" + layer2_flight_number + "_combined"
 
@@ -105,7 +108,6 @@ class CombineFlightplansModule:
             merged_waypoints.append(waypoints2[id2])
             id2 += 1
 
-        print(id1, len(waypoints1), waypoints1[id1])
         while id1 < len(waypoints1):
             merged_waypoints.append(waypoints1[id1])
             id1 += 1
