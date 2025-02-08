@@ -115,7 +115,8 @@ class CombineFlightplansModule:
         fields = QgsFields()
         fields.append(QgsField("id", QVariant.Int))
 
-        file_path = r"C:\Users\maxim\OneDrive\Desktop\Bachelorpraktikum\BP-AdvancedScienceFlightPlanner\SLOGIS2024-Flight1\Flight3_combined2.shp"
+        #file_path = r"C:\Users\maxim\OneDrive\Desktop\Bachelorpraktikum\BP-AdvancedScienceFlightPlanner\SLOGIS2024-Flight1\Flight3_combined2.shp"
+        #file_path = r"resources/Flight_combined.shp"
 
         writer = self.layer_utils.create_vector_file_write(
             file_path,
