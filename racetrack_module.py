@@ -4,21 +4,31 @@ from typing import Union, Tuple, List, Dict
 from dataclasses import dataclass
 
 from PyQt5.QtWidgets import (
-    QSpinBox, QComboBox, QFileDialog, QDialog,
-    QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
+    QSpinBox,
+    QComboBox,
+    QFileDialog,
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
 )
-from qgis._core import QgsVectorFileWriter
 from qgis.core import (
     QgsWkbTypes, Qgis,
     QgsGeometry, QgsVector, QgsPointXY,
     QgsFeature, QgsExpressionContextUtils,
     QgsVectorLayer,
-    QgsFields, QgsField, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject, QgsUnitTypes,
+    QgsFields,
+    QgsField,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
+    QgsUnitTypes,
+    QgsVectorFileWriter
 )
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
 
-from constants import SECOND_ALGO_NAME, FIRST_ALGO_NAME
 from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
@@ -29,6 +39,8 @@ from .constants import (
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
     PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
     DEFAULT_PUSH_MESSAGE_DURATION,
+    SECOND_ALGO_NAME,
+    FIRST_ALGO_NAME
 )
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
