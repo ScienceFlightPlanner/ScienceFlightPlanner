@@ -1,128 +1,80 @@
-import importlib
 import sys
-import os
-import random
+
+from qgis.utils import iface
+from qgis.testing import unittest
+from parameterized import parameterized
+from unittest.mock import patch
 
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.utils import install_package
-from qgis.core import QgsProjectBadLayerHandler
-
-try:
-    importlib.import_module("pandas")
-except ImportError:
-    install_package("pandas")
-
-try:
-    importlib.import_module("numpy")
-except ImportError:
-    install_package("numpy")
-
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.constants import (
+    TAGS,
+    CUSTOM_TAG,
+    DEFAULT_TAG
+)
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.tests.BaseTest import BaseTest
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.tests.utils import (
+    load_project,
+    deselect_selected_features,
+    select_layer,
+    tag_list_from_features,
+    random_list,
+    select_features
+)
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
-
-random.seed(0)
-
-from PyQt5.QtWidgets import QToolBar, QToolButton
-from qgis.core import QgsProject
-from qgis.testing import unittest
-from unittest.mock import patch
-
-from qgis.utils import plugins
-
-sys.path.insert(0, os.path.dirname(__file__))
-
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.waypoint_tag_module import WaypointTagModule
-from qgis.utils import iface
 
+TAG_LIST = TAGS + [CUSTOM_TAG]
 
-class QgsProjectBadLayerDefaultHandler(QgsProjectBadLayerHandler):
-    def handleBadLayers(self, layers):
-        pass
-
-def load_project():
-    QgsProject.instance().setBadLayerHandler(QgsProjectBadLayerDefaultHandler())
-    b = QgsProject.instance().read("resources/Test.qgz")
-    if not b:
-        raise Exception("Could not load QGIS project")
-
-def select_layer(layer_name):
-    layer = QgsProject.instance().mapLayersByName(layer_name)[0]
-    iface.layerTreeView().setCurrentLayer(layer)
-
-def get_tag_actions():
-    toolbar = iface.mainWindow().findChild(QToolBar, "ScienceFlightPlanner")
-    tag_button = toolbar.findChildren(QToolButton)[5]
-    tag_menu = tag_button.menu()
-    return tag_menu.actions()
-
-def select_features(ids):
-    layer = iface.layerTreeView().currentLayer()
-    for id in ids:
-        layer.select(id)
-
-def deselect_selected_features():
-    layer = iface.layerTreeView().currentLayer()
-    for f in layer.selectedFeatures():
-        layer.deselect(f.id())
-
-def random_list(l_size):
-    return [random.randint(0, 53) for _ in range(l_size)]
-
-def features_to_list(features):
-    tag_list = []
-    for feature in features:
-        tag_list.append(feature.attribute("tag"))
-    return tag_list
-
-def trigger_action(name):
-    for action in get_tag_actions():
-        if action.text() == name:
-            action.trigger()
-
-
-class TestTags(unittest.TestCase):
-    tags = ["Fly-over",
-            "Fly-by",
-            "RH 180",
-            "RH 270",
-            "LH 180",
-            "LH 270",
-            "Custom tag"]
-
-    plugin_instance: ScienceFlightPlanner
-
+class TestTags(BaseTest):
     waypoint_tag_module: WaypointTagModule
 
     def setUp(self):
-        self.plugin_instance = plugins["ScienceFlightPlanner"]
+        super().setUp()
         self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
-        load_project()
         select_layer("SLOGIS2024-Flight1_wp")
+        iface.layerTreeView().currentLayer().selectAll()
+        self.waypoint_tag_module.tag(DEFAULT_TAG)
+        iface.layerTreeView().currentLayer().commitChanges()
         deselect_selected_features()
 
     def check_feature_changes(self, features_before, features_after, tag, ids):
         for i, (feature_before, feature_after) in enumerate(zip(features_before, features_after)):
             if i in ids:
-                self.assertEqual(feature_after, tag)
+                self.assertEqual(feature_after, tag, f"Wrong Tag in feature: {i + 1}")
             else:
-                self.assertEqual(feature_after, feature_before)
+                self.assertEqual(feature_after, feature_before, f"Wrong Tag in feature: {i + 1}")
 
-    def test_add_tag_to_layer(self, tag = "RH 180", list_length = 12):
-        features_before = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
+    @parameterized.expand([
+        ["zero_features", TAG_LIST[1], 0],
+        ["one_feature", TAG_LIST[1], 1],
+        ["all_features", TAG_LIST[1], 54],
+    ])
+    def test_add_tag_to_layer(self, name, tag, list_length):
+        features_before = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
 
         random_ids = random_list(list_length)
         select_features(random_ids)
         self.waypoint_tag_module.tag(tag)
         iface.layerTreeView().currentLayer().commitChanges()
 
-        features_after = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
+        features_after = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
 
         self.check_feature_changes(features_before, features_after, tag, random_ids)
 
-    @patch("PyQt5.QtWidgets.QInputDialog.getText")
-    def test_add_valid_custom_tag_to_layer(self, mock_get_text, tag = "< 10 chars", list_length = 12):
-        features_before = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
+    @parameterized.expand([
+        ["", "CUSTOM TAG", 10],
+        ["all_valid_chars", "A /1", 10],
+        ["whitespace", " ", 10],
+    ])
+    @patch("qgis.PyQt.QtWidgets.QInputDialog.getText")
+    def test_add_valid_custom_tag_to_layer(self, name, tag, list_length, mock_get_text):
+        features_before = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
 
         random_ids = random_list(list_length)
         select_features(random_ids)
@@ -130,13 +82,21 @@ class TestTags(unittest.TestCase):
         self.waypoint_tag_module.new_tag(self.plugin_instance.popupMenu)
         iface.layerTreeView().currentLayer().commitChanges()
 
-        features_after = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
-
+        features_after = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
+        if tag == " ":
+            tag = None
         self.check_feature_changes(features_before, features_after, tag, random_ids)
 
-    @patch("PyQt5.QtWidgets.QInputDialog.getText")
-    def test_add_invalid_custom_tag_to_layer(self, mock_get_text, tag = "too_long_tag_exceeding_10_characters", list_length = 12):
-        features_before = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
+    @parameterized.expand([
+        ["too_long_tag", "too_long_tag_exceeding_10_characters", 10],
+        ["invalid_character", "TAG_1", 10],
+        ["invalid_character", "TÄG", 10],
+        ["invalid_character", "tag", 10],
+        ["empty_string", "", 10],
+    ])
+    @patch("qgis.PyQt.QtWidgets.QInputDialog.getText")
+    def test_add_invalid_custom_tag_to_layer(self, name, tag, list_length, mock_get_text):
+        features_before = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
 
         random_ids = random_list(list_length)
         select_features(random_ids)
@@ -144,15 +104,10 @@ class TestTags(unittest.TestCase):
         self.waypoint_tag_module.new_tag(self.plugin_instance.popupMenu)
         iface.layerTreeView().currentLayer().commitChanges()
 
-        features_after = features_to_list(iface.layerTreeView().currentLayer().getFeatures())
+        features_after = tag_list_from_features(iface.layerTreeView().currentLayer().getFeatures())
 
-        self.check_feature_changes(features_before, features_after, tag, [])
-
-    def Notest_random(self):
-        for i in range(5):
-            tag = self.tags[random.randint(0, 5)]
-            list_length = random.randint(0, 54)
-            self.test_add_tag_to_layer(tag, list_length)
+        ids_of_changed_features = [] # no features should have changed
+        self.check_feature_changes(features_before, features_after, tag, ids_of_changed_features)
 
     def tearDown(self):
         deselect_selected_features()

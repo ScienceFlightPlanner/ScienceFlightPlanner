@@ -82,8 +82,8 @@ class CutFlowlineModule:
             )
             return None
 
-        point1_id = features[0][QGIS_FIELD_NAME_ID]
-        point2_id = features[1][QGIS_FIELD_NAME_ID]
+        point1_id = features[0].id()
+        point2_id = features[1].id()
 
         # Return IDs in order (smaller, larger)
         return (min(point1_id, point2_id), max(point1_id, point2_id))
@@ -110,7 +110,7 @@ class CutFlowlineModule:
         # Create a list of features within the ID range
         cut_features = []
         for feature in point_layer.getFeatures():
-            point_id = feature[QGIS_FIELD_NAME_ID]
+            point_id = feature.id()
             if min_id <= point_id <= max_id:
                 cut_features.append(feature)
 
