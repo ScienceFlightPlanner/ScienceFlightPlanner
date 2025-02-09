@@ -15,8 +15,11 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 
-from .constants import DEFAULT_PUSH_MESSAGE_DURATION
-from .utils import LayerUtils
+from .constants import (
+    DEFAULT_PUSH_MESSAGE_DURATION,
+    QGIS_FIELD_NAME_ID
+)
+from .utils import LayerUtils, layer_has_field
 
 class CombineFlightplansModule:
 
@@ -42,6 +45,17 @@ class CombineFlightplansModule:
             return
 
         layer1, layer2 = layers_with_selected_features
+
+        layer1_has_id_field = layer_has_field(layer1, QGIS_FIELD_NAME_ID)
+        layer2_has_id_field = layer_has_field(layer2, QGIS_FIELD_NAME_ID)
+
+        if not layer1_has_id_field or not layer2_has_id_field:
+            self.iface.messageBar().pushMessage(
+                "One of the layers or both layers have no id field",
+                level=Qgis.Info,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return
 
         waypoints1 = [feature.geometry().asPoint() for feature in layer1.getFeatures()]
         waypoints2 = [feature.geometry().asPoint() for feature in layer2.getFeatures()]

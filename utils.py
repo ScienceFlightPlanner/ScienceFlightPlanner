@@ -379,6 +379,9 @@ class LayerUtils:
 
         return deleted
 
+def layer_has_field(layer, field_name):
+    return layer.fields().indexFromName(field_name) > -1
+
 def get_geometry_type_from_string(geom_string: str) -> QgsWkbTypes.GeometryType:
     """Returns Geometry Type for a given string (assumes valid geometry type)"""
     types = {
