@@ -37,7 +37,6 @@ class TestTags(BaseTest):
     def setUp(self):
         super().setUp()
         self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
-        load_project()
         select_layer("SLOGIS2024-Flight1_wp")
         iface.layerTreeView().currentLayer().selectAll()
         self.waypoint_tag_module.tag(DEFAULT_TAG)

@@ -6,6 +6,8 @@ from qgis.testing import unittest
 from qgis.utils import plugins
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.tests.utils import load_project
 
 
 class BaseTest(unittest.TestCase, ABC):
@@ -13,3 +15,4 @@ class BaseTest(unittest.TestCase, ABC):
 
     def setUp(self):
         self.plugin_instance = plugins["ScienceFlightPlanner"]
+        load_project()

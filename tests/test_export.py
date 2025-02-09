@@ -23,7 +23,6 @@ class TestExport(BaseTest):
     def setUp(self):
         super().setUp()
         self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
-        load_project()
 
     def compare_wpt_files(self, file1, file2):
         self.assertTrue(os.path.exists(file1), f"File path {file1} does not exist.")
