@@ -1,11 +1,8 @@
 import os
 import sys
-from functools import partial
 
-from PyQt5.QtWidgets import QMessageBox
-from qgis.core import QgsProject
+from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import QgsVectorLayer
-from qgis.utils import plugins
 from qgis.testing import unittest
 from parameterized import parameterized
 from unittest.mock import patch
@@ -15,18 +12,16 @@ from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.export_module import shapefile_to_wpt, wpt_to_gfp, pad_with_zeros
 # noinspection PyUnresolvedReferences
-from ScienceFlightPlanner.tests.test_tags import load_project, select_layer
+from ScienceFlightPlanner.tests.utils import load_project, select_layer, tearDown_if_test_passed
+# noinspection PyUnresolvedReferences
+from ScienceFlightPlanner.tests.BaseTest import BaseTest
 
 
-def tearDown_if_test_passed(output_file_path):
-    os.remove(output_file_path)
-
-
-class TestExport(unittest.TestCase):
+class TestExport(BaseTest):
     plugin_instance: ScienceFlightPlanner
 
     def setUp(self):
-        self.plugin_instance = plugins["ScienceFlightPlanner"]
+        super().setUp()
         self.waypoint_tag_module = self.plugin_instance.waypoint_tag_module
         load_project()
 
