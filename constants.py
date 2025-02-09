@@ -19,6 +19,8 @@ Q_TOOL_TIP_STYLE_SHEET = """
 
 PLUGIN_HELP_MANUAL_TITLE = "Science Flight Planner - Help Manual"
 
+# tag/comments in the .wpt file can be longer than 10 characters,
+# but the GARMIN GTN750 Xi may be not able to fully display them
 MAX_TAG_LENGTH = 10 # in chars
 
 QGIS_FIELD_NAME_TAG = "tag"
@@ -28,12 +30,12 @@ QGIS_FIELD_NAME_ID = "id"
 QGIS_FIELD_NAME_SIG = "sig"
 
 TAGS = [
-    "fly-over",
-    "fly-by",
-    "RH 180",
-    "RH 270",
-    "LH 180",
-    "LH 270",
+    "FLYOVER",
+    "FLYBY",
+    "RH180",
+    "RH270",
+    "LH180",
+    "LH270",
 ]
 
 CUSTOM_TAG = "Custom tag"
@@ -58,3 +60,5 @@ FLIGHT_ALTITUDE_ACTION_NAME = "Set Flight Altitude"
 SENSOR_COVERAGE_ACTION_NAME = "Select Sensor"
 
 SENSOR_COMBOBOX_DEFAULT_VALUE = "No sensor"
+FIRST_ALGO_NAME = "Meander"
+SECOND_ALGO_NAME = "Racetrack"

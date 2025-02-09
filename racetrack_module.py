@@ -4,15 +4,27 @@ from typing import Union, Tuple, List, Dict
 from dataclasses import dataclass
 
 from PyQt5.QtWidgets import (
-    QSpinBox, QComboBox, QFileDialog, QDialog,
-    QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
+    QSpinBox,
+    QComboBox,
+    QFileDialog,
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
 )
 from qgis.core import (
     QgsWkbTypes, Qgis,
     QgsGeometry, QgsVector, QgsPointXY,
     QgsFeature, QgsExpressionContextUtils,
     QgsVectorLayer,
-    QgsFields, QgsField, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject, QgsUnitTypes,
+    QgsFields,
+    QgsField,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
+    QgsUnitTypes,
+    QgsVectorFileWriter
 )
 from qgis.gui import QgisInterface
 from PyQt5.QtCore import QVariant
@@ -27,6 +39,8 @@ from .constants import (
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
     PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
     DEFAULT_PUSH_MESSAGE_DURATION,
+    SECOND_ALGO_NAME,
+    FIRST_ALGO_NAME
 )
 from .coverage_module import CoverageModule
 from .utils import LayerUtils
@@ -80,7 +94,7 @@ class RacetrackDialog(QDialog):
         algo_layout = QHBoxLayout()
         algo_label = QLabel("Algorithm:")
         self.algo_combo = QComboBox()
-        self.algo_combo.addItems(["Fly to top and back", "Back and Forth"])
+        self.algo_combo.addItems([FIRST_ALGO_NAME, SECOND_ALGO_NAME])
         algo_layout.addWidget(algo_label)
         algo_layout.addWidget(self.algo_combo)
         self.layout.addLayout(algo_layout)
@@ -299,7 +313,7 @@ class RacetrackModule:
         if os.path.exists(file_path):
             self.iface.messageBar().pushMessage(
                 "Please select a file path that does not already exist",
-                level=Qgis.Warning,
+                level=Qgis.MessageLevel.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION
             )
             return None
@@ -307,25 +321,62 @@ class RacetrackModule:
         return self._create_point_layer(file_path, crs)
 
     def _create_point_layer(self, file_path: str, crs: QgsCoordinateReferenceSystem) -> Union[QgsVectorLayer, None]:
-        """Create and return a new point layer"""
+        """Create and return a new point layer by writing an empty shapefile to disk."""
+        # Define the fields for the new layer
         fields = QgsFields()
         fields.append(QgsField(QGIS_FIELD_NAME_ID, QVariant.Int))
         fields.append(QgsField(QGIS_FIELD_NAME_TAG, QVariant.String))
 
-        writer = self.layer_utils.create_vector_file_write(
-            file_path, fields, QgsWkbTypes.Point, crs
+        # Create an empty in‑memory layer with the desired geometry type and CRS.
+        # The URI "Point?crs=EPSG:XXXX" is built from the CRS's auth id.
+        mem_layer = QgsVectorLayer("Point?crs=" + crs.authid(), "temporary", "memory")
+        if not mem_layer.isValid():
+            self.iface.messageBar().pushMessage("Error", "Could not create in‑memory layer", level=Qgis.MessageLevel.Critical)
+            return None
+
+        # Add the fields to the in‑memory layer
+        mem_provider = mem_layer.dataProvider()
+        mem_provider.addAttributes(fields)
+        mem_layer.updateFields()
+
+        # Use QgsVectorFileWriter to write the in‑memory layer to disk as a shapefile.
+        # This ensures that all the required shapefile components (.shp, .shx, .dbf, .prj) are created.
+        error = QgsVectorFileWriter.writeAsVectorFormat(
+            mem_layer,  # layer to write (empty, but with proper structure)
+            file_path,  # output file path
+            "utf-8",  # file encoding
+            crs,  # CRS for the output layer
+            "ESRI Shapefile"  # output format
         )
 
+        # Check if writing the file was successful
+        if error[0] != QgsVectorFileWriter.NoError:
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "Failed to create shapefile: " + str(error),
+                level=Qgis.MessageLevel.Critical
+            )
+            return None
+
+        # Now that the shapefile exists and is finalized, load it using OGR
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
-        del writer
+        if not layer or not layer.isValid():
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "The created shapefile is not a valid data source.",
+                level=Qgis.MessageLevel.Critical
+            )
+            return None
+
         return layer
+
     @staticmethod
-    def _compute_back_and_forth_points(params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for back and forth algorithm - exact original implementation"""
+    def _compute_racetrack_algo_points(params: dict) -> List[QgsPointXY]:
+        """Compute waypoints for racetrack algorithm"""
         points = []
         forward = True
-        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2))
-        max_flyover = math.floor(params['max_turn_distance'] / params['coverage_range'] * 2)
+        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
+        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
         j = 1
         left_point = True
         reached_end = False
@@ -402,15 +453,16 @@ class RacetrackModule:
                 break
 
         return points
+
     @staticmethod
-    def _compute_fly_to_top_points(params: dict) -> List[QgsPointXY]:
-        """Compute waypoints for fly to top and back algorithm - exact original implementation"""
+    def _compute_meander_algo_points(params: dict) -> List[QgsPointXY]:
+        """Compute waypoints for meander algorithm"""
         points = []
         left_point = True
         forward = True
-        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2))
+        number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
         j = 1
-        max_flyover = math.floor(params['max_turn_distance'] / params['coverage_range'] * 2)
+        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
         line_from_bottom = 2
 
         for k in range(number_of_lines):
@@ -499,7 +551,7 @@ class RacetrackModule:
         if not layer_params:
             return None
 
-        flight_params = self._get_flight_parameters(layer_params['layer'])
+        flight_params = self._get_flight_parameters()
         if not flight_params:
             return None
 
@@ -512,10 +564,10 @@ class RacetrackModule:
 
     def _compute_points_for_algorithm(self, params: dict) -> List[QgsPointXY]:
         """Compute waypoints based on selected algorithm"""
-        if params['flight_params'].algorithm == "Back and Forth":
-            return self._compute_back_and_forth_points(params)
-        elif params['flight_params'].algorithm == "Fly to top and back":
-            return self._compute_fly_to_top_points(params)
+        if params['flight_params'].algorithm == SECOND_ALGO_NAME:
+            return self._compute_racetrack_algo_points(params)
+        elif params['flight_params'].algorithm == FIRST_ALGO_NAME:
+            return self._compute_meander_algo_points(params)
         else:
             self.iface.messageBar().pushMessage(
                 "This algorithm is not implemented",
