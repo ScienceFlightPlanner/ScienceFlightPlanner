@@ -41,7 +41,7 @@ def deselect_selected_features():
         layer.deselect(f.id())
 
 def random_list(l_size):
-    return [random.randint(1, 54) for _ in range(l_size)]
+    return [random.randint(0, 53) for _ in range(l_size)]
 
 def tag_list_from_features(features):
     tag_list = []
