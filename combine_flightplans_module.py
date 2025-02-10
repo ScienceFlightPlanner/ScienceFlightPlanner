@@ -49,6 +49,14 @@ class CombineFlightplansModule:
         layer1_has_id_field = layer_has_field(layer1, QGIS_FIELD_NAME_ID)
         layer2_has_id_field = layer_has_field(layer2, QGIS_FIELD_NAME_ID)
 
+        if layer1.wkbType() != layer2.wkbType():
+            self.iface.messageBar().pushMessage(
+                "Both layers must have the same geometry type",
+                level=Qgis.Info,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return
+
         if not layer1_has_id_field or not layer2_has_id_field:
             self.iface.messageBar().pushMessage(
                 "One of the layers or both layers have no id field",
@@ -135,7 +143,7 @@ class CombineFlightplansModule:
         writer = self.layer_utils.create_vector_file_write(
             file_path,
             fields,
-            QgsWkbTypes.Point,
+            layer1.wkbType(),
             QgsCoordinateReferenceSystem("EPSG:4326")
         )
 
