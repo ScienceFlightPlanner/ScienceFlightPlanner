@@ -19,7 +19,9 @@ from ScienceFlightPlanner.tests.utils import (
     get_layer,
     select_layer,
     select_features,
-    current_layer
+    current_layer,
+    increment_if_test_passed,
+    delete_layer
 )
 # noinspection PyUnresolvedReferences
 from ScienceFlightPlanner.science_flight_planner import ScienceFlightPlanner
@@ -64,15 +66,20 @@ class TestCombine(BaseTest):
         layer2_name = get_layer(layer2_name)
         combined_layer = get_layer(result_layer_name)
 
+        num_of_tests_passed = 0
         with self.subTest("Correct layer name"):
             self.assertTrue(combined_layer is not None)
+            num_of_tests_passed = increment_if_test_passed(num_of_tests_passed)
 
         with self.subTest("Correct number of features"):
             self.assertEqual(
                 combined_layer.featureCount(),
                 layer1_name.featureCount() + layer2_name.featureCount()
             )
+            num_of_tests_passed = increment_if_test_passed(num_of_tests_passed)
 
+        if num_of_tests_passed == 2:
+            delete_layer(combined_layer)
 
 def run_all():
     """Default function that is called by the runner if nothing else is specified"""

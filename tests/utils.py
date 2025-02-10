@@ -8,7 +8,8 @@ from qgis.PyQt.QtWidgets import QToolBar, QToolButton
 from qgis.core import (
     QgsProject,
     QgsProjectBadLayerHandler,
-    QgsVectorLayer
+    QgsVectorLayer,
+    QgsVectorFileWriter
 )
 from qgis.utils import iface
 
@@ -66,5 +67,13 @@ def trigger_action(name):
         if action.text() == name:
             action.trigger()
 
+def increment_if_test_passed(i):
+    return i+1
+
 def tearDown_if_test_passed(output_file_path):
     os.remove(output_file_path)
+
+def delete_layer(layer):
+    shapefile_path = layer.dataProvider().dataSourceUri()
+    QgsProject.instance().removeMapLayer(layer.id())
+    QgsVectorFileWriter.deleteShapeFile(shapefile_path)
