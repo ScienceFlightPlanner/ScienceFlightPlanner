@@ -17,7 +17,8 @@ from qgis.gui import QgisInterface
 
 from .constants import (
     DEFAULT_PUSH_MESSAGE_DURATION,
-    QGIS_FIELD_NAME_ID
+    QGIS_FIELD_NAME_ID,
+    QGIS_FIELD_NAME_TAG
 )
 from .utils import LayerUtils, layer_has_field
 
@@ -30,7 +31,6 @@ class CombineFlightplansModule:
         self.iface = iface
         self.layer_utils = LayerUtils(iface)
 
-    # noinspection DuplicatedCode
     def combine(self):
         vector_layers = [layer for layer in QgsProject.instance().mapLayers().values() if
                          isinstance(layer, QgsVectorLayer)]
@@ -57,8 +57,8 @@ class CombineFlightplansModule:
             )
             return
 
-        waypoints1 = [feature.geometry().asPoint() for feature in layer1.getFeatures()]
-        waypoints2 = [feature.geometry().asPoint() for feature in layer2.getFeatures()]
+        features1 = [feature for feature in layer1.getFeatures()]
+        features2 = [feature for feature in layer2.getFeatures()]
 
         selected_features1 = list(layer1.getSelectedFeatures())
         selected_features2 = list(layer2.getSelectedFeatures())
@@ -104,33 +104,33 @@ class CombineFlightplansModule:
         if not file_path:
             return
 
-        merged_waypoints = []
+        merged_features = []
         id1 = 1 - 1
         id2 = merge_waypoint2_id - 1
 
         while id1 < merge_waypoint1_id:
-            merged_waypoints.append(waypoints1[id1])
+            merged_features.append(features1[id1])
             id1 += 1
 
-        while id2 < len(waypoints2):
-            merged_waypoints.append(waypoints2[id2])
+        while id2 < len(features2):
+            merged_features.append(features2[id2])
             id2 += 1
 
-        id2 %= len(waypoints2)
+        id2 %= len(features2)
 
         while id2 < merge_waypoint2_id - 1:
-            merged_waypoints.append(waypoints2[id2])
+            merged_features.append(features2[id2])
             id2 += 1
 
-        while id1 < len(waypoints1):
-            merged_waypoints.append(waypoints1[id1])
+        while id1 < len(features1):
+            merged_features.append(features1[id1])
             id1 += 1
 
         fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
-
-        #file_path = r"C:\Users\maxim\OneDrive\Desktop\Bachelorpraktikum\BP-AdvancedScienceFlightPlanner\SLOGIS2024-Flight1\Flight3_combined2.shp"
-        #file_path = r"resources/Flight_combined.shp"
+        id_field = QgsField(QGIS_FIELD_NAME_ID, QVariant.Int)
+        tag_field = QgsField(QGIS_FIELD_NAME_TAG, QVariant.String)
+        fields.append(id_field)
+        fields.append(tag_field)
 
         writer = self.layer_utils.create_vector_file_write(
             file_path,
@@ -139,10 +139,10 @@ class CombineFlightplansModule:
             QgsCoordinateReferenceSystem("EPSG:4326")
         )
 
-        for i, merged_waypoint in enumerate(merged_waypoints):
+        for i, merged_waypoint in enumerate(merged_features):
             feature = QgsFeature()
-            feature.setGeometry(QgsGeometry.fromPointXY(merged_waypoint))
-            feature.setAttributes([i + 1])
+            feature.setGeometry(merged_waypoint.geometry())
+            feature.setAttributes([i + 1, merged_waypoint.attribute(QGIS_FIELD_NAME_TAG)])
             writer.addFeature(feature)
 
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
