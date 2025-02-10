@@ -1,9 +1,15 @@
 import os
 import random
+from typing import cast
+
 random.seed(0)
 
 from qgis.PyQt.QtWidgets import QToolBar, QToolButton
-from qgis.core import QgsProject, QgsProjectBadLayerHandler
+from qgis.core import (
+    QgsProject,
+    QgsProjectBadLayerHandler,
+    QgsVectorLayer
+)
 from qgis.utils import iface
 
 # noinspection PyUnresolvedReferences
@@ -20,9 +26,15 @@ def load_project():
     if not b:
         raise Exception("Could not load QGIS project")
 
+def get_layer(layer_name):
+    return cast(QgsVectorLayer, QgsProject.instance().mapLayersByName(layer_name)[0])
+
 def select_layer(layer_name):
     layer = QgsProject.instance().mapLayersByName(layer_name)[0]
     iface.layerTreeView().setCurrentLayer(layer)
+
+def current_layer():
+    return iface.layerTreeView().currentLayer()
 
 def get_tag_actions():
     toolbar = iface.mainWindow().findChild(QToolBar, "ScienceFlightPlanner")
@@ -31,12 +43,12 @@ def get_tag_actions():
     return tag_menu.actions()
 
 def select_features(ids):
-    layer = iface.layerTreeView().currentLayer()
+    layer = current_layer()
     for id in ids:
         layer.select(id)
 
 def deselect_selected_features():
-    layer = iface.layerTreeView().currentLayer()
+    layer = current_layer()
     for f in layer.selectedFeatures():
         layer.deselect(f.id())
 
