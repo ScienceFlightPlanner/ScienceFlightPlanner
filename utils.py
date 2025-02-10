@@ -265,7 +265,7 @@ class LayerUtils:
         self,
         file_name: str,
         fields: QgsFields,
-        geometry_type: QgsWkbTypes,
+        geometry_type: Qgis.WkbType,
         crs: QgsCoordinateReferenceSystem,
     ) -> QgsVectorFileWriter:
         """Creates a QGSVectorFileWriter with the given attributes"""
