@@ -49,9 +49,9 @@ class CombineFlightplansModule:
         layer1_has_id_field = layer_has_field(layer1, QGIS_FIELD_NAME_ID)
         layer2_has_id_field = layer_has_field(layer2, QGIS_FIELD_NAME_ID)
 
-        if layer1.wkbType() != layer2.wkbType():
+        if layer1.wkbType() != Qgis.WkbType.Point or layer2.wkbType() != Qgis.WkbType.Point:
             self.iface.messageBar().pushMessage(
-                "Both layers must have the same geometry type",
+                "Both layers must have geometry: point",
                 level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
@@ -143,7 +143,7 @@ class CombineFlightplansModule:
         writer = self.layer_utils.create_vector_file_write(
             file_path,
             fields,
-            layer1.wkbType(),
+            Qgis.WkbType.Point,
             QgsCoordinateReferenceSystem("EPSG:4326")
         )
 
