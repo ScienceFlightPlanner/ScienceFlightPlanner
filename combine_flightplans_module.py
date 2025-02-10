@@ -39,7 +39,7 @@ class CombineFlightplansModule:
         if len(layers_with_selected_features) != 2:
             self.iface.messageBar().pushMessage(
                 "Please select exactly 2 coordinates in 2 different layers",
-                level=Qgis.Info,
+                level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
@@ -52,7 +52,7 @@ class CombineFlightplansModule:
         if layer1.wkbType() != layer2.wkbType():
             self.iface.messageBar().pushMessage(
                 "Both layers must have the same geometry type",
-                level=Qgis.Info,
+                level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
@@ -60,7 +60,7 @@ class CombineFlightplansModule:
         if not layer1_has_id_field or not layer2_has_id_field:
             self.iface.messageBar().pushMessage(
                 "One of the layers or both layers have no id field",
-                level=Qgis.Info,
+                level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
@@ -74,7 +74,7 @@ class CombineFlightplansModule:
         if len(selected_features1) != 1 or len(selected_features2) != 1:
             self.iface.messageBar().pushMessage(
                 "Please select exactly 2 coordinates in 2 different layers",
-                level=Qgis.Info,
+                level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
