@@ -82,6 +82,22 @@ class CombineFlightplansModule:
         merge_waypoint1_id = selected_features1[0].attribute("id")
         merge_waypoint2_id = selected_features2[0].attribute("id")
 
+        if type(merge_waypoint1_id) is not int:
+            self.iface.messageBar().pushMessage(
+                f"id field of the selected feature in {layer1.name()} isn't an integer",
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return
+
+        if type(merge_waypoint2_id) is not int:
+            self.iface.messageBar().pushMessage(
+                f"id field of the selected feature in {layer2.name()} isn't an integer",
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return
+
         reply = QMessageBox.question(
             self.iface.mainWindow(),
             f"Combine Flightplans?",
@@ -133,6 +149,11 @@ class CombineFlightplansModule:
         while id1 < len(features1):
             merged_features.append(features1[id1])
             id1 += 1
+
+        #merged_features = features1[:merge_waypoint1_id] + \
+        #                  features2[merge_waypoint2_id:] + \
+        #                  features2[:merge_waypoint2_id] + \
+        #                  features1[merge_waypoint1_id:]
 
         fields = QgsFields()
         id_field = QgsField(QGIS_FIELD_NAME_ID, QVariant.Int)
