@@ -1,7 +1,8 @@
 import re
 
-from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QMessageBox
+from qgis.PyQt.QtCore import QVariant, Qt
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
+#from qgis.PyQt import Qt
 from qgis.core import (
     Qgis,
     QgsField,
@@ -65,6 +66,29 @@ class CombineFlightplansModule:
             )
             return
 
+        message_box = QMessageBox(self.iface.mainWindow())
+        message_box.setIcon(QMessageBox.Question)
+        message_box.setWindowTitle("Combine Flightplans")
+        message_box.setText(
+            f"To combine the flightplans, you must<br>"
+            f"select whether you want to start<br>"
+            f"at <b>waypoint 1</b> in <b>{layer1.name()}</b> or<br>"
+            f"at <b>waypoint 1</b> in <b>{layer2.name()}</b>."
+        )
+        message_box.setTextFormat(Qt.TextFormat.RichText)
+        message_box.addButton(f"{layer1.name()}", QMessageBox.AcceptRole)
+        button2 = message_box.addButton(f"{layer2.name()}", QMessageBox.AcceptRole)
+        cancel_button = message_box.addButton(QMessageBox.Cancel)
+        message_box.exec()
+
+        if message_box.clickedButton() == cancel_button:
+            return
+
+        # if clickedButton is button1 then layer1 and layer2 stay the same
+
+        if message_box.clickedButton() == button2:
+            layer1, layer2 = layer2, layer1
+
         features1 = [feature for feature in layer1.getFeatures()]
         features2 = [feature for feature in layer2.getFeatures()]
 
@@ -96,17 +120,6 @@ class CombineFlightplansModule:
                 level=Qgis.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
-            return
-
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Combine Flightplans?",
-            f"Combine {layer1.name()} and {layer2.name()}\n"
-            f"with selected points {merge_waypoint1_id} and {merge_waypoint2_id}?",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.No:
             return
 
         layer1_path = layer1.dataProvider().dataSourceUri().split('|')[0]
