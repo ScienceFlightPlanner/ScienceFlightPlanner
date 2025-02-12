@@ -128,32 +128,12 @@ class CombineFlightplansModule:
         if not file_path:
             return
 
-        merged_features = []
-        id1 = 1 - 1
-        id2 = merge_waypoint2_id - 1
-
-        while id1 < merge_waypoint1_id:
-            merged_features.append(features1[id1])
-            id1 += 1
-
-        while id2 < len(features2):
-            merged_features.append(features2[id2])
-            id2 += 1
-
-        id2 %= len(features2)
-
-        while id2 < merge_waypoint2_id - 1:
-            merged_features.append(features2[id2])
-            id2 += 1
-
-        while id1 < len(features1):
-            merged_features.append(features1[id1])
-            id1 += 1
-
-        #merged_features = features1[:merge_waypoint1_id] + \
-        #                  features2[merge_waypoint2_id:] + \
-        #                  features2[:merge_waypoint2_id] + \
-        #                  features1[merge_waypoint1_id:]
+        merged_features = (
+                features1[:merge_waypoint1_id] +
+                features2[merge_waypoint2_id:] +
+                features2[:merge_waypoint2_id] +
+                features1[merge_waypoint1_id:]
+        )
 
         fields = QgsFields()
         id_field = QgsField(QGIS_FIELD_NAME_ID, QVariant.Int)
