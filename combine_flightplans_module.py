@@ -141,11 +141,14 @@ class CombineFlightplansModule:
         if not file_path:
             return
 
+        merge_waypoint1_index = merge_waypoint1_id - 1
+        merge_waypoint2_index = merge_waypoint2_id - 1
+
         merged_features = (
-                features1[:merge_waypoint1_id] +
-                features2[merge_waypoint2_id:] +
-                features2[:merge_waypoint2_id] +
-                features1[merge_waypoint1_id:]
+                features1[:merge_waypoint1_index + 1] +
+                features2[merge_waypoint2_index:] +
+                features2[:merge_waypoint2_index] +
+                features1[merge_waypoint1_index + 1:]
         )
 
         fields = QgsFields()
