@@ -18,8 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os.path
-import typing
-from typing import List
+from typing import List, Union, Callable
 
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QToolButton, QMenu, QApplication
@@ -83,7 +82,7 @@ class ScienceFlightPlanner:
     plugin_dir: str
     toolbar_items: List[QObject]
     pluginMenu: QMenu
-    toolbar: QToolBar
+    toolbar: Union[QToolBar, None]
     pluginIsActive: bool
     layer_utils: LayerUtils
     flight_distance_duration_module: FlightDistanceDurationModule
@@ -142,11 +141,11 @@ class ScienceFlightPlanner:
         self,
         icon: str,
         text: str,
-        callback: typing.Callable[..., None],
+        callback: Callable[..., None],
         enabled_flag: bool = True,
         add_to_menu: bool = True,
         add_to_toolbar: bool = True,
-        parent: typing.Union[None, QWidget] =None,
+        parent: Union[None, QWidget] =None,
         is_checkable: bool = False
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
@@ -334,39 +333,21 @@ class ScienceFlightPlanner:
 
         self.help_module.set_actions()
 
-    # --------------------------------------------------------------------------
-    #this function is probably dead code
-    def onClosePlugin(self):
-        """Cleanup necessary items here when plugin is closed"""
-        # disconnects
-        # print("test")
+    def unload(self):
+        """Removes the plugin menu item and icon from QGIS GUI."""
         self.help_module.close()
         self.coverage_module.close()
-        self.racetrack_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
         self.action_module.close()
         self.pluginIsActive = False
-
-    def unload(self):
-        #TODO
-        """Removes the plugin menu item and icon from QGIS GUI."""
-        self.help_module.close()
-        #self.onClosePlugin()
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)
         self.iface.pluginMenu().removeAction(self.pluginMenu.menuAction())
 
         self.iface.pluginHelpMenu().removeAction(self.help_action)
-        del self.help_action
+        self.help_action = None
 
-        for action in self.toolbar_items:
-            #self.toolbar.removeAction(action)
-            if isinstance(action, QAction):
-                self.iface.removeToolBarIcon(action)
-
-        # self.toolbar.deleteLater()
-        # remove the toolbar
-        del self.toolbar
+        self.toolbar = None
 
     # --------------------------------------------------------------------------
 
