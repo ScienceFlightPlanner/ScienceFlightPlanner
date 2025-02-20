@@ -2,6 +2,7 @@ import re
 
 from qgis.PyQt.QtCore import QVariant, Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
+from qgis._core import QgsPalLayerSettings, QgsVectorLayerSimpleLabeling
 #from qgis.PyQt import Qt
 from qgis.core import (
     Qgis,
@@ -183,3 +184,12 @@ class CombineFlightplansModule:
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
         del writer
         layer.reload()
+
+        new_label_field = QGIS_FIELD_NAME_ID
+        label_settings = QgsPalLayerSettings()
+        label_settings.enabled = True
+        label_settings.drawLabels = True
+        label_settings.fieldName = new_label_field
+        layer.setLabelsEnabled(True)
+        layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
+        layer.triggerRepaint()
