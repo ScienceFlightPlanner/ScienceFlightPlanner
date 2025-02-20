@@ -47,6 +47,16 @@ class CombineFlightplansModule:
 
         layer1, layer2 = layers_with_selected_features
 
+        if layer1.crs() != layer2.crs():
+            self.iface.messageBar().pushMessage(
+                "Both layers must have the same CRS",
+                level=Qgis.Warning,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
+            )
+            return
+
+        combined_layer_crs = layer1.crs()
+
         layer1_has_id_field = layer_has_field(layer1, QGIS_FIELD_NAME_ID)
         layer2_has_id_field = layer_has_field(layer2, QGIS_FIELD_NAME_ID)
 
@@ -161,7 +171,7 @@ class CombineFlightplansModule:
             file_path,
             fields,
             Qgis.WkbType.Point,
-            QgsCoordinateReferenceSystem("EPSG:4326")
+            combined_layer_crs
         )
 
         for i, merged_waypoint in enumerate(merged_features):
