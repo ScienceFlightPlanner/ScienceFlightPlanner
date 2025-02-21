@@ -44,6 +44,7 @@ from .constants import (
     COVERAGE_LINES_ACTION_NAME,
     CUT_FLOWLINE_ACTION_NAME,
     RACETRACK_ACTION_NAME,
+    TOPOGRAPHY_ACTION_NAME,
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
@@ -67,6 +68,7 @@ from .utils import LayerUtils
 from .waypoint_generation_module import WaypointGenerationModule
 from .export_module import ExportModule
 from .waypoint_tag_module import WaypointTagModule
+from .topography_module import TopographyModule
 from functools import partial
 
 from .waypoint_reduction_module import WaypointReductionModule
@@ -94,6 +96,7 @@ class ScienceFlightPlanner:
     coverage_module: CoverageModule
     cut_flowline_module: CutFlowlineModule
     racetrack_module: RacetrackModule
+    topography_module: TopographyModule
     action_module: ActionModule
 
     def __init__(self, iface: QgisInterface):
@@ -131,6 +134,7 @@ class ScienceFlightPlanner:
         self.waypoint_reversal_module = WaypointReversalModule(iface)
         self.coverage_module = CoverageModule(iface)
         self.racetrack_module = RacetrackModule(iface, self.coverage_module)
+        self.topography_module = TopographyModule(iface)
         self.cut_flowline_module = CutFlowlineModule(iface)
         self.action_module = ActionModule(iface)
         self.help_module = HelpManualModule(
@@ -297,6 +301,12 @@ class ScienceFlightPlanner:
             icon="icon_racetrack.png",
             text=RACETRACK_ACTION_NAME,
             callback=self.racetrack_module.compute_way_points,
+            parent=self.toolbar,
+        )
+        self.add_action(
+            icon="icon_topography.png",
+            text=TOPOGRAPHY_ACTION_NAME,
+            callback=self.topography_module.tmp,
             parent=self.toolbar,
         )
         self.add_action(

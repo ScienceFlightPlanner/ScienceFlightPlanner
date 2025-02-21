@@ -17,6 +17,7 @@ from .constants import (
     FLOWLINE_ACTION_NAME,
     CUT_FLOWLINE_ACTION_NAME,
     RACETRACK_ACTION_NAME,
+    TOPOGRAPHY_ACTION_NAME,
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
@@ -50,6 +51,7 @@ class ActionModule:
         RACETRACK_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
+        TOPOGRAPHY_ACTION_NAME: [QgsWkbTypes.GeometryType.LineGeometry],
         FLIGHT_ALTITUDE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
