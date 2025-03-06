@@ -51,7 +51,7 @@ class ActionModule:
         RACETRACK_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
-        TOPOGRAPHY_ACTION_NAME: [QgsWkbTypes.GeometryType.LineGeometry],
+        TOPOGRAPHY_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
         FLIGHT_ALTITUDE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
