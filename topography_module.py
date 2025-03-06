@@ -2,33 +2,71 @@ import math
 from typing import Union, List
 
 import numpy as np
-from PyQt5.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QPushButton, QCheckBox, QSpinBox, QHBoxLayout, QLabel, \
-    QToolBar
+
+from qgis.PyQt.QtWidgets import (
+    QDockWidget,
+    QWidget,
+    QVBoxLayout,
+    QCheckBox,
+    QSpinBox,
+    QHBoxLayout,
+    QLabel,
+    QToolBar,
+    QDialog,
+    QPushButton
+)
 from osgeo import gdal
-from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt
-from qgis._core import QgsMessageLog, Qgis
-from qgis.core import QgsUnitTypes, QgsExpressionContext, QgsExpressionContextUtils, QgsExpression, QgsGeometry, \
-    QgsDistanceArea, QgsEllipsoidUtils, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext, QgsTask, \
-    QgsApplication
-from qgis._gui import QgsMapLayerComboBox
-from qgis.core import QgsPointXY, QgsCoordinateTransform, QgsRasterLayer, QgsVectorLayer, QgsProject, LayerFilters
-from qgis.gui import QgisInterface
 
+from qgis.core import (
+    QgsCoordinateTransform,
+    QgsProject,
+    QgsDistanceArea,
+    QgsTask,
+    QgsApplication,
+    LayerFilters
+)
+from qgis.gui import (
+    QgisInterface,
+    QgsMapLayerComboBox
+)
+
+from .constants import PLUGIN_NAME
 from .libs.pyqtgraph import PlotItem
-from .libs.pyqtgraph import PlotDataItem
-from .libs.pyqtgraph import functions as fn
-
-from .coverage_module import CoverageModule
-from .libs.pyqtgraph import Point
-from .libs.pyqtgraph import debug
-from .utils import install_package
 
 from .libs import pyqtgraph as pg
 
-#import pyqtgraph as pg
-
 from .utils import LayerUtils
+
+class RasterSelectionDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Raster Layer")
+        self.setModal(True)
+        self.resize(300, 100)
+
+        v_layout = QVBoxLayout(self)
+        h_layout = QHBoxLayout(self)
+
+        self.layer_combo = QgsMapLayerComboBox()
+        self.layer_combo.setFilters(LayerFilters.LayerFilter.RasterLayer)
+        v_layout.addWidget(self.layer_combo)
+
+        self.ok_button = QPushButton("OK")
+        self.ok_button.clicked.connect(self.accept)  # Closes dialog with success
+        self.ok_button.setDefault(True)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.reject)  # Closes dialog without selecting
+
+
+        h_layout.addWidget(self.ok_button)
+        h_layout.addWidget(self.cancel_button)
+        v_layout.addLayout(h_layout)
+
+    def get_selected_layer(self):
+        """Returns the selected Raster Layer"""
+        return self.layer_combo.currentLayer()
 
 class CustomAxisTop(pg.AxisItem):
     def __init__(self, wp_data_x):
@@ -69,7 +107,7 @@ def plot(
 class PlotDock(QDockWidget):
 
     def __init__(self,
-                 iface: QgisInterface,
+                 iface,
                  data_x,
                  data_y,
                  wp_data_x,
@@ -132,15 +170,20 @@ class PlotDock(QDockWidget):
 
         self.iface.addDockWidget(Qt.BottomDockWidgetArea, self)
 
+        # self.max_climb_rate_spinbox.editingFinished.connect(
+        #     self.plot_task
+        # )
+
         self.max_climb_rate_spinbox.valueChanged.connect(
             self.plot_task
         )
 
     def plot_task(self):
-        print("plottask")
         max_climbing_rate_feet = self.max_climb_rate_spinbox.value()
         max_climbing_rate_meters = max_climbing_rate_feet / 3.28
-        flight_speed_kmh = 200  # get from settings later !!!!!
+        flight_speed_kmh, _ = QgsProject.instance().readDoubleEntry(
+            PLUGIN_NAME, "flight_speed", 200
+        )
 
         for line in self.danger_lines:
             self.plot_widget.removeItem(line)
@@ -205,17 +248,18 @@ class TopographyModule:
             print("Error: Could not load vector layer")
             exit()
 
-        #map_layer_combo_box = QgsMapLayerComboBox(self.iface.mainWindow())
-        #map_layer_combo_box.setFilters(LayerFilters.LayerFilter.RasterLayer)
-        #map_layer_combo_box.setCurrentIndex(-1)
-        #raster_layer = map_layer_combo_box.currentLayer()
-        #map_layer_combo_box.show()
+        dialog = RasterSelectionDialog(self.iface.mainWindow())
+        result = dialog.exec_()
 
-        raster_layer = QgsRasterLayer(raster_path, "Raster Layer", "gdal")
-        if not raster_layer.isValid():
-            print("Error: Could not load raster layer")
-            exit()
+        if result == QDialog.Accepted:
+            selected_layer = dialog.get_selected_layer()
+            raster_layer = selected_layer  # Store it for later use
+        else:
+            self.close()
+            return
 
+
+        raster_path = raster_layer.dataProvider().dataSourceUri().split('|')[0]
         raster_ds = gdal.Open(raster_path)
         gt = raster_ds.GetGeoTransform()
         transform_to_raster_crs = QgsCoordinateTransform(vector_layer.crs(), raster_layer.crs(), QgsProject.instance())
