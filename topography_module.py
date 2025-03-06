@@ -1,5 +1,5 @@
 import math
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 from PyQt5.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QPushButton, QCheckBox, QSpinBox, QHBoxLayout, QLabel, \
@@ -7,11 +7,16 @@ from PyQt5.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QPushButton, QChe
 from osgeo import gdal
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt
-from qgis._core import QgsUnitTypes, QgsExpressionContext, QgsExpressionContextUtils, QgsExpression, QgsGeometry, \
-    QgsDistanceArea, QgsEllipsoidUtils, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
+from qgis._core import QgsMessageLog, Qgis
+from qgis.core import QgsUnitTypes, QgsExpressionContext, QgsExpressionContextUtils, QgsExpression, QgsGeometry, \
+    QgsDistanceArea, QgsEllipsoidUtils, QgsCoordinateReferenceSystem, QgsCoordinateTransformContext, QgsTask, \
+    QgsApplication
 from qgis._gui import QgsMapLayerComboBox
 from qgis.core import QgsPointXY, QgsCoordinateTransform, QgsRasterLayer, QgsVectorLayer, QgsProject, LayerFilters
 from qgis.gui import QgisInterface
+
+from .libs.pyqtgraph import PlotItem
+from .libs.pyqtgraph import PlotDataItem
 from .libs.pyqtgraph import functions as fn
 
 from .coverage_module import CoverageModule
@@ -26,8 +31,7 @@ from .libs import pyqtgraph as pg
 from .utils import LayerUtils
 
 class CustomAxisTop(pg.AxisItem):
-
-    def __init__(self, wp_data_x, plot_pixel_height):
+    def __init__(self, wp_data_x):
         super().__init__(orientation="top")
         self.data_x = wp_data_x
         major_ticks = []
@@ -36,63 +40,82 @@ class CustomAxisTop(pg.AxisItem):
         super().setTicks(ticks)
 
 
+def plot(
+        task,
+        max_climbing_rate_meters,
+        flight_speed_kmh,
+        data_x,
+        data_y,
+):
+    danger_points = []
+    for i in range(len(data_x) - 1):
+        x_distance = data_x[i + 1] - data_x[i]
+        max_height_gain = max_climbing_rate_meters / ((flight_speed_kmh * 1000 / 60) / x_distance)
+        y_distance = data_y[i + 1] - data_y[i]
+        if max_height_gain <= y_distance:
+            danger_points.append(i)
+
+    lines = []
+    for i in danger_points:
+        x_1 = data_x[i]
+        x_2 = data_x[i + 1]
+        y_1 = data_y[i]
+        y_2 = data_y[i + 1]
+        lines.append(([x_1, x_2], [y_1, y_2]))
+
+    return lines
+
+
 class PlotDock(QDockWidget):
-    iface: QgisInterface
 
     def __init__(self,
                  iface: QgisInterface,
                  data_x,
                  data_y,
                  wp_data_x,
-                 danger_points
+                 max_climb_rate_spinbox
                  ):
         super().__init__("Topography", iface.mainWindow())
 
         self.iface = iface
+        self.data_x = np.array(data_x)
+        self.x_max = self.data_x.max()
+        self.data_y = np.array(data_y)
+        self.y_max = self.data_y.max()
+        self.wp_data_x = wp_data_x
+        self.v_lines = []
+        self.danger_lines = []
+        self.max_climb_rate_spinbox = max_climb_rate_spinbox
+        self.graph = PlotItem()
 
-        dock_widget = QWidget()
-        layout = QVBoxLayout(dock_widget)
-
-        self.setWindowTitle("Linear Function Plot")
-
-        x = np.array(data_x)
-        y = np.array(data_y)
         self.plot_widget = pg.PlotWidget()
         self.plot_widget.showGrid(True, True, 0.5)
+        self.graph = self.plot_widget.plot(self.data_x, self.data_y)
 
-        self.plot_widget.getViewBox().border = pg.mkPen(color=(0, 0, 0), width=1)
+        #self.plot_widget.getViewBox().border = pg.mkPen(color=(0, 0, 0), width=1)
 
-        pixel_height = self.plot_widget.height()
-        print("pixel_height", pixel_height)
-        x_axis_top = CustomAxisTop(wp_data_x, pixel_height)
+        x_axis_top = CustomAxisTop(wp_data_x)
         self.plot_widget.setAxisItems({'top': x_axis_top})
 
-        y_max = max(data_y)
-        self.plot_widget.getViewBox().setLimits(xMin=-10000, yMin=0, yMax=y_max + 100)
-
-        for i in danger_points:
-            x_1 = data_x[i]
-            x_2 = data_x[i + 1]
-            y_1 = data_y[i]
-            y_2 = data_y[i + 1]
-            line_x = [x_1, x_2]
-            line_y = [y_1, y_2]
-
-            line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 0, 0), width=1))
-
-        self.v_lines = []
-        for x in wp_data_x:
-            line_x = [x, x]
-            line_y = [0, y_max + 100]  # Full height of the plot
-
-            v_line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 255, 0, 100), width=1))
-            self.v_lines.append(v_line)
-            v_line.setVisible(False)
+        self.plot_widget.getViewBox().setLimits(xMin=-10000, yMin=0, yMax=self.y_max + 100)
+        self.plot_widget.getViewBox().setRange(xRange=(0, self.x_max), yRange=(0, self.y_max))
 
         self.plot_widget.getAxis("left").setLabel("Height", "m")
         self.plot_widget.getAxis("top").setLabel("Waypoint ID")
         self.plot_widget.getAxis("bottom").setLabel("Distance", "m")
         self.plot_widget.getAxis("bottom").enableAutoSIPrefix(False)
+
+        self.v_lines = []
+        for x in self.wp_data_x:
+            line_x = [x, x]
+            line_y = [0, self.y_max + 100]  # Full height of the plot
+
+            v_line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 255, 0, 100), width=1))
+            v_line.setVisible(False)
+            self.v_lines.append(v_line)
+
+        dock_widget = QWidget()
+        layout = QVBoxLayout(dock_widget)
 
         layout.addWidget(self.plot_widget)
 
@@ -109,6 +132,37 @@ class PlotDock(QDockWidget):
 
         self.iface.addDockWidget(Qt.BottomDockWidgetArea, self)
 
+        self.max_climb_rate_spinbox.valueChanged.connect(
+            self.plot_task
+        )
+
+    def plot_task(self):
+        print("plottask")
+        max_climbing_rate_feet = self.max_climb_rate_spinbox.value()
+        max_climbing_rate_meters = max_climbing_rate_feet / 3.28
+        flight_speed_kmh = 200  # get from settings later !!!!!
+
+        for line in self.danger_lines:
+            self.plot_widget.removeItem(line)
+
+        # globals()['task'] is needed because QgsTask is weird when used within function scopes
+        globals()['task'] = QgsTask.fromFunction(
+            "plot",
+            plot,
+            on_finished=self.task_completed,
+            max_climbing_rate_meters=max_climbing_rate_meters,
+            flight_speed_kmh=flight_speed_kmh,
+            data_x=self.data_x,
+            data_y=self.data_y
+        )
+
+        QgsApplication.taskManager().addTask(globals()['task'])
+
+    def task_completed(self, exception, result=None):
+        for line_x, line_y in result:
+            line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 0, 0), width=1))
+            self.danger_lines.append(line)
+
     def toggle_line(self):
         """ Show/Hide the vertical line when the button is clicked """
         for v_line in self.v_lines:
@@ -118,7 +172,6 @@ class PlotDock(QDockWidget):
         self.iface.removeDockWidget(self)
 
 class TopographyModule:
-
     iface: QgisInterface
     layer_utils: LayerUtils
     plot_dock_widget: Union[PlotDock, None]
@@ -139,7 +192,7 @@ class TopographyModule:
         layout = QHBoxLayout()
         layout.addWidget(QLabel("Maximum climb rate in feet/min"))
         layout.addWidget(self.max_climb_rate_spinbox)
-        layout.setContentsMargins(5, 0, 5, 0)
+        layout.setContentsMargins(20, 0, 5, 0)
         self.max_climb_rate_widget.setLayout(layout)
         toolbar.addWidget(self.max_climb_rate_widget)
 
@@ -233,19 +286,8 @@ class TopographyModule:
         data_x.append(total_distance)
         data_y.append(raster_value)
 
-        max_climbing_rate_feet = self.max_climb_rate_spinbox.value()
-        max_climbing_rate_meters = max_climbing_rate_feet / 3.28
-        flight_speed_kmh = 200 # get from settings later !!!!!
-
-        danger_points = []
-        for i in range(len(data_x) - 1):
-            x_distance = data_x[i + 1] - data_x[i]
-            max_height_gain = max_climbing_rate_meters / ((flight_speed_kmh * 1000 / 60) / x_distance)
-            y_distance = data_y[i + 1] - data_y[i]
-            if max_height_gain <= y_distance:
-                danger_points.append(i)
-
-        self.plot_dock_widget = PlotDock(self.iface, data_x, data_y, wp_data_x, danger_points)
+        self.plot_dock_widget = PlotDock(self.iface, data_x, data_y, wp_data_x, self.max_climb_rate_spinbox)
+        self.plot_dock_widget.plot_task()
 
     def close(self):
         if self.plot_dock_widget is not None:
