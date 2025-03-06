@@ -21,6 +21,7 @@ from .constants import (
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
+    MAX_CLIMB_RATE_ACTION_NAME
 )
 
 class ActionModule:
@@ -60,6 +61,9 @@ class ActionModule:
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
+        MAX_CLIMB_RATE_ACTION_NAME: [
+            QgsWkbTypes.GeometryType.PointGeometry
+        ]
     }
 
     def __init__(self, iface: QgisInterface):

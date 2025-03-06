@@ -48,6 +48,7 @@ from .constants import (
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
+    MAX_CLIMB_RATE_ACTION_NAME,
     PLUGIN_ICON_PATH
 )
 from .cut_flowline_module import CutFlowlineModule
@@ -339,6 +340,10 @@ class ScienceFlightPlanner:
         self.coverage_module.sensor_combobox.setToolTip(SENSOR_COVERAGE_ACTION_NAME)
         self.toolbar_items.append(self.coverage_module.sensor_combobox)
 
+        self.topography_module.init_gui(self.toolbar)
+        self.topography_module.max_climb_rate_spinbox.setToolTip(MAX_CLIMB_RATE_ACTION_NAME)
+        self.toolbar_items.append(self.topography_module.max_climb_rate_spinbox)
+
         self.action_module.connect(self.toolbar_items)
 
         self.help_module.set_actions()
@@ -349,6 +354,7 @@ class ScienceFlightPlanner:
         self.coverage_module.close()
         self.flight_distance_duration_module.close()
         self.waypoint_reduction_module.close()
+        self.topography_module.close()
         self.action_module.close()
         self.pluginIsActive = False
         self.iface.unregisterOptionsWidgetFactory(self.options_factory)

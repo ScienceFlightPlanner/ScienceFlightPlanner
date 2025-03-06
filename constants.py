@@ -58,6 +58,7 @@ TOPOGRAPHY_ACTION_NAME = "Create topography profile"
 HELP_MANUAL_ACTION_NAME = "Help"
 FLIGHT_ALTITUDE_ACTION_NAME = "Set Flight Altitude"
 SENSOR_COVERAGE_ACTION_NAME = "Select Sensor"
+MAX_CLIMB_RATE_ACTION_NAME = "Set Maximum Climb Rate"
 
 SENSOR_COMBOBOX_DEFAULT_VALUE = "No sensor"
 FIRST_ALGO_NAME = "Meander"
