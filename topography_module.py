@@ -167,10 +167,9 @@ class PlotDock(QDockWidget):
         self.check_box.stateChanged.connect(lambda: self.toggle_line())
         h_layout.addWidget(self.check_box, 0, Qt.AlignLeft)
 
-        auto_size_button = QPushButton("Autosize")
-        auto_size_button.setParent(self)
-        auto_size_button.clicked.connect(self.plot_widget.autoBtnClicked)
-        h_layout.addWidget(auto_size_button, 0, Qt.AlignLeft)
+        self.plot_widget.plotItem.autoBtn.setImageFile(":resources/icons/icon_scale_up_or_down.png")
+        self.plot_widget.plotItem.autoBtn._width = 32
+        self.plot_widget.plotItem.autoBtn.update()
 
         h_layout.addStretch()
 
@@ -184,13 +183,13 @@ class PlotDock(QDockWidget):
 
         self.iface.addDockWidget(Qt.BottomDockWidgetArea, self)
 
-        # self.max_climb_rate_spinbox.editingFinished.connect(
-        #     self.plot_task
-        # )
-
-        self.max_climb_rate_spinbox.valueChanged.connect(
+        self.max_climb_rate_spinbox.editingFinished.connect(
             self.plot_task
         )
+
+        # self.max_climb_rate_spinbox.valueChanged.connect(
+        #     self.plot_task
+        # )
 
     def plot_task(self):
         max_climbing_rate_feet = self.max_climb_rate_spinbox.value()
@@ -318,14 +317,15 @@ class TopographyModule:
             wp_data_x.append(s)
             s += distance
 
-            sample_interval = 1000 # every 1000 meters
+            sample_interval = 1000.0 # every 1000 meters
 
-            line = distance_area.geodesicLine(current_point, next_point,sample_interval)
+            line = distance_area.geodesicLine(current_point, next_point, sample_interval)
 
             for point in line[0][0:-1]:
                 points.append(point)
 
         wp_data_x.append(s)
+        print(points)
         points.append(features[-1].geometry().asPoint())
 
         for i in range(len(points) - 1):
