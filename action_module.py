@@ -18,9 +18,11 @@ from .constants import (
     FLOWLINE_ACTION_NAME,
     CUT_FLOWLINE_ACTION_NAME,
     RACETRACK_ACTION_NAME,
+    TOPOGRAPHY_ACTION_NAME,
     HELP_MANUAL_ACTION_NAME,
     FLIGHT_ALTITUDE_ACTION_NAME,
     SENSOR_COVERAGE_ACTION_NAME,
+    MAX_CLIMB_RATE_ACTION_NAME
 )
 
 class ActionModule:
@@ -52,6 +54,7 @@ class ActionModule:
         RACETRACK_ACTION_NAME: [
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
+        TOPOGRAPHY_ACTION_NAME: [QgsWkbTypes.GeometryType.PointGeometry],
         FLIGHT_ALTITUDE_ACTION_NAME: [
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
@@ -60,6 +63,9 @@ class ActionModule:
             QgsWkbTypes.GeometryType.LineGeometry,
             QgsWkbTypes.GeometryType.PolygonGeometry,
         ],
+        MAX_CLIMB_RATE_ACTION_NAME: [
+            QgsWkbTypes.GeometryType.PointGeometry
+        ]
     }
 
     def __init__(self, iface: QgisInterface):

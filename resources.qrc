@@ -16,6 +16,8 @@
         <file>resources/icons/icon_flowline.png</file>
         <file>resources/icons/icon_cut_flowline.png</file>
         <file>resources/icons/icon_racetrack.png</file>
+        <file>resources/icons/icon_topography.png</file>
+        <file>resources/icons/icon_scale_up_or_down.png</file>
         <file>resources/user_manual/complete_manual.html</file>
         <file>resources/user_manual/compute_optimal_coverage_lines.html</file>
         <file>resources/user_manual/display_expected_flight_duration.html</file>
