@@ -1,7 +1,5 @@
-import math
-from typing import Union, List
-
 import numpy as np
+from qgis.PyQt.QtGui import QColor
 
 from qgis.PyQt.QtWidgets import (
     QDockWidget,
@@ -24,11 +22,14 @@ from qgis.core import (
     QgsDistanceArea,
     QgsTask,
     QgsApplication,
-    LayerFilters
+    LayerFilters,
+    Qgis,
+    QgsGeometry
 )
 from qgis.gui import (
     QgisInterface,
-    QgsMapLayerComboBox
+    QgsMapLayerComboBox,
+    QgsRubberBand
 )
 
 from .constants import PLUGIN_NAME
@@ -101,7 +102,7 @@ def plot(
         y_2 = data_y[i + 1]
         lines.append(([x_1, x_2], [y_1, y_2]))
 
-    return lines
+    return danger_points, lines
 
 
 class PlotDock(QDockWidget):
@@ -111,7 +112,8 @@ class PlotDock(QDockWidget):
                  data_x,
                  data_y,
                  wp_data_x,
-                 max_climb_rate_spinbox
+                 max_climb_rate_spinbox,
+                 points
                  ):
         super().__init__("Topography", iface.mainWindow())
 
@@ -124,6 +126,8 @@ class PlotDock(QDockWidget):
         self.v_lines = []
         self.danger_lines = []
         self.max_climb_rate_spinbox = max_climb_rate_spinbox
+        self.points = points
+        self.rubber_bands = []
         self.graph = PlotItem()
 
         self.plot_widget = pg.PlotWidget()
@@ -153,16 +157,26 @@ class PlotDock(QDockWidget):
             self.v_lines.append(v_line)
 
         dock_widget = QWidget()
-        layout = QVBoxLayout(dock_widget)
+        v_layout = QVBoxLayout(dock_widget)
+        h_layout = QHBoxLayout(dock_widget)
 
-        layout.addWidget(self.plot_widget)
+        v_layout.addWidget(self.plot_widget)
 
         self.check_box = QCheckBox("Show Waypoints")
         self.check_box.setParent(self)
         self.check_box.stateChanged.connect(lambda: self.toggle_line())
-        layout.addWidget(self.check_box)
+        h_layout.addWidget(self.check_box, 0, Qt.AlignLeft)
 
-        dock_widget.setLayout(layout)
+        auto_size_button = QPushButton("Autosize")
+        auto_size_button.setParent(self)
+        auto_size_button.clicked.connect(self.plot_widget.autoBtnClicked)
+        h_layout.addWidget(auto_size_button, 0, Qt.AlignLeft)
+
+        h_layout.addStretch()
+
+        v_layout.addLayout(h_layout)
+
+        dock_widget.setLayout(v_layout)
 
         self.setWidget(dock_widget)
 
@@ -202,9 +216,26 @@ class PlotDock(QDockWidget):
         QgsApplication.taskManager().addTask(globals()['task'])
 
     def task_completed(self, exception, result=None):
-        for line_x, line_y in result:
+        print("comp")
+        print(result)
+        danger_points, lines = result
+        for line_x, line_y in lines:
             line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 0, 0), width=1))
             self.danger_lines.append(line)
+
+        for rubber_band in self.rubber_bands:
+            rubber_band.reset()
+
+        for i in danger_points:
+            point_tuple = [self.points[i], self.points[i + 1]]
+            geom = QgsGeometry.fromPolylineXY(point_tuple)
+            rubber_band = QgsRubberBand(self.iface.mapCanvas(), Qgis.GeometryType.Line)  # False = LineString
+            rubber_band.setColor(QColor(255, 0, 0, 150))  # Semi-transparent red
+            rubber_band.setWidth(7)  # Line width
+
+            rubber_band.setToGeometry(geom, self.iface.layerTreeView().currentLayer())
+            self.rubber_bands.append(rubber_band)
+
 
     def toggle_line(self):
         """ Show/Hide the vertical line when the button is clicked """
@@ -213,14 +244,10 @@ class PlotDock(QDockWidget):
 
     def close(self):
         self.iface.removeDockWidget(self)
+        for rubber_band in self.rubber_bands:
+            rubber_band.reset()
 
 class TopographyModule:
-    iface: QgisInterface
-    layer_utils: LayerUtils
-    plot_dock_widget: Union[PlotDock, None]
-    max_climb_rate_widget: QWidget
-    max_climb_rate_spinbox: QSpinBox
-
     def __init__(self, iface: QgisInterface):
         self.iface = iface
         self.layer_utils = LayerUtils(iface)
@@ -330,7 +357,7 @@ class TopographyModule:
         data_x.append(total_distance)
         data_y.append(raster_value)
 
-        self.plot_dock_widget = PlotDock(self.iface, data_x, data_y, wp_data_x, self.max_climb_rate_spinbox)
+        self.plot_dock_widget = PlotDock(self.iface, data_x, data_y, wp_data_x, self.max_climb_rate_spinbox, points)
         self.plot_dock_widget.plot_task()
 
     def close(self):
