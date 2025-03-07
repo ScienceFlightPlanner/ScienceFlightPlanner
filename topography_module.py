@@ -113,7 +113,8 @@ class PlotDock(QDockWidget):
                  data_y,
                  wp_data_x,
                  max_climb_rate_spinbox,
-                 points
+                 points,
+                 layer_crs
                  ):
         super().__init__("Topography", iface.mainWindow())
 
@@ -128,6 +129,7 @@ class PlotDock(QDockWidget):
         self.max_climb_rate_spinbox = max_climb_rate_spinbox
         self.points = points
         self.rubber_bands = []
+        self.layer_crs = layer_crs
         self.graph = PlotItem()
 
         self.plot_widget = pg.PlotWidget()
@@ -225,14 +227,15 @@ class PlotDock(QDockWidget):
         for rubber_band in self.rubber_bands:
             rubber_band.reset()
 
+        map_canvas = self.iface.mapCanvas()
         for i in danger_points:
             point_tuple = [self.points[i], self.points[i + 1]]
             geom = QgsGeometry.fromPolylineXY(point_tuple)
-            rubber_band = QgsRubberBand(self.iface.mapCanvas(), Qgis.GeometryType.Line)  # False = LineString
+            rubber_band = QgsRubberBand(map_canvas, Qgis.GeometryType.Line)  # False = LineString
             rubber_band.setColor(QColor(255, 0, 0, 150))  # Semi-transparent red
             rubber_band.setWidth(7)  # Line width
 
-            rubber_band.setToGeometry(geom, self.iface.layerTreeView().currentLayer())
+            rubber_band.setToGeometry(geom, self.layer_crs)
             self.rubber_bands.append(rubber_band)
 
 
@@ -267,7 +270,6 @@ class TopographyModule:
 
     def tmp(self):
         self.close()
-        raster_path = r"C:\Users\maxim\Downloads\DEM.tif"
 
         vector_layer = self.iface.layerTreeView().currentLayer()
         if not vector_layer.isValid():
@@ -357,7 +359,15 @@ class TopographyModule:
         data_x.append(total_distance)
         data_y.append(raster_value)
 
-        self.plot_dock_widget = PlotDock(self.iface, data_x, data_y, wp_data_x, self.max_climb_rate_spinbox, points)
+        self.plot_dock_widget = PlotDock(
+            self.iface,
+            data_x,
+            data_y,
+            wp_data_x,
+            self.max_climb_rate_spinbox,
+            points,
+            vector_layer.crs()
+        )
         self.plot_dock_widget.plot_task()
 
     def close(self):
