@@ -466,23 +466,18 @@ class RacetrackModule:
         line_from_bottom = 2
 
         for k in range(number_of_lines):
-            dist = 2 * params['coverage_range'] * params['overlap_factor'] * j - params['coverage_range']
-            start = QgsPointXY(
-                params['point_start'].x() + params['vec_normalized'].x() * dist,
-                params['point_start'].y() + params['vec_normalized'].y() * dist,
+            # Using the same point calculation approach as the racetrack algorithm
+            point_line = RacetrackModule._compute_line_points(
+                j, 
+                left_point, 
+                params['point_start'], 
+                params['point_end'], 
+                params['vec_normalized'], 
+                params['coverage_range'], 
+                params['overlap_factor']
             )
-            end = QgsPointXY(
-                params['point_end'].x() + params['vec_normalized'].x() * dist,
-                params['point_end'].y() + params['vec_normalized'].y() * dist
-            )
-
-            if left_point:
-                points.append(start)
-                points.append(end)
-            else:
-                points.append(end)
-                points.append(start)
-
+            
+            points.extend(point_line)
             left_point = not left_point
 
             if forward:
