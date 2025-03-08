@@ -267,17 +267,24 @@ class RacetrackModule:
             coverage_crs.mapUnits(),
         )
 
+        coverage_range = self.coverage_module.compute_sensor_coverage_in_meters(
+            float(self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[self.sensor_combobox.currentText()]),
+            self.flight_altitude_spinbox.value()
+        ) * unit_factor
+        
+        overlap_factor = 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0))
+        
+        # Read max_turn_distance from settings
+        max_turn_distance = float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
+        
         return {
             'vec': vec,
             'vec_normalized': vec_normalized,
             'point_start': point_start,
             'point_end': point_end,
-            'coverage_range': self.coverage_module.compute_sensor_coverage_in_meters(
-                float(self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[self.sensor_combobox.currentText()]),
-                self.flight_altitude_spinbox.value()
-            ) * unit_factor,
-            'overlap_factor': 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0)),
-            'max_turn_distance': float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
+            'coverage_range': coverage_range,
+            'overlap_factor': overlap_factor,
+            'max_turn_distance': max_turn_distance
         }
     @staticmethod
     def _get_save_file_path(base_path: str,
@@ -376,7 +383,9 @@ class RacetrackModule:
         points = []
         forward = True
         number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
-        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
+        line_spacing = params['coverage_range'] * 2 * params['overlap_factor']
+        max_flyover = math.floor(params['max_turn_distance'] / line_spacing)
+
         j = 1
         left_point = True
         reached_end = False
@@ -466,35 +475,30 @@ class RacetrackModule:
         line_from_bottom = 2
 
         for k in range(number_of_lines):
-            dist = 2 * params['coverage_range'] * params['overlap_factor'] * j - params['coverage_range']
-            start = QgsPointXY(
-                params['point_start'].x() + params['vec_normalized'].x() * dist,
-                params['point_start'].y() + params['vec_normalized'].y() * dist,
+            # Using the same point calculation approach as the racetrack algorithm
+            point_line = RacetrackModule._compute_line_points(
+                j, 
+                left_point, 
+                params['point_start'], 
+                params['point_end'], 
+                params['vec_normalized'], 
+                params['coverage_range'], 
+                params['overlap_factor']
             )
-            end = QgsPointXY(
-                params['point_end'].x() + params['vec_normalized'].x() * dist,
-                params['point_end'].y() + params['vec_normalized'].y() * dist
-            )
-
-            if left_point:
-                points.append(start)
-                points.append(end)
-            else:
-                points.append(end)
-                points.append(start)
-
+            
+            points.extend(point_line)
             left_point = not left_point
 
             if forward:
-                if j + max_flyover > number_of_lines:
+                if j + max_flyover <= number_of_lines:  # Changed to match racetrack condition (<=)
+                    j = j + max_flyover
+                else:
                     if j + 1 <= number_of_lines:
                         j = j + 1
                         forward = not forward
                     else:
                         j = j + 1 - max_flyover
                         forward = not forward
-                else:
-                    j = j + max_flyover
             else:
                 if j == line_from_bottom:
                     forward = not forward
@@ -555,15 +559,32 @@ class RacetrackModule:
         if not flight_params:
             return None
 
+        # Store max_turn_distance from dialog for use in algorithm
+        QgsProject.instance().writeEntryDouble(
+            PLUGIN_NAME, 
+            "max_turn_distance", 
+            flight_params.max_turn_distance
+        )
+        self.settings.setValue(
+            PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 
+            flight_params.max_turn_distance
+        )
+
         geometry_params = self._prepare_geometry_parameters(
             layer_params['feature'], layer_params['crs'],
             layer_params['coverage_crs']
         )
 
+        # Ensure max_turn_distance is set from flight_params
+        geometry_params['max_turn_distance'] = flight_params.max_turn_distance
+
         return {**layer_params, **geometry_params, 'flight_params': flight_params}
 
     def _compute_points_for_algorithm(self, params: dict) -> List[QgsPointXY]:
         """Compute waypoints based on selected algorithm"""
+        # Force update max_turn_distance to ensure it's using the correct value
+        params['max_turn_distance'] = params['flight_params'].max_turn_distance
+        
         if params['flight_params'].algorithm == SECOND_ALGO_NAME:
             return self._compute_racetrack_algo_points(params)
         elif params['flight_params'].algorithm == FIRST_ALGO_NAME:
