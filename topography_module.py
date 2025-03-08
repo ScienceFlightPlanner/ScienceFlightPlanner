@@ -106,7 +106,6 @@ def plot(
 
 
 class PlotDock(QDockWidget):
-
     def __init__(self,
                  iface,
                  data_x,
@@ -217,8 +216,9 @@ class PlotDock(QDockWidget):
         QgsApplication.taskManager().addTask(globals()['task'])
 
     def task_completed(self, exception, result=None):
-        print("comp")
-        print(result)
+        if exception is not None:
+            raise exception
+
         danger_points, lines = result
         for line_x, line_y in lines:
             line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 0, 0), width=1))
@@ -292,7 +292,6 @@ class TopographyModule:
         gt = raster_ds.GetGeoTransform()
         transform_to_raster_crs = QgsCoordinateTransform(vector_layer.crs(), raster_layer.crs(), QgsProject.instance())
         band_number = 1
-
         data_x = []
         data_y = []
         wp_data_x = []
