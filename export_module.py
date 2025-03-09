@@ -1,6 +1,7 @@
 import os
+import tempfile
 
-from PyQt5.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
@@ -9,10 +10,8 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 
-import tempfile
-
-from .constants import QGIS_FIELD_NAME_TAG, QGIS_FIELD_NAME_ID, DEFAULT_TAG
 from .libs.garmin_fpl import wpt_to_gfp_20230704, DEC2DMM_20230704
+from .constants import QGIS_FIELD_NAME_TAG, QGIS_FIELD_NAME_ID, DEFAULT_TAG
 from .utils import LayerUtils
 
 

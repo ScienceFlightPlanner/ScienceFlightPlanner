@@ -4,7 +4,6 @@ from qgis.core import (
     Qgis,
     QgsExpressionContextUtils,
     QgsFeature,
-    QgsField,
     QgsMapLayer,
     QgsPalLayerSettings,
     QgsPointXY,

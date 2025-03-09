@@ -19,11 +19,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os.path
 from typing import List, Union, Callable
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QToolButton, QMenu
-from qgis.gui import QgisInterface
+from qgis.PyQt.QtCore import QObject
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
+from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget, QToolButton, QMenu
+
+from qgis.gui import QgisInterface
 
 from .constants import (
     ICON_DIRECTORY_PATH,

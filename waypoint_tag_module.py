@@ -1,6 +1,7 @@
 import re
-from PyQt5.QtCore import QVariant
-from PyQt5.QtWidgets import QInputDialog
+
+from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtWidgets import QInputDialog
 from qgis.core import Qgis, QgsWkbTypes
 from qgis.gui import QgisInterface
 

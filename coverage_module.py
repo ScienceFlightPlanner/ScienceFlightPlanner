@@ -1,7 +1,6 @@
 import math
 from typing import Dict, Union
 
-from PyQt5.QtWidgets import QToolBar
 from qgis.core import (
     Qgis,
     QgsCoordinateReferenceSystem,
@@ -27,6 +26,7 @@ from qgis.core import (
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt, QVariant
 from qgis.PyQt.QtWidgets import (
+    QToolBar,
     QComboBox,
     QHBoxLayout,
     QLabel,

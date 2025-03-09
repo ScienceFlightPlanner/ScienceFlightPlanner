@@ -1,15 +1,12 @@
 import re
 
 from qgis.PyQt.QtCore import QVariant, Qt
-from PyQt5.QtWidgets import QMessageBox, QInputDialog
+from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (
     Qgis,
     QgsField,
-    QgsWkbTypes,
     QgsFeature,
-    QgsGeometry,
     QgsFields,
-    QgsCoordinateReferenceSystem,
     QgsVectorLayer,
     QgsProject,
     QgsPalLayerSettings,

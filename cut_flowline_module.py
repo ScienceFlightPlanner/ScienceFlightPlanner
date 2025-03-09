@@ -1,4 +1,5 @@
-from PyQt5.QtCore import QVariant
+import os
+
 from qgis.core import (
     QgsWkbTypes, 
     Qgis, 
@@ -9,14 +10,15 @@ from qgis.core import (
     QgsVectorFileWriter
 )
 from qgis.gui import QgisInterface
+from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
+from qgis.PyQt.QtCore import QVariant
+
 from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
     DEFAULT_TAG
 )
 from .utils import LayerUtils
-import os
-from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
 
 
 class CutFlowlineModule:

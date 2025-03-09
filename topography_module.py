@@ -1,8 +1,10 @@
-import os.path
-
+import os
 import numpy as np
-from qgis.PyQt.QtGui import QColor
 
+from osgeo import gdal
+
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (
     QDockWidget,
     QWidget,
@@ -15,8 +17,6 @@ from qgis.PyQt.QtWidgets import (
     QDialog,
     QPushButton
 )
-from osgeo import gdal
-from qgis.PyQt.QtCore import Qt
 
 from qgis.core import (
     QgsCoordinateTransform,

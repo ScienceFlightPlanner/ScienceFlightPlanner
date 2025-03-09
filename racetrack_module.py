@@ -3,7 +3,7 @@ import os
 from typing import Union, Tuple, List, Dict
 from dataclasses import dataclass
 
-from PyQt5.QtWidgets import (
+from qgis.PyQt.QtWidgets import (
     QSpinBox,
     QComboBox,
     QFileDialog,
@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
 )
+from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsWkbTypes, Qgis,
     QgsGeometry, QgsVector, QgsPointXY,
@@ -27,7 +28,6 @@ from qgis.core import (
     QgsVectorFileWriter
 )
 from qgis.gui import QgisInterface
-from PyQt5.QtCore import QVariant
 
 from .constants import (
     QGIS_FIELD_NAME_ID,
