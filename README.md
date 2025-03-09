@@ -152,3 +152,9 @@ The plugin setting can be found under: \"Settings ▶ Options\... ▶ ScienceFli
 #### I\'ve activated the flight duration/distance display, how is it updated?
 
 When the flight duration/distance display is activated (indicated by a toggled button of the corresponding feature) the distance/duration is updated in accordance to the current layer/feature selection. This means that when for example changing the layer to a different line layer, the distance/duration is updated to match the new layer. If the layer contains multiple features, it is required to explicitly select one feature for which the distance/duration is to be shown. Similarly, as for a new layer selection, a new feature selection within the current layer results in an update of the distance/duration. When a layer of a geometry other than line is selected, the display is toggled until a layer of type line is selected again.
+
+## Acknowledgments
+
+This plugin makes use of [**garmin_fpl**](https://github.com/awi-response/garmin_fpl):
+
+Rettelbach, T., Döpper, V., & Nitze, I. (2024). garmin_fpl: Creation and conversion scripts for Garmin flightplans for scientific flight campaigns [Computer software]
