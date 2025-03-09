@@ -1,4 +1,3 @@
-import codecs
 import os
 from functools import partial
 from typing import List, Union
@@ -23,15 +22,10 @@ from .constants import (
     PLUGIN_TOOLBAR_NAME,
     PLUGIN_HELP_MANUAL_TITLE,
     SENSOR_COVERAGE_ACTION_NAME,
+    HTML_FILE_FOR_ACTION, PLUGIN_DIRECTORY_PATH,
 )
 
 from .action_module import ActionModule
-
-Q_PUSH_BUTTON_STYLE_SHEET = """
-                        QPushButton {
-                            color: black
-                        }
-                    """
 
 COMPLETE_MANUAL_NAME = "Complete Manual"
 
@@ -43,8 +37,6 @@ FAQ_ACTION_NAME = "FAQ"
 class HelpWidget(QDockWidget):
 
     iface: QgisInterface
-    plugin_dir: str
-    user_manual_htmls_directory_path: str
     action_module: ActionModule
     sensor_combobox_plugin: QComboBox
 
@@ -66,12 +58,9 @@ class HelpWidget(QDockWidget):
         iface: QgisInterface,
         actions: List[Union[QAction, QToolButton]],
         sensor_combobox: QComboBox,
-        plugin_dir: str,
     ):
         super().__init__(PLUGIN_HELP_MANUAL_TITLE, iface.mainWindow())
         self.iface = iface
-        self.plugin_dir = plugin_dir
-        self.user_manual_htmls_directory_path = os.path.join(self.plugin_dir, "resources", "user_manual")
 
         self.actions = actions
         self.action_module = ActionModule(iface)
@@ -180,7 +169,6 @@ class HelpWidget(QDockWidget):
     def add_faq_widget(self):
         """adds a faq widget to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
         faq_button = QPushButton(FAQ_ACTION_NAME)
-        faq_button.setStyleSheet(Q_PUSH_BUTTON_STYLE_SHEET)
         faq_button.setToolTip(FAQ_ACTION_NAME)
         faq_button.setAutoDefault(False)
 
@@ -227,23 +215,16 @@ class HelpWidget(QDockWidget):
             set_checked_for_corresponding_action_button(action_name, actions, True)
 
             # read corresponding html file
-            action_html_name = action_name.replace(" ", "_").lower() + ".html"
+            dict_action_name = action_name.lower()
 
-            file = None
-
-            if action_html_name in [f for f in os.listdir(self.user_manual_htmls_directory_path)]:
-                html_file = os.path.join(self.user_manual_htmls_directory_path, action_html_name)
-                file = codecs.open(html_file, "r")
-                html_string = file.read()
+            if dict_action_name in HTML_FILE_FOR_ACTION:
+                html_string = HTML_FILE_FOR_ACTION[dict_action_name]
             else:
                 html_string = ""
 
             # set text widget to corresponding text and update widget
             self.text_widget = create_text_widget(html_string)
             self.update_widget()
-
-            if file is not None:
-                file.close()
 
             self.current_action_name = action_name
 
@@ -259,16 +240,14 @@ class HelpManualModule:
 
     iface: QgisInterface
     sensor_combobox: QComboBox
-    plugin_dir: str
 
     actions: Union[List[Union[QAction, QToolButton]], None]
     help_action: Union[QAction, None]
 
     help_widget: Union[HelpWidget, None]
 
-    def __init__(self, iface, sensor_combobox, plugin_dir):
+    def __init__(self, iface, sensor_combobox):
         self.iface = iface
-        self.plugin_dir = plugin_dir
         self.sensor_combobox = sensor_combobox
 
         self.actions = None
@@ -285,13 +264,13 @@ class HelpManualModule:
         # initialize help widgets
         if self.help_widget is None:
             self.help_widget = HelpWidget(
-                self.iface, self.actions, self.sensor_combobox, self.plugin_dir
+                self.iface, self.actions, self.sensor_combobox
             )
             self.help_widget.visibilityChanged.connect(self.close)
 
         elif not self.help_widget.isVisible():
             self.help_widget = HelpWidget(
-                self.iface, self.actions, self.sensor_combobox, self.plugin_dir
+                self.iface, self.actions, self.sensor_combobox
             )
         else:
             self.close()

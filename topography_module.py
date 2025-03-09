@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 from qgis.PyQt.QtGui import QColor
 
@@ -32,7 +34,10 @@ from qgis.gui import (
     QgsRubberBand
 )
 
-from .constants import PLUGIN_NAME
+from .constants import (
+    PLUGIN_NAME,
+    ICON_DIRECTORY_PATH
+)
 from .libs.pyqtgraph import PlotItem
 
 from .libs import pyqtgraph as pg
@@ -170,7 +175,7 @@ class PlotDock(QDockWidget):
         self.check_box.stateChanged.connect(lambda: self.toggle_line())
         h_layout.addWidget(self.check_box, 0, Qt.AlignLeft)
 
-        self.plot_widget.plotItem.autoBtn.setImageFile(":resources/icons_for_light_mode/icon_scale_up_or_down.png")
+        self.plot_widget.plotItem.autoBtn.setImageFile(os.path.join(ICON_DIRECTORY_PATH, "icon_scale_up_or_down.png"))
         self.plot_widget.plotItem.autoBtn._width = 32
         self.plot_widget.plotItem.autoBtn.update()
 

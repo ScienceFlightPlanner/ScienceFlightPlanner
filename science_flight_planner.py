@@ -21,12 +21,13 @@ import os.path
 from typing import List, Union, Callable
 
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QToolButton, QMenu, QApplication
+from PyQt5.QtWidgets import QToolButton, QMenu
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QWidget
 
 from .constants import (
+    ICON_DIRECTORY_PATH,
     TAGS,
     CUSTOM_TAG,
     PLUGIN_NAME,
@@ -77,14 +78,11 @@ from functools import partial
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
-icon_folder_path = os.path.join(":resources", "icons")
-
 class ScienceFlightPlanner:
     """QGIS Plugin Implementation."""
     popupMenu: QMenu
     toolButton: QToolButton
     iface: QgisInterface
-    plugin_dir: str
     toolbar_items: List[QObject]
     pluginMenu: QMenu
     toolbar: Union[QToolBar, None]
@@ -114,9 +112,6 @@ class ScienceFlightPlanner:
         self.help_action = None
         self.iface = iface
 
-        # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
-
         # Declare instance attributes
         self.toolbar_items = []
         self.options_factory = None
@@ -143,7 +138,7 @@ class ScienceFlightPlanner:
         self.cut_flowline_module = CutFlowlineModule(iface)
         self.action_module = ActionModule(iface)
         self.help_module = HelpManualModule(
-            iface, self.coverage_module.sensor_combobox, self.plugin_dir
+            iface, self.coverage_module.sensor_combobox
         )
 
     def add_action(
@@ -184,7 +179,7 @@ class ScienceFlightPlanner:
         if parent is None:
             parent = self.iface.mainWindow()
 
-        icon_path = os.path.join(icon_folder_path, icon)
+        icon_path = os.path.join(ICON_DIRECTORY_PATH, icon)
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.setObjectName(text)
@@ -230,7 +225,7 @@ class ScienceFlightPlanner:
         self.popupMenu.addAction(action)
 
         self.toolButton = QToolButton(self.iface.mainWindow())
-        icon_path = os.path.join(icon_folder_path, "icon_tag.png")
+        icon_path = os.path.join(ICON_DIRECTORY_PATH, "icon_tag.png")
         self.toolButton.setIcon(QIcon(icon_path))
         self.toolButton.setText(TAG_ACTION_NAME)
         self.toolButton.setToolTip(TAG_ACTION_NAME)

@@ -1,23 +1,38 @@
 <RCC>
     <qresource>
         <file>icon.png</file>
-        <file>resources/icons/icon_distance.png</file>
-        <file>resources/icons/icon_duration.png</file>
-        <file>resources/icons/icon_file.png</file>
-        <file>resources/icons/icon_export.png</file>
-        <file>resources/icons/icon_combine.png</file>
-        <file>resources/icons/icon_tag.png</file>
-        <file>resources/icons/icon_custom_tag.png</file>
-        <file>resources/icons/icon_labels.png</file>
-        <file>resources/icons/icon_reverse.png</file>
-        <file>resources/icons/icon_highlight.png</file>
-        <file>resources/icons/icon_help.png</file>
-        <file>resources/icons/icon_coverage_lines.png</file>
-        <file>resources/icons/icon_flowline.png</file>
-        <file>resources/icons/icon_cut_flowline.png</file>
-        <file>resources/icons/icon_racetrack.png</file>
-        <file>resources/icons/icon_topography.png</file>
-        <file>resources/icons/icon_scale_up_or_down.png</file>
+        <file>resources/icons_for_dark_mode/icon_distance.png</file>
+        <file>resources/icons_for_dark_mode/icon_duration.png</file>
+        <file>resources/icons_for_dark_mode/icon_file.png</file>
+        <file>resources/icons_for_dark_mode/icon_export.png</file>
+        <file>resources/icons_for_dark_mode/icon_combine.png</file>
+        <file>resources/icons_for_dark_mode/icon_tag.png</file>
+        <file>resources/icons_for_dark_mode/icon_custom_tag.png</file>
+        <file>resources/icons_for_dark_mode/icon_labels.png</file>
+        <file>resources/icons_for_dark_mode/icon_reverse.png</file>
+        <file>resources/icons_for_dark_mode/icon_highlight.png</file>
+        <file>resources/icons_for_dark_mode/icon_help.png</file>
+        <file>resources/icons_for_dark_mode/icon_coverage_lines.png</file>
+        <file>resources/icons_for_dark_mode/icon_cut_flowline.png</file>
+        <file>resources/icons_for_dark_mode/icon_racetrack.png</file>
+        <file>resources/icons_for_dark_mode/icon_topography.png</file>
+        <file>resources/icons_for_dark_mode/icon_scale_up_or_down.png</file>
+        <file>resources/icons_for_light_mode/icon_distance.png</file>
+        <file>resources/icons_for_light_mode/icon_duration.png</file>
+        <file>resources/icons_for_light_mode/icon_file.png</file>
+        <file>resources/icons_for_light_mode/icon_export.png</file>
+        <file>resources/icons_for_light_mode/icon_combine.png</file>
+        <file>resources/icons_for_light_mode/icon_tag.png</file>
+        <file>resources/icons_for_light_mode/icon_custom_tag.png</file>
+        <file>resources/icons_for_light_mode/icon_labels.png</file>
+        <file>resources/icons_for_light_mode/icon_reverse.png</file>
+        <file>resources/icons_for_light_mode/icon_highlight.png</file>
+        <file>resources/icons_for_light_mode/icon_help.png</file>
+        <file>resources/icons_for_light_mode/icon_coverage_lines.png</file>
+        <file>resources/icons_for_light_mode/icon_cut_flowline.png</file>
+        <file>resources/icons_for_light_mode/icon_racetrack.png</file>
+        <file>resources/icons_for_light_mode/icon_topography.png</file>
+        <file>resources/icons_for_light_mode/icon_scale_up_or_down.png</file>
         <file>resources/user_manual/complete_manual.html</file>
         <file>resources/user_manual/compute_optimal_coverage_lines.html</file>
         <file>resources/user_manual/display_expected_flight_duration.html</file>

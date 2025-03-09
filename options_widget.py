@@ -12,14 +12,15 @@ from .constants import (
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
     PLUGIN_NAME,
     PLUGIN_ICON_PATH,
-    DEFAULT_PUSH_MESSAGE_DURATION
+    DEFAULT_PUSH_MESSAGE_DURATION,
+    PLUGIN_DIRECTORY_PATH
 )
 from .coverage_module import CoverageModule
 from .flight_distance_duration_module import FlightDistanceDurationModule
 from .utils import show_checkable_info_message_box
 
 # from PyQt import uic
-WIDGET, BASE = uic.loadUiType(os.path.join(os.path.dirname(__file__), "options.ui"))
+WIDGET, BASE = uic.loadUiType(os.path.join(PLUGIN_DIRECTORY_PATH, "options.ui"))
 
 
 class SfpOptionsFactory(QgsOptionsWidgetFactory):

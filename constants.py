@@ -1,4 +1,21 @@
+print("EXEC")
+import codecs
+import os
+from qgis.core import QgsSettings
+
+def get_icon_directory_path():
+    if QgsSettings().value("UI/UITheme", "default") == "Night Mapping":
+        return os.path.join(":resources", "icons_for_dark_mode")
+    else:
+        return os.path.join(":resources", "icons_for_light_mode")
+
 PLUGIN_NAME = "ScienceFlightPlanner"
+
+PLUGIN_DIRECTORY_PATH = os.path.dirname(__file__)
+
+ICON_DIRECTORY_PATH = get_icon_directory_path()
+
+USER_MANUAL_HTMLS_DIRECTORY_PATH = os.path.join(PLUGIN_DIRECTORY_PATH, "resources", "user_manual")
 
 DEFAULT_PUSH_MESSAGE_DURATION = 4 # in seconds
 
@@ -64,3 +81,17 @@ MAX_CLIMB_RATE_ACTION_NAME = "Set Maximum Climb Rate"
 SENSOR_COMBOBOX_DEFAULT_VALUE = "No sensor"
 FIRST_ALGO_NAME = "Meander"
 SECOND_ALGO_NAME = "Racetrack"
+
+def create_html_str_for_action_dict():
+    result = dict()
+    for html_name in [file_name for file_name in os.listdir(USER_MANUAL_HTMLS_DIRECTORY_PATH) if file_name.endswith(".html")]:
+        action_name = html_name.replace(".html", "").replace("_", " ")
+        html_path = os.path.join(USER_MANUAL_HTMLS_DIRECTORY_PATH, html_name)
+        with codecs.open(html_path, "r", encoding="utf-8") as file:
+            html_string = file.read()
+        html_string = html_string.replace("{ICON_FOLDER_PATH}", ICON_DIRECTORY_PATH)
+        result[action_name] = html_string
+
+    return result
+
+HTML_FILE_FOR_ACTION = create_html_str_for_action_dict()
