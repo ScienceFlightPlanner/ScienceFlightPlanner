@@ -325,8 +325,11 @@ class WaypointReductionModule:
             try:
                 layer_settings.placement = 1
             except (NameError, TypeError):
-                layer_settings.placement = QgsPalLayerSettings.OverPoint
-                layer_settings.offsetType = QgsPalLayerSettings.FromPoint
+                try:
+                    layer_settings.placement = QgsPalLayerSettings.OverPoint
+                    layer_settings.offsetType = QgsPalLayerSettings.FromPoint
+                except (NameError, TypeError):
+                    layer_settings.placement = Qgis.LabelPlacement.OverPoint # for QGIS v >= 3.26
 
             # buffer
             buffer_settings = QgsTextBufferSettings()
