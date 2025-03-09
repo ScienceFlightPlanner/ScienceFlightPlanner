@@ -132,6 +132,12 @@
             <td>Given a polygon, flight altitude, and max turning distance, calculates optimal waypoints for a plane based on the selected algorithm.</td>
             <td>Polygon</td>
         </tr>
+        <tr>
+            <td><a href="#create_topography_profile">Create Topography Profile</a></td>
+            <td><img src="{ICON_FOLDER_PATH}/icon_topography.png"></td>
+            <td>Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance. </td>
+            <td>Points</td>
+        </tr>
     </table>
 
     <h2>Detailed Feature Description</h2>
@@ -357,17 +363,17 @@
 
     The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:</p>
 
-    <h4>Back-and-Forth Algorithm</h4>
-    <p>
-        The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).<br>
-        It then flies back over <code>k-1</code> waypoints, reversing direction.<br>
-        This process repeats until the entire area is covered.<br>
-    </p>
-    <h4>Top-to-Bottom Algorithm</h4>
+    <h4>Meander Algorithm</h4>
     <p>
         The plane flies over <code>k</code> waypoints repeatedly until it reaches the end of the grid.<br>
         It then moves back by 1 waypoint.<br>
         The plane continues flying <code>k</code> waypoints in the opposite direction, repeating the process until the grid is fully covered.<br>
+    </p>
+    <h4>Racetrack Algorithm</h4>
+    <p>
+        The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).<br>
+        It then flies back over <code>k-1</code> waypoints, reversing direction.<br>
+        This process repeats until the entire area is covered.<br>
     </p>
     <h4>Suggested Naming for Output Files</h4>
     <p>

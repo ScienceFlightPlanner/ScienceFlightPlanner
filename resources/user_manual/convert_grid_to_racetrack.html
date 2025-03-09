@@ -31,23 +31,23 @@
 
     <h4>Key Features of Waypoints</h4>
     <ul>
-        <li><strong>Fly-over Tag:</strong> Each waypoint is assigned a fly-over tag by default.</li>
+        <li><strong>FLYOVER Tag:</strong> Each waypoint is assigned a FLYOVER tag by default.</li>
         <li><strong>Unique IDs:</strong> Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.</li>
     </ul>
     <p>The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:</p>
 
-    <h4>Back-and-Forth Algorithm</h4>
-    <ul>
-        <li>The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).</li>
-        <li>It then flies back over <code>k-1</code> waypoints, reversing direction.</li>
-        <li>This process repeats until the entire area is covered.</li>
-    </ul>
-
-    <h4>Top-to-Bottom Algorithm</h4>
+    <h4>Meander</h4>
     <ul>
         <li>The plane flies over <code>k</code> waypoints repeatedly until it reaches the end of the grid.</li>
         <li>It then moves back by 1 waypoint.</li>
         <li>The plane continues flying <code>k</code> waypoints in the opposite direction, repeating the process until the grid is fully covered.</li>
+    </ul>
+
+    <h4>Racetrack</h4>
+    <ul>
+        <li>The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).</li>
+        <li>It then flies back over <code>k-1</code> waypoints, reversing direction.</li>
+        <li>This process repeats until the entire area is covered.</li>
     </ul>
 
     <h4>Suggested Naming for Output Files</h4>

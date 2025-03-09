@@ -134,6 +134,35 @@ The amount of overlap which is considered when creating the optimal flight lines
 Additionally, it is possible to use two different settings for the line computations. The default setting, which we strongly suggest to use, is called \"optimal\". In this case the lines are optimal w.r.t. the criteria described above. Choosing \"90° rotated\" means that the lines are 90° rotated from the optimal orientation. Therefore, they are no longer optimal but depending on the flight plan and use case this might still be useful.
 
 In order to use this feature for the first time it is necessary to set the CRS used for coverage computations in the plugin settings. The CRS should be compatible with the region of the QGIS project.
+### Convert Polygon to Racetrack
+
+![Topography Profile Icon](resources/icons_for_dark_mode/icon_racetrack.png) 
+
+The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude. Note that the selected polygon layer must contain only one feature.
+
+Key Features of Waypoints
+
+**Fly-over Tag:** Each waypoint is assigned a fly-over tag by default.  
+**Unique IDs:** Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.  
+
+The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:
+
+**Meander Algorithm**
+
+The plane flies over `k` waypoints repeatedly until it reaches the end of the grid.  
+It then moves back by 1 waypoint.  
+The plane continues flying `k` waypoints in the opposite direction, repeating the process until the grid is fully covered.
+
+**Racetrack Algorithm**
+
+The plane flies over the first `k` waypoints (determined by the maximum turning distance).  
+It then flies back over `k-1` waypoints, reversing direction.  
+This process repeats until the entire area is covered.
+
+**Suggested Naming for Output Files**
+
+The generated output files include the maximum turning distance in their filenames to make them easily identifiable.
+
 
 ### Create a Topography Profile
 
