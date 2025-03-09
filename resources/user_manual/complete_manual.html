@@ -373,6 +373,24 @@
     <p>
         The generated output files include the maximum turning distance in their filenames to make them easily identifiable.
     </p>
+    <h3 id="create_topography_profile">Create Topography Profile</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_topography.png"></p>
+    <p>
+        This feature allows to generate a detailed elevation profile along a flight path by integrating waypoint data with a digital elevation model (DEM).
+    </p>
+    <p>
+        <strong>Graph Generation</strong><br>
+        When a waypoint layer is selected and the topography button is pressed, select a DEM file. The feature will then generate a graph in a dock window. The top of this window shows the waypoint numbers, which correspond directly to the points on the selected flight path.
+    </p>
+    <p>
+        <strong>Graph Interaction and Navigation</strong><br>
+        The dock window includes zoom controls - you can zoom in and out for better visibility. There is also a full zoom out button in the bottom left corner for a full view of the topography.
+        The dock window also supports dragging the graph with a cursor.
+    </p>
+    <p>
+        <strong>Critical Zones Indicator</strong><br>
+        The profile graph visually highlights critical zones in red - areas where the climb rate needed to maintain the current altitude above the terrain exceeds the aircraft's available climb rate. The critical zones can be seen ob both the graph and the layer. An aircraft's <strong>climb rate</strong> can be entered in the 'Maximum climb rate in feet/min' field in the toolbar.
+    </p>
     <br>
     <h3 id="faq">FAQ</h3>
     <h4>What does it mean that some feature has to be selected?</h4>

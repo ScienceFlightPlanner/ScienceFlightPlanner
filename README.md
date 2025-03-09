@@ -8,20 +8,21 @@ In addition to this help manual, you can find tutorial videos for using our plug
 
 ## Feature Overview
 
-Feature name | Access via                                     | Short description                                                                                                                                           | Applicable to geometry type
----|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|---
-Display Flight Distance | ![](resources/icons_for_dark_mode/icon_distance.png)       | Shows the length of the current flight plan in meters.                                                                                                      | Line 
-Display Flight Duration | ![](resources/icons_for_dark_mode/icon_duration.png)       | Shows the expected flight duration of the current flight plan in hours.                                                                                     | Line 
-Generate Waypoints for Flight Plan | ![](resources/icons_for_dark_mode/icon_file.png)           | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan.                                                   | Line 
-Export in Garmin GTN750Xi Format | ![](resources/icons_for_dark_mode/icon_export.png)         | Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.                                                                 | Waypoints file
-Add tag to selected waypoints | ![](resources/icons_for_dark_mode/icon_tag.png)            | Adds a tag to the selected waypoints of the current flight plan.                                                                                            | Points
-Mark Selected Waypoints as Significant | ![](resources/icons_for_dark_mode/icon_highlight.png)      | Marks the selected waypoints of the current flight plan as significant.                                                                                     | Points 
-Generate Reduced Flight Plan from Significant Waypoints | ![](resources/icons_for_dark_mode/icon_labels.png)         | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile.                                           | Points 
-Reverse Waypoints | ![](resources/icons_for_dark_mode/icon_reverse.png)        | Reverses the order of current waypoints or flight plan.                                                                                                     | Line, Points 
-Show Coverage | Sensor selection box in toolbar                | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile. | Line 
-Compute Optimal Coverage Lines | ![](resources/icons_for_dark_mode/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.                             | Polygon 
-Cut flowline | ![](resources/icons_for_dark_mode/icon_cut_flowline.png)   | Cut a flowline out of a given flowline at the selected waypoints                                                                                            | Points
-Racetrack from Polygon | ![](resources/icons_for_dark_mode/icon_racetrack.png)      | Given a polygone, flight alttitude, max turning distance calculates optimal waypoints for a plane based on selected algorithm                               | Polygon 
+Feature name | Access via                                                 | Short description                                                                                                                                                                                                              | Applicable to geometry type
+---|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---
+Display Flight Distance | ![](resources/icons_for_dark_mode/icon_distance.png)       | Shows the length of the current flight plan in meters.                                                                                                                                                                         | Line 
+Display Flight Duration | ![](resources/icons_for_dark_mode/icon_duration.png)       | Shows the expected flight duration of the current flight plan in hours.                                                                                                                                                        | Line 
+Generate Waypoints for Flight Plan | ![](resources/icons_for_dark_mode/icon_file.png)           | Generates a new shapefile which contains all waypoints (numbered from 1 to n) of the current flight plan.                                                                                                                      | Line 
+Export in Garmin GTN750Xi Format | ![](resources/icons_for_dark_mode/icon_export.png)         | Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.                                                                                                                                    | Waypoints file
+Add tag to selected waypoints | ![](resources/icons_for_dark_mode/icon_tag.png)            | Adds a tag to the selected waypoints of the current flight plan.                                                                                                                                                               | Points
+Mark Selected Waypoints as Significant | ![](resources/icons_for_dark_mode/icon_highlight.png)      | Marks the selected waypoints of the current flight plan as significant.                                                                                                                                                        | Points 
+Generate Reduced Flight Plan from Significant Waypoints | ![](resources/icons_for_dark_mode/icon_labels.png)         | Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile.                                                                                                              | Points 
+Reverse Waypoints | ![](resources/icons_for_dark_mode/icon_reverse.png)        | Reverses the order of current waypoints or flight plan.                                                                                                                                                                        | Line, Points 
+Show Coverage | Sensor selection box in toolbar                            | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile.                                                                    | Line 
+Compute Optimal Coverage Lines | ![](resources/icons_for_dark_mode/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.                                                                                                | Polygon 
+Cut flowline | ![](resources/icons_for_dark_mode/icon_cut_flowline.png)   | Cut a flowline out of a given flowline at the selected waypoints                                                                                                                                                               | Points
+Racetrack from Polygon | ![](resources/icons_for_dark_mode/icon_racetrack.png)      | Given a polygone, flight alttitude, max turning distance calculates optimal waypoints for a plane based on selected algorithm                                                                                                  | Polygon 
+Create a Topography Profile | ![](resources/icons_for_dark_mode/icon_topography.png)       | Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance. | Waypoint file 
 ## Detailed feature description
 
 ### Display Flight Distance
@@ -133,6 +134,29 @@ The amount of overlap which is considered when creating the optimal flight lines
 Additionally, it is possible to use two different settings for the line computations. The default setting, which we strongly suggest to use, is called \"optimal\". In this case the lines are optimal w.r.t. the criteria described above. Choosing \"90° rotated\" means that the lines are 90° rotated from the optimal orientation. Therefore, they are no longer optimal but depending on the flight plan and use case this might still be useful.
 
 In order to use this feature for the first time it is necessary to set the CRS used for coverage computations in the plugin settings. The CRS should be compatible with the region of the QGIS project.
+
+### Create a Topography Profile
+
+![Topography Profile Icon](resources/icons_for_dark_mode/icon_topography.png)
+
+Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance.
+
+**Graph Generation**
+
+When a waypoint layer is selected and the topography button is pressed, select a DEM file. The feature will then generate a graph in a dock window. The top of this window shows the waypoint numbers, which correspond directly to the points on the selected flight path. 
+
+**Graph Interaction and Navigation**
+
+The dock window offers several interactive actions with the graph:
+
+- **Zoom In:** Increase the magnification to view a detailed section of the graph.
+- **Zoom Out:** Decrease the magnification to obtain a broader overview.
+- **Full Zoom Out:** Use the button located in the bottom left corner to reset the view and display the complete topography profile. 
+- **Drag Graph:** Click and hold the graph to drag and navigate through different sections of the elevation profile.
+- **Show Waypoints:** Use the button in the bottom left corner to display vertical lines that indicate each waypoint on the graph. 
+**Critical Zones Indicator**
+
+The profile graph visually highlights critical zones in red - areas where the climb rate needed to maintain the current altitude above the terrain exceeds the aircraft's available climb rate. The critical zones can be seen ob both the graph and the layer. An aircraft's climb rate can be entered in the 'Maximum climb rate in feet/min' field in the toolbar. 
 
 ## FAQ
 
