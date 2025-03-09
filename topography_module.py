@@ -140,7 +140,9 @@ class PlotDock(QDockWidget):
         x_axis_top = CustomAxisTop(wp_data_x)
         self.plot_widget.setAxisItems({'top': x_axis_top})
 
-        self.plot_widget.getViewBox().setLimits(xMin=-10000, yMin=0, yMax=self.y_max + 100)
+        plot_height = self.y_max + 100
+
+        self.plot_widget.getViewBox().setLimits(xMin=-10000, yMin=0, yMax=plot_height)
         self.plot_widget.getViewBox().setRange(xRange=(0, self.x_max), yRange=(0, self.y_max))
 
         self.plot_widget.getAxis("left").setLabel("Height", "m")
@@ -151,7 +153,7 @@ class PlotDock(QDockWidget):
         self.v_lines = []
         for x in self.wp_data_x:
             line_x = [x, x]
-            line_y = [0, self.y_max + 100]  # Full height of the plot
+            line_y = [0, plot_height]  # Full height of the plot
 
             v_line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 255, 0, 100), width=1))
             v_line.setVisible(False)
@@ -168,7 +170,7 @@ class PlotDock(QDockWidget):
         self.check_box.stateChanged.connect(lambda: self.toggle_line())
         h_layout.addWidget(self.check_box, 0, Qt.AlignLeft)
 
-        self.plot_widget.plotItem.autoBtn.setImageFile(":resources/icons/icon_scale_up_or_down.png")
+        self.plot_widget.plotItem.autoBtn.setImageFile(":resources/icons_for_light_mode/icon_scale_up_or_down.png")
         self.plot_widget.plotItem.autoBtn._width = 32
         self.plot_widget.plotItem.autoBtn.update()
 
@@ -244,8 +246,14 @@ class PlotDock(QDockWidget):
         for v_line in self.v_lines:
             v_line.setVisible(not v_line.isVisible())
 
-    def close(self):
+    def closeWidget(self):
         self.iface.removeDockWidget(self)
+        for rubber_band in self.rubber_bands:
+            rubber_band.reset()
+
+        super().close()
+
+    def closeEvent(self, event):
         for rubber_band in self.rubber_bands:
             rubber_band.reset()
 
@@ -280,29 +288,37 @@ class TopographyModule:
         result = dialog.exec_()
 
         if result == QDialog.Accepted:
-            selected_layer = dialog.get_selected_layer()
-            raster_layer = selected_layer  # Store it for later use
+            raster_layer = dialog.get_selected_layer()
+            if raster_layer is None:
+                print("Error: No raster selected")
+                return
         else:
             self.close()
             return
 
-
+        vector_layer_crs = vector_layer.crs()
         raster_path = raster_layer.dataProvider().dataSourceUri().split('|')[0]
         raster_ds = gdal.Open(raster_path)
-        gt = raster_ds.GetGeoTransform()
-        transform_to_raster_crs = QgsCoordinateTransform(vector_layer.crs(), raster_layer.crs(), QgsProject.instance())
+        gdal_raster = gdal.Open(raster_path)
         band_number = 1
+        band = gdal_raster.GetRasterBand(band_number)
+        gt = raster_ds.GetGeoTransform()
+        transform_to_raster_crs = QgsCoordinateTransform(vector_layer_crs, raster_layer.crs(), QgsProject.instance())
+        distance_area = QgsDistanceArea()
+        distance_area.setEllipsoid('WGS84')
+        distance_area.setSourceCrs(vector_layer_crs, QgsProject.instance().transformContext())
+
         data_x = []
         data_y = []
         wp_data_x = []
-
-        total_distance = 0
 
         points = []
 
         features = list(vector_layer.getFeatures())
 
-        s = 0
+        sample_interval = 100.0  # every 100 meters
+
+        total_distance = 0
 
         for i in range(len(features) - 1):
             current_feature = features[i]
@@ -312,35 +328,30 @@ class TopographyModule:
             current_point = current_feature_geom.asPoint()
             next_point = next_feature_geom.asPoint()
 
-            distance_area = QgsDistanceArea()
-            distance_area.setEllipsoid('WGS84')
             distance = distance_area.measureLine(current_point, next_point)
-            wp_data_x.append(s)
-            s += distance
-
-            sample_interval = 1000.0 # every 1000 meters
+            wp_data_x.append(total_distance)
+            total_distance += distance
 
             line = distance_area.geodesicLine(current_point, next_point, sample_interval)
+            points_every_kilometre = line[0][:-1:10]
 
-            for point in line[0][0:-1]:
+            for point in points_every_kilometre:
                 points.append(point)
 
-        wp_data_x.append(s)
-        print(points)
+        wp_data_x.append(total_distance)
         points.append(features[-1].geometry().asPoint())
 
-        for i in range(len(points) - 1):
+        total_distance = 0
+        transformed_points = [transform_to_raster_crs.transform(p) for p in points]
+
+        for i in range(len(transformed_points) - 1):
             current_point = points[i]
             next_point = points[i + 1]
-            distance_area = QgsDistanceArea()
-            distance_area.setEllipsoid('WGS84')
             distance = distance_area.measureLine(current_point, next_point)
-            current_point = transform_to_raster_crs.transform(current_point)
 
+            current_point = transformed_points[i]
             px, py = world_to_pixel(current_point.x(), current_point.y(), gt)
 
-            gdal_raster = gdal.Open(raster_path)
-            band = gdal_raster.GetRasterBand(band_number)
             raster_value = band.ReadAsArray(px, py, 1, 1)[0][0]
 
             data_x.append(total_distance)
@@ -348,11 +359,9 @@ class TopographyModule:
 
             total_distance += distance
 
-        current_point = transform_to_raster_crs.transform(points[-1])
+        current_point = transformed_points[-1]
         px, py = world_to_pixel(current_point.x(), current_point.y(), gt)
 
-        gdal_raster = gdal.Open(raster_path)
-        band = gdal_raster.GetRasterBand(band_number)
         raster_value = band.ReadAsArray(px, py, 1, 1)[0][0]
 
         data_x.append(total_distance)
@@ -371,7 +380,7 @@ class TopographyModule:
 
     def close(self):
         if self.plot_dock_widget is not None:
-            self.plot_dock_widget.close()
+            self.plot_dock_widget.closeWidget()
 
 
 def world_to_pixel(x, y, gt):
