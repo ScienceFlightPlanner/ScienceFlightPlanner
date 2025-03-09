@@ -46,5 +46,6 @@
         <file>resources/user_manual/select_sensor.html</file>
         <file>resources/user_manual/overlap_0_percent.png</file>
         <file>resources/user_manual/overlap_50_percent.png</file>
+        <file>resources/user_manual/create_topography_profile.html</file>
     </qresource>
 </RCC>

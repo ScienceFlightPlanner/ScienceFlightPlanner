@@ -39,6 +39,7 @@ from .constants import (
     PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
     PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
     DEFAULT_PUSH_MESSAGE_DURATION,
+    DEFAULT_TAG,
     SECOND_ALGO_NAME,
     FIRST_ALGO_NAME
 )
@@ -611,7 +612,7 @@ class RacetrackModule:
         for i, point in enumerate(points, start=1):
             f = QgsFeature()
             f.setGeometry(QgsGeometry.fromPointXY(point))
-            f.setAttributes([int(i), "fly-over"])
+            f.setAttributes([int(i), DEFAULT_TAG])
             features.append(f)
 
         provider.addFeatures(features)
