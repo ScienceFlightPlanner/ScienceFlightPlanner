@@ -6,12 +6,21 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QDoubleSpinBox, QHBoxLayout, QLineEdit, QPushButton
 
+from .constants import (
+    PLUGIN_SENSOR_SETTINGS_PATH,
+    PLUGIN_OVERLAP_SETTINGS_PATH,
+    PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
+    PLUGIN_NAME,
+    PLUGIN_ICON_PATH,
+    DEFAULT_PUSH_MESSAGE_DURATION,
+    PLUGIN_DIRECTORY_PATH
+)
 from .coverage_module import CoverageModule
 from .flight_distance_duration_module import FlightDistanceDurationModule
 from .utils import show_checkable_info_message_box
 
 # from PyQt import uic
-WIDGET, BASE = uic.loadUiType(os.path.join(os.path.dirname(__file__), "options.ui"))
+WIDGET, BASE = uic.loadUiType(os.path.join(PLUGIN_DIRECTORY_PATH, "options.ui"))
 
 
 class SfpOptionsFactory(QgsOptionsWidgetFactory):
@@ -23,14 +32,11 @@ class SfpOptionsFactory(QgsOptionsWidgetFactory):
         flight_distance_duration_module: FlightDistanceDurationModule,
         coverage_module: CoverageModule,
     ):
-        super().__init__()
+        super().__init__(PLUGIN_NAME, QIcon(PLUGIN_ICON_PATH))
         self.flight_distance_duration_module = flight_distance_duration_module
         self.coverage_module = coverage_module
 
-    def icon(self):
-        return QIcon(":/plugins/science_flight_planner/icon.png")
-
-    def createWidget(self, parent):
+    def createWidget(self, parent: None = None):
         return SfpConfigOptionsPage(
             parent, self.flight_distance_duration_module, self.coverage_module
         )
@@ -62,7 +68,7 @@ class SfpConfigOptionsPage(QgsOptionsPageWidget):
                 "Couldn't save changes",
                 str(err.args[0]),
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
         self.flight_distance_duration_module.update_flight_distance_duration_widgets()
 
@@ -77,15 +83,17 @@ class OptionsDialog(BASE, WIDGET):
         self.proj = QgsProject.instance()
         default_speed = 200
         flight_speed = self.proj.readDoubleEntry(
-            "ScienceFlightPlanner", "flight_speed", default_speed
+            PLUGIN_NAME, "flight_speed", default_speed
         )[0]
         self.flightSpeedSpinBox.setValue(int(flight_speed))
-        txt = "ScienceFlightPlanner \n\nThe sensor coverage works if the CRS used for computation and the project CRS are the same. \n\nWhen using a different CRS the sensor coverage shown might contain inconsistencies because of the line representation used in QGIS."
+        txt = ("ScienceFlightPlanner \n\nThe sensor coverage works if the CRS used for computation and the project CRS "
+               "are the same. \n\nWhen using a different CRS the sensor coverage shown might contain inconsistencies "
+               "because of the line representation used in QGIS.")
         settings_name = "show_coverage_info"
         show_checkable_info_message_box(settings_name, txt, self.proj)
 
         coverage_crs = QgsCoordinateReferenceSystem(
-            self.proj.readEntry("ScienceFlightPlanner", "coverage_crs", None)[0]
+            self.proj.readEntry(PLUGIN_NAME, "coverage_crs", None)[0]
         )
         self.coverageCrsWidget.setCrs(coverage_crs)
         default_overlap = 0
@@ -93,18 +101,27 @@ class OptionsDialog(BASE, WIDGET):
         self.overlapSpinBox.setMaximum(0.99)
         self.overlapSpinBox.setValue(
             float(
-                self.settings.value("science_flight_planner/overlap", default_overlap)
+                self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, default_overlap)
             )
         )
         self.overlapComboBox.addItem("optimal")
         self.overlapComboBox.addItem("90° rotated")
         self.overlapComboBox.setCurrentIndex(
-            int(self.settings.value("science_flight_planner/overlap_rotation", 0))
+            int(self.settings.value(PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH, 0))
         )
         # self.overlapComboBox.currentText()
-        self.sensors = self.settings.value("science_flight_planner/sensors", {})
+        self.sensors = self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})
         self.load_sensor_table()
         self.coverage_module = coverage_module
+
+        default_max_turn_distance = 3500
+
+        max_turn_distance = self.proj.readDoubleEntry(
+            PLUGIN_NAME, "max_turn_distance", default_max_turn_distance
+        )[0]
+        self.maxTurnDistanceSpinBox.setValue(int(max_turn_distance))
+        self.maxTurnDistanceSpinBox.setMaximum(100000)
+        self.maxTurnDistanceSpinBox.setMinimum(0)
 
     def load_sensor_table(self):
         """Creates the table on the settings page which allows to manage (add, delete, edit) sensors"""
@@ -182,21 +199,33 @@ class OptionsDialog(BASE, WIDGET):
                     names.append(sensor_name)
                 angle_widget = self.gridLayout.itemAtPosition(row, 1).widget()
                 self.sensors[sensor_name] = angle_widget.value()
+
         self.proj.writeEntryDouble(
-            "ScienceFlightPlanner", "flight_speed", self.flightSpeedSpinBox.value()
+            PLUGIN_NAME,
+            "max_turn_distance",
+            self.maxTurnDistanceSpinBox.value()
+        )
+
+        self.proj.writeEntryDouble(
+            PLUGIN_NAME, "flight_speed", self.flightSpeedSpinBox.value()
         )
         self.proj.writeEntry(
-            "ScienceFlightPlanner",
+            PLUGIN_NAME,
             "coverage_crs",
             self.coverageCrsWidget.crs().authid(),
         )
         self.settings.setValue(
-            "science_flight_planner/overlap", self.overlapSpinBox.value()
+            PLUGIN_OVERLAP_SETTINGS_PATH, self.overlapSpinBox.value()
         )
         self.settings.setValue(
-            "science_flight_planner/overlap_rotation",
+            PLUGIN_OVERLAP_ROTATION_SETTINGS_PATH,
             self.overlapComboBox.currentIndex(),
         )
-        self.settings.setValue("science_flight_planner/sensors", self.sensors)
+        self.proj.writeEntryDouble(
+            PLUGIN_NAME,
+            "max_turn_distance",
+            self.maxTurnDistanceSpinBox.value()
+        )
+        self.settings.setValue(PLUGIN_SENSOR_SETTINGS_PATH, self.sensors)
         self.coverage_module.set_sensor_combobox_entries()
         self.coverage_module.sensor_coverage_sensor_settings_changed()

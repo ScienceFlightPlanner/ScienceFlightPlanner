@@ -1,8 +1,6 @@
-import codecs
-import os
+from functools import partial
 from typing import List, Union
 
-from qgis._core import QgsApplication
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import (
@@ -16,29 +14,37 @@ from qgis.PyQt.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QWidget,
+    QToolButton
+)
+
+from .constants import (
+    PLUGIN_TOOLBAR_NAME,
+    PLUGIN_HELP_MANUAL_TITLE,
+    SENSOR_COVERAGE_ACTION_NAME,
+    HTML_FILE_FOR_ACTION,
 )
 
 from .action_module import ActionModule
 
-complete_manual_txt = "Complete Manual"
-help_action_name = "Help"
-faq_action_name = "FAQ"
+COMPLETE_MANUAL_NAME = "Complete Manual"
+
+HELP_ACTION_NAME = "Help"
+
+FAQ_ACTION_NAME = "FAQ"
 
 
 class HelpWidget(QDockWidget):
 
     iface: QgisInterface
-    plugin_dir: str
-    app: QgsApplication
     action_module: ActionModule
     sensor_combobox_plugin: QComboBox
 
-    actions: List[QAction]
+    actions: List[Union[QAction, QToolButton]]
     faq_button: Union[QPushButton, None]
     default_action: Union[QAction, None]
 
     toolbar_widgets: List[QWidget]
-    sensor_combobox: QComboBox
+    sensor_combobox: Union[QComboBox, None]
     text_widget: QWidget
 
     default_action: QAction
@@ -49,14 +55,11 @@ class HelpWidget(QDockWidget):
     def __init__(
         self,
         iface: QgisInterface,
-        actions: List[QAction],
+        actions: List[Union[QAction, QToolButton]],
         sensor_combobox: QComboBox,
-        plugin_dir: str,
     ):
-        super().__init__("ScienceFlightPlanner - Help Manual", iface.mainWindow())
+        super().__init__(PLUGIN_HELP_MANUAL_TITLE, iface.mainWindow())
         self.iface = iface
-        self.plugin_dir = plugin_dir
-        self.app = QgsApplication.instance()
 
         self.actions = actions
         self.action_module = ActionModule(iface)
@@ -108,7 +111,7 @@ class HelpWidget(QDockWidget):
         self.add_actions_toolbar(self.actions)
         self.add_widgets_toolbar()
 
-    def add_actions_toolbar(self, actions: List[QAction]):
+    def add_actions_toolbar(self, actions: List[Union[QAction, QToolButton]]):
         """adds actions to toolbar and sets default action to 'complete manual'"""
         assert self.toolbar is not None
         for action in actions:
@@ -119,7 +122,7 @@ class HelpWidget(QDockWidget):
             self.toolbar.addAction(action)
 
             # default action is set to the action displaying the complete manual
-            if action.text() == complete_manual_txt:
+            if action.text() == COMPLETE_MANUAL_NAME:
                 self.default_action = action
 
     def add_widgets_toolbar(self):
@@ -133,11 +136,12 @@ class HelpWidget(QDockWidget):
             self.toolbar.addWidget(w)
 
     def add_sensor_widget(self):
-        """adds a sensor widget to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a sensor widget to the toolbar widgets (widgets are drawn in the order that they are added to the
+        widgets list)"""
         layout = QHBoxLayout()
 
         sensor_combobox = QComboBox()
-        sensor_combobox.setToolTip(self.action_module.sensor_coverage)
+        sensor_combobox.setToolTip(SENSOR_COVERAGE_ACTION_NAME)
         layout.addWidget(sensor_combobox)
         layout.setContentsMargins(2, 0, 10, 0)
 
@@ -145,14 +149,16 @@ class HelpWidget(QDockWidget):
         sensor_widget.setLayout(layout)
 
         sensor_combobox.addItem(self.sensor_combobox_plugin.currentText())
-        sensor_combobox.highlighted.connect(self.fct_display_coverage)
+        fct_display_coverage = partial(self.fct_action, SENSOR_COVERAGE_ACTION_NAME)
+        sensor_combobox.highlighted.connect(fct_display_coverage)
         sensor_combobox.activated.connect(self.update_coverage_widget)
 
         self.toolbar_widgets.append(sensor_widget)
         self.sensor_combobox = sensor_combobox
 
     def add_separator(self):
-        """adds a separator to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a separator to the toolbar widgets (widgets are drawn in the order that they are added to the widgets
+        list)"""
         separator_label = QLabel("|")
         layout = QHBoxLayout()
         layout.addWidget(separator_label)
@@ -162,10 +168,10 @@ class HelpWidget(QDockWidget):
         self.toolbar_widgets.append(separator_widget)
 
     def add_faq_widget(self):
-        """adds a faq widget to the tool bar widgets (widgets are drawn in the order that they are added to the widgets list)"""
-        faq_button = QPushButton(faq_action_name)
-        faq_button.setStyleSheet("QPushButton {color: black}")
-        faq_button.setToolTip("faq")
+        """adds a faq widget to the toolbar widgets (widgets are drawn in the order that they are added to the
+        widgets list)"""
+        faq_button = QPushButton(FAQ_ACTION_NAME)
+        faq_button.setToolTip(FAQ_ACTION_NAME)
         faq_button.setAutoDefault(False)
 
         faq_button.setCheckable(True)
@@ -175,25 +181,18 @@ class HelpWidget(QDockWidget):
 
         faq_widget = QWidget()
         faq_widget.setLayout(layout)
-        faq_button.clicked.connect(self.fct_faq)
+        fct_faq = partial(self.fct_action, FAQ_ACTION_NAME)
+        faq_button.clicked.connect(fct_faq)
         self.toolbar_widgets.append(faq_widget)
         self.faq_button = faq_button
 
-    def get_corresponding_action_fct(self, action: QAction):
-        """returns the corresponding trigger function for the action"""
-        return {
-            self.action_module.distance: self.fct_distance,
-            self.action_module.duration: self.fct_duration,
-            self.action_module.waypoint_generation: self.fct_generate_waypoints,
-            self.action_module.reduced_waypoint_selection: self.fct_mark_significant_waypoints,
-            self.action_module.reduced_waypoint_generation: self.fct_generate_reduced_waypoints,
-            self.action_module.reversal: self.fct_reverse_waypoints,
-            self.action_module.coverage_lines: self.fct_optimal_coverage_lines,
-            complete_manual_txt: self.fct_complete_manual,
-        }[action.text()]
+    def get_corresponding_action_fct(self, action: Union[QAction, QToolButton]):
+        """returns the action function with the corresponding argument for the action"""
+        return partial(self.fct_action, action.text())
 
     def fct_action(self, action_name: str):
-        """general trigger function. When action is triggered and is not checked right now, the corresponding manual is displayed else the complete manual is displayed"""
+        """general trigger function. When action is triggered and is not checked right now, the corresponding manual
+        is displayed else the complete manual is displayed"""
 
         if self.faq_button is not None:
             actions = self.actions + [self.faq_button]
@@ -219,15 +218,10 @@ class HelpWidget(QDockWidget):
             set_checked_for_corresponding_action_button(action_name, actions, True)
 
             # read corresponding html file
-            action_html_name = action_name.replace(" ", "_").lower() + ".html"
-            html_path = os.path.join(self.plugin_dir, "resources")
+            dict_action_name = action_name.lower()
 
-            file = None
-
-            if action_html_name in [f for f in os.listdir(html_path)]:
-                html_file = os.path.join(html_path, action_html_name)
-                file = codecs.open(html_file, "r")
-                html_string = file.read()
+            if dict_action_name in HTML_FILE_FOR_ACTION:
+                html_string = HTML_FILE_FOR_ACTION[dict_action_name]
             else:
                 html_string = ""
 
@@ -235,73 +229,29 @@ class HelpWidget(QDockWidget):
             self.text_widget = create_text_widget(html_string)
             self.update_widget()
 
-            if file is not None:
-                file.close()
-
             self.current_action_name = action_name
 
-    def fct_faq(self):
-        """trigger function for 'faq'"""
-        self.fct_action(faq_action_name)
-
-    def fct_optimal_coverage_lines(self):
-        """trigger function for 'compute optimal coverage lines'"""
-        self.fct_action(self.action_module.coverage_lines)
-
-    def fct_complete_manual(self):
-        """trigger function for 'complete manual'"""
-        self.fct_action(complete_manual_txt)
-
-    def fct_distance(self):
-        """trigger function for 'display flight distance'"""
-        self.fct_action(self.action_module.distance)
-
-    def fct_display_coverage(self, index: int):
-        """trigger function for 'select sensor'"""
-        self.fct_action(self.action_module.sensor_coverage)
-
-    def update_coverage_widget(self, index: int):
-        """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted' signal)"""
+    def update_coverage_widget(self):
+        """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted'
+        signal)"""
         assert self.sensor_combobox is not None
-        self.fct_display_coverage(index)
+        self.fct_action(SENSOR_COVERAGE_ACTION_NAME)
         self.sensor_combobox.clear()
         self.sensor_combobox.addItem(self.sensor_combobox_plugin.currentText())
-
-    def fct_duration(self):
-        """trigger functions for 'display expected flight duration'"""
-        self.fct_action(self.action_module.duration)
-
-    def fct_generate_waypoints(self):
-        """trigger function for 'generate waypoints for flightplan'"""
-        self.fct_action(self.action_module.waypoint_generation)
-
-    def fct_mark_significant_waypoints(self):
-        """trigger function for 'mark selected waypoints as significant'"""
-        self.fct_action(self.action_module.reduced_waypoint_selection)
-
-    def fct_generate_reduced_waypoints(self):
-        "trigger function for 'generate reduced flightplan from significant waypoints'"
-        self.fct_action(self.action_module.reduced_waypoint_generation)
-
-    def fct_reverse_waypoints(self):
-        """trigger function for 'reverse waypoints'"""
-        self.fct_action(self.action_module.reversal)
 
 
 class HelpManualModule:
 
     iface: QgisInterface
     sensor_combobox: QComboBox
-    plugin_dir: str
 
-    actions: Union[List[QAction], None]
+    actions: Union[List[Union[QAction, QToolButton]], None]
     help_action: Union[QAction, None]
 
     help_widget: Union[HelpWidget, None]
 
-    def __init__(self, iface, sensor_combobox, plugin_dir):
+    def __init__(self, iface, sensor_combobox):
         self.iface = iface
-        self.plugin_dir = plugin_dir
         self.sensor_combobox = sensor_combobox
 
         self.actions = None
@@ -318,13 +268,13 @@ class HelpManualModule:
         # initialize help widgets
         if self.help_widget is None:
             self.help_widget = HelpWidget(
-                self.iface, self.actions, self.sensor_combobox, self.plugin_dir
+                self.iface, self.actions, self.sensor_combobox
             )
             self.help_widget.visibilityChanged.connect(self.close)
 
         elif not self.help_widget.isVisible():
             self.help_widget = HelpWidget(
-                self.iface, self.actions, self.sensor_combobox, self.plugin_dir
+                self.iface, self.actions, self.sensor_combobox
             )
         else:
             self.close()
@@ -338,36 +288,34 @@ class HelpManualModule:
             self.help_widget.close()
             self.help_widget = None
 
-    def set_actions(self, actions: List[QAction]):
-        """copies the given lists of actions and modifies it so that the help action corresponds to the complete manual actions"""
+    def set_actions(self):
+        """copies the given lists of actions and modifies it so that the help action corresponds to the complete
+        manual actions"""
+        toolbar = self.iface.mainWindow().findChild(QToolBar, PLUGIN_TOOLBAR_NAME)
+        tool_buttons = [x for x in toolbar.findChildren(QToolButton) if x.objectName() != "qt_toolbar_ext_button"]
         self.actions = []
-        main_action = None
 
         # copy actions so that buttons in help widget are not linked to the ones in the plugin's toolbar
-        for a in actions:
-            text = a.text()
-            parent = a.parent()
-            icon = a.icon()
-            status_tip = a.statusTip()
-            whats_this = a.whatsThis()
+        for tool_button in tool_buttons:
+            text = tool_button.text()
+            parent = tool_button.parent()
+            icon = tool_button.icon()
+            tool_tip = tool_button.toolTip()
 
             action = QAction(icon, text, parent)
-            if status_tip is not None:
-                action.setStatusTip(status_tip)
+            if tool_tip is not None:
+                action.setToolTip(tool_tip)
 
-            if whats_this is not None:
-                action.setWhatsThis(whats_this)
             # text of help action is changed to "complete manual"
-            if text != help_action_name:
+            if text != HELP_ACTION_NAME:
                 self.actions.append(action)
             else:
-                main_action = action
-                self.help_action = a
-                main_action.setText(complete_manual_txt)
-
-        # assure that complete manual action is the first action in the help widget
-        if main_action is not None:
-            self.actions.insert(0, main_action)
+                self.help_action = toolbar.findChild(QAction, HELP_ACTION_NAME)
+                action.setText(COMPLETE_MANUAL_NAME)
+                action.setToolTip(COMPLETE_MANUAL_NAME)
+                # assure that complete manual action is the first action in the help widget
+                self.actions.insert(0, action)
+            print(action.toolTip())
 
 
 def create_text_widget(html_str: str = "") -> QWidget:
@@ -388,7 +336,7 @@ def create_text_widget(html_str: str = "") -> QWidget:
 
 
 def set_checked_for_corresponding_action_button(
-    action_txt: str, actions: List[QAction], checked: bool
+    action_txt: str, actions: List[Union[QAction, QToolButton]], checked: bool
 ):
     """sets the action button with the given text to checked/not checked depending on the parameter checked"""
     matching_actions = [action for action in actions if action.text() == action_txt]

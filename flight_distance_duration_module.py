@@ -15,6 +15,10 @@ from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QTimer
 from qgis.PyQt.QtWidgets import QHBoxLayout, QLabel, QToolBar, QWidget
 
+from .constants import (
+    PLUGIN_NAME,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 from .utils import LayerUtils
 
 
@@ -71,14 +75,16 @@ class FlightDistanceDurationModule:
         self.distance_duration_widget.setLayout(layout)
 
     def compute_flight_distance(self, layer: QgsVectorLayer, feature_id: int) -> float:
-        """Computes the length (in m) of the given feature in the given layer and return ir. If the feature geometry is not of type LineGeometry an according warning is thrown and 0 is returned."""
+        """Computes the length (in m) of the given feature in the given layer and return ir. If the feature geometry
+        is not of type LineGeometry an according warning is thrown and 0 is returned."""
         feature = layer.getFeature(feature_id)
         if feature.geometry().type() != QgsWkbTypes.GeometryType.LineGeometry:
             self.iface.messageBar().pushMessage(
                 "Couldn't perform calculation",
-                f"Selected feature is of type {QgsWkbTypes.displayString(feature.geometry().wkbType())} but needs to be of type {QgsWkbTypes.displayString(QgsWkbTypes.Type.LineString)}.",
+                f"Selected feature is of type {QgsWkbTypes.displayString(feature.geometry().wkbType())} but needs to "
+                f"be of type {QgsWkbTypes.displayString(QgsWkbTypes.Type.LineString)}.",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return 0
 
@@ -108,7 +114,7 @@ class FlightDistanceDurationModule:
                 "Couldn't perform calculation",
                 "Flight speed must be greater than zero.",
                 level=Qgis.MessageLevel.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return 0
 
@@ -130,14 +136,14 @@ class FlightDistanceDurationModule:
         if self.is_displaying_flight_duration:
             try:
                 flight_speed = self.proj.readDoubleEntry(
-                    "ScienceFlightPlanner", "flight_speed", default_speed
+                    PLUGIN_NAME, "flight_speed", default_speed
                 )[0]
             except:
                 self.iface.messageBar().pushMessage(
                     "Couldn't update flight duration",
                     "The flight speed setting is invalid.",
                     level=Qgis.MessageLevel.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
                 return
             duration = self.compute_flight_duration(
@@ -240,7 +246,8 @@ class FlightDistanceDurationModule:
         QTimer().singleShot(0, self.set_layer_to_selected)
 
     def handle_current_layer_changed(self):
-        """handles the change in the currently selected layer. If a new layer of type linegeometry is selected. The new distance/duration is displayed. Otherwise the display is cleared"""
+        """handles the change in the currently selected layer. If a new layer of type linegeometry is selected. The
+        new distance/duration is displayed. Otherwise the display is cleared"""
         if self.is_displaying_flight_distance or self.is_displaying_flight_duration:
             QTimer().singleShot(0, self.set_layer_to_selected)
 
