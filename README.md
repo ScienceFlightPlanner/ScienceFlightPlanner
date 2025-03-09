@@ -48,6 +48,17 @@ A window will pop up in which you can set the name and location of the shp-file 
 
 ### Export in Garmin GTN750Xi Format
 
+![](resources/icons_for_dark_mode/icon_tag.png)
+
+When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750. 
+After pressing the button, the selected .wpt file will be transformed into two files of following format: 
+- example_user.wpt (MUST be named _user.wpt for import) 
+- example_gfp.gfp
+
+_Hint: To avoid the GTN750Xi system giving the waypoints coordinates a generic ID, first import the user.wpt file and only after this import the .gfp-file._
+
+### Add tag to selected waypoints
+
 ![](resources/icons_for_dark_mode/icon_export.png) 
 
 After selecting a waypoint or multiple waypoints [(FAQ)](#faq) and pressing this button, a label is added to the point.
@@ -66,19 +77,7 @@ After adding a tag, select the corresponding waypoint to see the tag displayed i
 
 To view all waypoints and their associated tags:  
    1. Select the **waypoint layer**.  
-   2. Open the **Attribute Table** (right-click → “Open Attribute Table”).   
-
-
-### Add tag to selected waypoints
-
-![](resources/icons_for_dark_mode/icon_tag.png)
-
-When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750. 
-After pressing the button, the selected .wpt file will be transformed into two files of following format: 
-- example_user.wpt (MUST be named _user.wpt for import) 
-- example_gfp.gfp
-
-_Hint: To avoid the GTN750 system giving the waypoints coordinates a generic ID, first import the user.wpt file and only after this import the .gfp-file._
+   2. Open the **Attribute Table** (right-click → “Open Attribute Table”).
 
 ### Mark Selected Waypoints as Significant
 
