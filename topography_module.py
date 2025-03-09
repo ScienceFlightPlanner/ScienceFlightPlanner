@@ -38,9 +38,12 @@ from .constants import (
     PLUGIN_NAME,
     ICON_DIRECTORY_PATH
 )
-from .libs.pyqtgraph import PlotItem
-
-from .libs import pyqtgraph as pg
+from .libs.pyqtgraph import (
+    PlotItem,
+    AxisItem,
+    PlotWidget,
+    mkPen
+)
 
 from .utils import LayerUtils
 
@@ -74,7 +77,7 @@ class RasterSelectionDialog(QDialog):
         """Returns the selected Raster Layer"""
         return self.layer_combo.currentLayer()
 
-class CustomAxisTop(pg.AxisItem):
+class CustomAxisTop(AxisItem):
     def __init__(self, wp_data_x):
         super().__init__(orientation="top")
         self.data_x = wp_data_x
@@ -136,11 +139,11 @@ class PlotDock(QDockWidget):
         self.layer_crs = layer_crs
         self.graph = PlotItem()
 
-        self.plot_widget = pg.PlotWidget()
+        self.plot_widget = PlotWidget()
         self.plot_widget.showGrid(True, True, 0.5)
         self.graph = self.plot_widget.plot(self.data_x, self.data_y)
 
-        #self.plot_widget.getViewBox().border = pg.mkPen(color=(0, 0, 0), width=1)
+        #self.plot_widget.getViewBox().border = mkPen(color=(0, 0, 0), width=1)
 
         x_axis_top = CustomAxisTop(wp_data_x)
         self.plot_widget.setAxisItems({'top': x_axis_top})
@@ -160,7 +163,7 @@ class PlotDock(QDockWidget):
             line_x = [x, x]
             line_y = [0, plot_height]  # Full height of the plot
 
-            v_line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 255, 0, 100), width=1))
+            v_line = self.plot_widget.plot(line_x, line_y, pen=mkPen(color=(255, 255, 0, 100), width=1))
             v_line.setVisible(False)
             self.v_lines.append(v_line)
 
@@ -228,7 +231,7 @@ class PlotDock(QDockWidget):
 
         danger_points, lines = result
         for line_x, line_y in lines:
-            line = self.plot_widget.plot(line_x, line_y, pen=pg.mkPen(color=(255, 0, 0), width=1))
+            line = self.plot_widget.plot(line_x, line_y, pen=mkPen(color=(255, 0, 0), width=1))
             self.danger_lines.append(line)
 
         for rubber_band in self.rubber_bands:
