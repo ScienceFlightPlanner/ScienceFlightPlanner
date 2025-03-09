@@ -179,7 +179,7 @@ class PlotDock(QDockWidget):
         self.check_box.stateChanged.connect(lambda: self.toggle_line())
         h_layout.addWidget(self.check_box, 0, Qt.AlignLeft)
 
-        self.plot_widget.plotItem.autoBtn.setImageFile(os.path.join(ICON_DIRECTORY_PATH, "icon_scale_up_or_down.png"))
+        self.plot_widget.plotItem.autoBtn.setImageFile(os.path.join(":resources", "icons_for_dark_mode", "icon_scale_up_or_down.png"))
         self.plot_widget.plotItem.autoBtn._width = 32
         self.plot_widget.plotItem.autoBtn.update()
 
