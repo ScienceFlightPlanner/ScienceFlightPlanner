@@ -1,4 +1,7 @@
-import os 
+# Modified on 2024-12-04 by Maxim Poliakov
+# Changes: Modified script references inside the file to reflect the new filenames
+
+import os
 import sys
 import glob
 from pathlib import Path

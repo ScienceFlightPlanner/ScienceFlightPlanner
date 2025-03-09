@@ -1,3 +1,8 @@
+# Modified on 2024-12-29 by Maxim Poliakov
+# Changes: add target param to dec2ddm_pandas
+# Modified on 2025-01-21 by Maxim Poliakov
+# Changes: Rewrite dec2ddm function without dependencies on numpy and pandas
+
 #import pandas as pd
 #import numpy as np
 import os
