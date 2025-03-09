@@ -255,15 +255,20 @@ class PlotDock(QDockWidget):
             v_line.setVisible(not v_line.isVisible())
 
     def closeWidget(self):
-        self.iface.removeDockWidget(self)
-        for rubber_band in self.rubber_bands:
-            rubber_band.reset()
-
         super().close()
 
     def closeEvent(self, event):
+        map_canvas = self.iface.mapCanvas()
         for rubber_band in self.rubber_bands:
             rubber_band.reset()
+            map_canvas.scene().removeItem(rubber_band)
+
+        try:
+            self.max_climb_rate_spinbox.editingFinished.disconnect(self.plot_task)
+        except:
+            pass
+
+        self.iface.removeDockWidget(self)
 
 
 class TopographyModule:
