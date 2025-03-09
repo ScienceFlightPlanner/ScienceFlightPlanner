@@ -73,6 +73,12 @@
             <td>Line</td>
         </tr>
         <tr>
+            <td><a href=#combine> Combine Flightplans</a></td>
+            <td><img src="{ICON_FOLDER_PATH}/icon_combine.png"></td>
+            <td>Combines 2 flight plans based on the selected way point in each flight plan.</td>
+            <td>Points</td>
+        </tr>
+        <tr>
             <td><a href=#wp_gen>Export in Garmin GTN750Xi Format</a></td>
             <td><img src="{ICON_FOLDER_PATH}/icon_export.png"></td>
             <td>Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.</td>
@@ -164,7 +170,42 @@
         will be stored as points.
     </p>
 
-    <h3 id="wp_tag">Export to Garmin</h3>
+    <h3 id="combine">Combine Flightplans</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_combine.png"></p>
+    <p>
+        This feature allows you to combine two separate flight plans into one continuous flight plan.
+        To use this feature:
+    </p>
+    <p>
+        <ol>
+            <li>Select exactly two coordinate points from two different point layers</li>
+            <li>Press the Combine Flightplans button</li>
+            <li>Choose which flight plan should be the starting point (waypoint 1)</li>
+            <li>A new layer will be created containing the combined flightplan</li>
+        </ol>
+    </p>
+    <p>
+        <strong>Important Requirements:</strong>
+    </p>
+    <p>
+        <ul>
+            <li>Both layers must have the same Coordinate Reference System (CRS)</li>
+            <li>Both layers must be point geometry layers</li>
+            <li>Both layers must have an "id" field with all features having a unique ID value</li>
+            <li>You must select exactly one point from each layer to serve as the connection points</li>
+        </ul>
+    </p>
+    <p>
+        The resulting combined flight plan preserves all waypoints from both original plans,
+        with sequential IDs starting from the selected point in the first flight plan,
+        continuing through the second flight plan, and then returning to complete any
+        remaining points in the first flight plan.
+    </p>
+    <p>
+        Any tags associated with the original waypoints will be preserved in the combined flight plan.
+    </p>
+
+    <h3 id="export">Export to Garmin</h3>
     <p><img src="{ICON_FOLDER_PATH}/icon_export.png"></p>
     <p>
         When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750.
@@ -177,10 +218,10 @@
         </ul>
     </p>
     <p>
-        Hint: To avoid the GTN750 system giving the waypoints coordinates a generic ID,  first import  the user.wpt file and only after this import the .gfp-file.
+        Hint: To avoid the GTN750 system assigning a generic ID to the waypoint coordinates, import the user.wpt file first and then import the .gfp file.
     </p>
 
-    <h3 id="export">Add tag to selected waypoints</h3>
+    <h3 id="wp_tag">Add tag to selected waypoints</h3>
     <p><img src="{ICON_FOLDER_PATH}/icon_tag.png"></p>
     <p>
         After selecting a waypoint or multiple waypoints <a href=#faq>(FAQ)</a>

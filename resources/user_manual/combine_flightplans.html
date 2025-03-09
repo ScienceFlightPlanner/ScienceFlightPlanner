@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Combine Flightplans</title>
+    <style>
+        p {
+            line-height: 1.4;
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        h3 {
+            text-align: justify;
+            margin: 20px 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Combine Flightplans</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_combine.png"></p>
+    <p>
+        This feature allows you to combine two separate flight plans into one continuous flight plan.
+        To use this feature:
+    </p>
+    <p>
+        <ol>
+            <li>Select exactly two coordinate points from two different point layers</li>
+            <li>Press the Combine Flightplans button</li>
+            <li>Choose which flight plan should be the starting point (waypoint 1)</li>
+            <li>A new layer will be created containing the combined flightplan</li>
+        </ol>
+    </p>
+    <p>
+        The tags of the original waypoints will be preserved in the combined flight plan.
+    </p>
+    <p>
+        <strong>Important Requirements:</strong>
+    </p>
+    <p>
+        <ul>
+            <li>Both layers must have the same Coordinate Reference System (CRS)</li>
+            <li>Both layers must be point geometry layers</li>
+            <li>Both layers must have an "id" field with all features having a unique ID value</li>
+            <li>You must select exactly one point from each layer to serve as the connection points</li>
+        </ul>
+    </p>
+    <p>
+        The resulting combined flight plan preserves all waypoints from both original plans,
+        with sequential IDs starting from the selected point in the first flight plan,
+        continuing through the selected point in the second flight plan, and finally returning to complete any
+        remaining points in the second flight plan and then in the first flight plan.
+    </p>
+    <p>
+        Or in coding terms:
+            <p style="text-indent:30px;">
+            Given two ordered sequences:
+                <ul>
+                    <li><strong>F1</strong>: The sequence of waypoints in flight plan 1</li>
+                    <li><strong>F2</strong>: The sequence of waypoints in flight plan 2</li>
+                    <li><strong>WP1</strong>: The selected waypoint in flight plan 1</li>
+                    <li><strong>WP2</strong>: The selected waypoint in flight plan 1</li>
+                    <li>Parentheses are exclusive and square brackets are inclusive</li>
+                    <li>In this example arrays start at index 1 and end at -1</li>
+                </ul>
+            </p>
+            <p style="text-indent:30px;">
+                The merged sequence <strong>M</strong> is defined as:
+                <div class="math", style="text-indent:30px;">
+                    M = F1[1 : WP1] + F2[WP2 : -1] + F2[1 : WP2) + F1(WP1 : -1]
+                </div>
+            </p>
+    </p>
+</body>
+
+</html>
