@@ -75,12 +75,14 @@ class FlightDistanceDurationModule:
         self.distance_duration_widget.setLayout(layout)
 
     def compute_flight_distance(self, layer: QgsVectorLayer, feature_id: int) -> float:
-        """Computes the length (in m) of the given feature in the given layer and return ir. If the feature geometry is not of type LineGeometry an according warning is thrown and 0 is returned."""
+        """Computes the length (in m) of the given feature in the given layer and return ir. If the feature geometry
+        is not of type LineGeometry an according warning is thrown and 0 is returned."""
         feature = layer.getFeature(feature_id)
         if feature.geometry().type() != QgsWkbTypes.GeometryType.LineGeometry:
             self.iface.messageBar().pushMessage(
                 "Couldn't perform calculation",
-                f"Selected feature is of type {QgsWkbTypes.displayString(feature.geometry().wkbType())} but needs to be of type {QgsWkbTypes.displayString(QgsWkbTypes.Type.LineString)}.",
+                f"Selected feature is of type {QgsWkbTypes.displayString(feature.geometry().wkbType())} but needs to "
+                f"be of type {QgsWkbTypes.displayString(QgsWkbTypes.Type.LineString)}.",
                 level=Qgis.MessageLevel.Warning,
                 duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
@@ -244,7 +246,8 @@ class FlightDistanceDurationModule:
         QTimer().singleShot(0, self.set_layer_to_selected)
 
     def handle_current_layer_changed(self):
-        """handles the change in the currently selected layer. If a new layer of type linegeometry is selected. The new distance/duration is displayed. Otherwise the display is cleared"""
+        """handles the change in the currently selected layer. If a new layer of type linegeometry is selected. The
+        new distance/duration is displayed. Otherwise the display is cleared"""
         if self.is_displaying_flight_distance or self.is_displaying_flight_duration:
             QTimer().singleShot(0, self.set_layer_to_selected)
 

@@ -47,6 +47,7 @@ from .libs.pyqtgraph import (
 
 from .utils import LayerUtils
 
+
 class RasterSelectionDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -68,7 +69,6 @@ class RasterSelectionDialog(QDialog):
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.clicked.connect(self.reject)  # Closes dialog without selecting
 
-
         h_layout.addWidget(self.ok_button)
         h_layout.addWidget(self.cancel_button)
         v_layout.addLayout(h_layout)
@@ -76,6 +76,7 @@ class RasterSelectionDialog(QDialog):
     def get_selected_layer(self):
         """Returns the selected Raster Layer"""
         return self.layer_combo.currentLayer()
+
 
 class CustomAxisTop(AxisItem):
     def __init__(self, wp_data_x):
@@ -248,7 +249,6 @@ class PlotDock(QDockWidget):
             rubber_band.setToGeometry(geom, self.layer_crs)
             self.rubber_bands.append(rubber_band)
 
-
     def toggle_line(self):
         """ Show/Hide the vertical line when the button is clicked """
         for v_line in self.v_lines:
@@ -264,6 +264,7 @@ class PlotDock(QDockWidget):
     def closeEvent(self, event):
         for rubber_band in self.rubber_bands:
             rubber_band.reset()
+
 
 class TopographyModule:
     def __init__(self, iface: QgisInterface):

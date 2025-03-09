@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QVariant
-from qgis._core import (
+from qgis.core import (
     QgsWkbTypes, 
     Qgis, 
     QgsVectorLayer, 
@@ -8,7 +8,7 @@ from qgis._core import (
     QgsFeature, 
     QgsVectorFileWriter
 )
-from qgis._gui import QgisInterface
+from qgis.gui import QgisInterface
 from .constants import (
     QGIS_FIELD_NAME_ID,
     QGIS_FIELD_NAME_TAG,
@@ -17,6 +17,7 @@ from .constants import (
 from .utils import LayerUtils
 import os
 from qgis.PyQt.QtWidgets import QFileDialog, QMessageBox
+
 
 class CutFlowlineModule:
 
@@ -175,7 +176,7 @@ class CutFlowlineModule:
         point2_id = features[1].id()
 
         # Return IDs in order (smaller, larger)
-        return (min(point1_id, point2_id), max(point1_id, point2_id))
+        return min(point1_id, point2_id), max(point1_id, point2_id)
 
     def cut_action(self):
         """Execute the cut action on the selected points."""

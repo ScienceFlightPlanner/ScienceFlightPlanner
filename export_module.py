@@ -18,6 +18,7 @@ from .utils import LayerUtils
 
 TEMP_FILE_SUFFIX = "wp_DDM.wpt"
 
+
 def wpt_to_gfp(input_file_path, output_file_path):
     with tempfile.NamedTemporaryFile(suffix=TEMP_FILE_SUFFIX, delete=False) as temp_file:
         DEC2DMM_20230704.dec2ddm(input_file_path, temp_file.name)
@@ -26,6 +27,7 @@ def wpt_to_gfp(input_file_path, output_file_path):
     finally:
         os.remove(temp_file.name)
 
+
 def pad_with_zeros(number, expected_decimal_places):
     number_str = str(number)
     if "." not in number_str:
@@ -33,6 +35,7 @@ def pad_with_zeros(number, expected_decimal_places):
 
     current_decimal_places = len(number_str.split(".")[1])
     return number_str + str(0) * (expected_decimal_places - current_decimal_places)
+
 
 def shapefile_to_wpt(selected_layer, file_path):
     source_crs = selected_layer.crs()
@@ -53,6 +56,7 @@ def shapefile_to_wpt(selected_layer, file_path):
             longitude_padded = pad_with_zeros(longitude, 8)
 
             file.write(f"{id},{comment},{latitude_padded},{longitude_padded}\r\n")
+
 
 class ExportModule:
     iface: QgisInterface

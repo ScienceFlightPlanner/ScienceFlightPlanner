@@ -41,7 +41,8 @@ class WaypointGenerationModule:
     def _get_waypoints_of_layer(
         self, selected_layer: QgsVectorLayer
     ) -> List[QgsPointXY]:
-        """Retrieves the waypoints of a line, if no line is selected a warning is printed and an empty list is returned"""
+        """Retrieves the waypoints of a line, if no line is selected a warning is printed and an empty list is
+        returned"""
         if selected_layer.geometryType() != QgsWkbTypes.GeometryType.LineGeometry:
             # the selected layer is not a line
             self.iface.messageBar().pushMessage(

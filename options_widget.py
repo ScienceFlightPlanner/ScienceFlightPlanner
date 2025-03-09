@@ -86,7 +86,9 @@ class OptionsDialog(BASE, WIDGET):
             PLUGIN_NAME, "flight_speed", default_speed
         )[0]
         self.flightSpeedSpinBox.setValue(int(flight_speed))
-        txt = "ScienceFlightPlanner \n\nThe sensor coverage works if the CRS used for computation and the project CRS are the same. \n\nWhen using a different CRS the sensor coverage shown might contain inconsistencies because of the line representation used in QGIS."
+        txt = ("ScienceFlightPlanner \n\nThe sensor coverage works if the CRS used for computation and the project CRS "
+               "are the same. \n\nWhen using a different CRS the sensor coverage shown might contain inconsistencies "
+               "because of the line representation used in QGIS.")
         settings_name = "show_coverage_info"
         show_checkable_info_message_box(settings_name, txt, self.proj)
 
@@ -120,8 +122,6 @@ class OptionsDialog(BASE, WIDGET):
         self.maxTurnDistanceSpinBox.setValue(int(max_turn_distance))
         self.maxTurnDistanceSpinBox.setMaximum(100000)
         self.maxTurnDistanceSpinBox.setMinimum(0)
-
-
 
     def load_sensor_table(self):
         """Creates the table on the settings page which allows to manage (add, delete, edit) sensors"""

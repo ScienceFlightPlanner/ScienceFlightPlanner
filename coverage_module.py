@@ -1,5 +1,4 @@
 import math
-import os
 from typing import Dict, Union
 
 from PyQt5.QtWidgets import QToolBar
@@ -46,6 +45,7 @@ from .constants import (
     PLUGIN_NAME,
     DEFAULT_PUSH_MESSAGE_DURATION
 )
+
 
 class CoverageModule:
     iface: QgisInterface
@@ -377,7 +377,8 @@ class CoverageModule:
     def compute_sensor_coverage_in_meters(
         self, sensor_opening_angle: float, flight_altitude: int
     ) -> float:
-        """Computes the sensor coverage (distance from flight path in one direction) in meters based on the opening angle of the sensor in degree and the flight altitude in meters"""
+        """Computes the sensor coverage (distance from flight path in one direction) in meters based on the opening
+        angle of the sensor in degree and the flight altitude in meters"""
         if sensor_opening_angle < 0 or sensor_opening_angle >= 180:
             self.iface.messageBar().pushMessage(
                 "Sensor opening angle is not sensible",
@@ -554,7 +555,8 @@ class CoverageModule:
     def perpendicular_counter_clockwise(
         self, vector: QgsVector, sensor_coverage: float
     ) -> QgsVector:
-        """Computes a vector perpendicular to the given vector (rotated counter-clockwise) with the length of sensor_coverage"""
+        """Computes a vector perpendicular to the given vector (rotated counter-clockwise) with the length of
+        sensor_coverage"""
         if vector.x() == 0 and vector.y() == 0:
             normalized_perpendicular = QgsVector(0, 0)
         else:
@@ -770,7 +772,8 @@ class CoverageModule:
             QMessageBox.information(
                 self.iface.mainWindow(),
                 "No CRS selected",
-                'There is no CRS selected for computing the sensor coverage. \n\nPlease select the CRS you want to use via "Settings ▶ Options... ▶ ScienceFlightPlanner"',
+                'There is no CRS selected for computing the sensor coverage. \n\nPlease select the CRS you want to '
+                'use via "Settings ▶ Options... ▶ ScienceFlightPlanner"',
                 QMessageBox.Ok,
             )
             return

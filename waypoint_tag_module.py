@@ -12,8 +12,8 @@ from .constants import (
     DEFAULT_PUSH_MESSAGE_DURATION
 )
 
-class WaypointTagModule:
 
+class WaypointTagModule:
     iface: QgisInterface
     layer_utils: LayerUtils
 
@@ -71,7 +71,7 @@ class WaypointTagModule:
             layer.updateFeature(feature)
 
         layer.removeSelection()
-        layer.endEditCommand() #"Add Tag for Waypoints"
+        layer.endEditCommand()  # "Add Tag for Waypoints"
 
     def at_least_one_feature_selected(self, layer):
         if layer.selectedFeatureCount() < 1:
@@ -87,8 +87,9 @@ class WaypointTagModule:
     def tag_is_valid(self, text):
         """
         Check if tag only consists of capital letters, spaces, or forward slash (/).
-        https://atlaske-content.garmin.com/filestorage//email/outbound/attachments/GTN_Flight_Plan_and_User_Waypoint_transfer_Time1712844670119.pdf Section 3.2
-        And also if it has 10 characters at most.
+        https://atlaske-content.garmin.com/filestorage//email/outbound/attachments
+        /GTN_Flight_Plan_and_User_Waypoint_transfer_Time1712844670119.pdf Section 3.2 And also if it has 10
+        characters at most.
         """
         if len(text) > MAX_TAG_LENGTH:
             self.iface.messageBar().pushMessage(
@@ -98,7 +99,7 @@ class WaypointTagModule:
             )
             return False
 
-        pattern = fr'^[A-Z0-9 /]{{1,{MAX_TAG_LENGTH}}}$' # = r'^[A-Z0-9 /]{1,<MAX_TAG_LENGTH>}$'
+        pattern = fr'^[A-Z0-9 /]{{1,{MAX_TAG_LENGTH}}}$'  # = r'^[A-Z0-9 /]{1,<MAX_TAG_LENGTH>}$'
         if re.fullmatch(pattern, text) is None:
             self.iface.messageBar().pushMessage(
                 "Tag may only consist of capital letters, spaces, or forward slash (/)",

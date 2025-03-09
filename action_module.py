@@ -25,6 +25,7 @@ from .constants import (
     MAX_CLIMB_RATE_ACTION_NAME
 )
 
+
 class ActionModule:
     iface: QgisInterface
     toolbar_items: Union[List[QObject], None]

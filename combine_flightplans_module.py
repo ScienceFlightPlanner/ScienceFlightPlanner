@@ -2,8 +2,6 @@ import re
 
 from qgis.PyQt.QtCore import QVariant, Qt
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
-from qgis._core import QgsPalLayerSettings, QgsVectorLayerSimpleLabeling
-#from qgis.PyQt import Qt
 from qgis.core import (
     Qgis,
     QgsField,
@@ -13,7 +11,9 @@ from qgis.core import (
     QgsFields,
     QgsCoordinateReferenceSystem,
     QgsVectorLayer,
-    QgsProject
+    QgsProject,
+    QgsPalLayerSettings,
+    QgsVectorLayerSimpleLabeling
 )
 from qgis.gui import QgisInterface
 
@@ -23,6 +23,7 @@ from .constants import (
     QGIS_FIELD_NAME_TAG
 )
 from .utils import LayerUtils, layer_has_field
+
 
 class CombineFlightplansModule:
 

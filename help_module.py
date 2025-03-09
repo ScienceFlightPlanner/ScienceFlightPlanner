@@ -1,4 +1,3 @@
-import os
 from functools import partial
 from typing import List, Union
 
@@ -22,7 +21,7 @@ from .constants import (
     PLUGIN_TOOLBAR_NAME,
     PLUGIN_HELP_MANUAL_TITLE,
     SENSOR_COVERAGE_ACTION_NAME,
-    HTML_FILE_FOR_ACTION, PLUGIN_DIRECTORY_PATH,
+    HTML_FILE_FOR_ACTION,
 )
 
 from .action_module import ActionModule
@@ -137,7 +136,8 @@ class HelpWidget(QDockWidget):
             self.toolbar.addWidget(w)
 
     def add_sensor_widget(self):
-        """adds a sensor widget to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a sensor widget to the toolbar widgets (widgets are drawn in the order that they are added to the
+        widgets list)"""
         layout = QHBoxLayout()
 
         sensor_combobox = QComboBox()
@@ -157,7 +157,8 @@ class HelpWidget(QDockWidget):
         self.sensor_combobox = sensor_combobox
 
     def add_separator(self):
-        """adds a separator to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a separator to the toolbar widgets (widgets are drawn in the order that they are added to the widgets
+        list)"""
         separator_label = QLabel("|")
         layout = QHBoxLayout()
         layout.addWidget(separator_label)
@@ -167,7 +168,8 @@ class HelpWidget(QDockWidget):
         self.toolbar_widgets.append(separator_widget)
 
     def add_faq_widget(self):
-        """adds a faq widget to the toolbar widgets (widgets are drawn in the order that they are added to the widgets list)"""
+        """adds a faq widget to the toolbar widgets (widgets are drawn in the order that they are added to the
+        widgets list)"""
         faq_button = QPushButton(FAQ_ACTION_NAME)
         faq_button.setToolTip(FAQ_ACTION_NAME)
         faq_button.setAutoDefault(False)
@@ -189,7 +191,8 @@ class HelpWidget(QDockWidget):
         return partial(self.fct_action, action.text())
 
     def fct_action(self, action_name: str):
-        """general trigger function. When action is triggered and is not checked right now, the corresponding manual is displayed else the complete manual is displayed"""
+        """general trigger function. When action is triggered and is not checked right now, the corresponding manual
+        is displayed else the complete manual is displayed"""
 
         if self.faq_button is not None:
             actions = self.actions + [self.faq_button]
@@ -229,7 +232,8 @@ class HelpWidget(QDockWidget):
             self.current_action_name = action_name
 
     def update_coverage_widget(self):
-        """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted' signal)"""
+        """updates the coverage widget (necessary after selecting item so that there can be a new 'highlighted'
+        signal)"""
         assert self.sensor_combobox is not None
         self.fct_action(SENSOR_COVERAGE_ACTION_NAME)
         self.sensor_combobox.clear()
@@ -285,7 +289,8 @@ class HelpManualModule:
             self.help_widget = None
 
     def set_actions(self):
-        """copies the given lists of actions and modifies it so that the help action corresponds to the complete manual actions"""
+        """copies the given lists of actions and modifies it so that the help action corresponds to the complete
+        manual actions"""
         toolbar = self.iface.mainWindow().findChild(QToolBar, PLUGIN_TOOLBAR_NAME)
         tool_buttons = [x for x in toolbar.findChildren(QToolButton) if x.objectName() != "qt_toolbar_ext_button"]
         self.actions = []

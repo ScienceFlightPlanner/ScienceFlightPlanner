@@ -1,13 +1,14 @@
-print("EXEC")
 import codecs
 import os
 from qgis.core import QgsSettings
+
 
 def get_icon_directory_path():
     if QgsSettings().value("UI/UITheme", "default") == "Night Mapping":
         return os.path.join(":resources", "icons_for_dark_mode")
     else:
         return os.path.join(":resources", "icons_for_light_mode")
+
 
 PLUGIN_NAME = "ScienceFlightPlanner"
 
@@ -82,6 +83,7 @@ SENSOR_COMBOBOX_DEFAULT_VALUE = "No sensor"
 FIRST_ALGO_NAME = "Meander"
 SECOND_ALGO_NAME = "Racetrack"
 
+
 def create_html_str_for_action_dict():
     result = dict()
     for html_name in [file_name for file_name in os.listdir(USER_MANUAL_HTMLS_DIRECTORY_PATH) if file_name.endswith(".html")]:
@@ -93,5 +95,6 @@ def create_html_str_for_action_dict():
         result[action_name] = html_string
 
     return result
+
 
 HTML_FILE_FOR_ACTION = create_html_str_for_action_dict()

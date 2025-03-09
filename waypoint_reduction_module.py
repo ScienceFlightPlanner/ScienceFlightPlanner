@@ -16,7 +16,6 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QMessageBox
 
 from .constants import (
     QGIS_FIELD_NAME_ID,
@@ -69,7 +68,10 @@ class WaypointReductionModule:
         # notify user if no changes cannot be made due to missing feature selection
         if len(selected_features) == 0:
             settings_name = "show_selection_info"
-            txt = 'No features were marked significant! \n\nThere are no features selected in the currently selected layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CTRL\" key (on Mac: \"Command\" key) and click on the features you want to select.\n\n'
+            txt = ('No features were marked significant! \n\nThere are no features selected in the currently selected '
+                   'layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) '
+                   'via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CTRL\" key (on Mac: '
+                   '\"Command\" key) and click on the features you want to select.\n\n')
 
             if not show_checkable_info_message_box(settings_name, txt, QgsProject.instance()):
                 self.iface.messageBar().pushMessage(

@@ -105,7 +105,8 @@ class WaypointReversalModule:
         return True
 
     def _reverse_geometry(self, geom: QgsGeometry) -> QgsGeometry:
-        """Reverses the ordering of point of a given geometry assuming given type is either PointGeometry or LineGeometry"""
+        """Reverses the ordering of point of a given geometry assuming given type is either PointGeometry or
+        LineGeometry"""
         single_type = QgsWkbTypes.isSingleType(geom.wkbType())
         # handle single type geometry
         if single_type:

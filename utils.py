@@ -46,10 +46,10 @@ class LayerUtils:
         self.proj = QgsProject.instance()
 
     def get_valid_selected_layer(
-        self,
-        accepted_types: List[QgsWkbTypes.GeometryType],
-        is_id_attribute_required: bool = False,
-        display_error_messages: bool = True,
+            self,
+            accepted_types: List[QgsWkbTypes.GeometryType],
+            is_id_attribute_required: bool = False,
+            display_error_messages: bool = True,
     ) -> Union[QgsVectorLayer, None]:
         """Get the current selected layer, if no vector layer/multiple layers selected or type of selected layer not
         given in parameter lst a warning is printed and None is returned"""
@@ -101,7 +101,7 @@ class LayerUtils:
         return selected_layer
 
     def get_id_attr_lst_for_layer(
-        self, layer: QgsMapLayer.VectorLayer
+            self, layer: QgsMapLayer.VectorLayer
     ) -> Union[Tuple[List[object], bool], Tuple[None, None]]:
         """Get values of field for given features, if resulting list contains None or duplicates a message is printed
         and None returned"""
@@ -113,7 +113,7 @@ class LayerUtils:
         attributes = [feature[field_name] for feature in features]
         reduction = False
         if QgsExpressionContextScope.hasVariable(
-            QgsExpressionContextUtils.layerScope(layer), var_name
+                QgsExpressionContextUtils.layerScope(layer), var_name
         ):
             total_number_wp = QgsExpressionContextScope.variable(
                 QgsExpressionContextUtils.layerScope(layer), var_name
@@ -210,12 +210,12 @@ class LayerUtils:
         return file_path
 
     def generate_shp_file(
-        self,
-        current_layer_path: str,
-        path_suffix: str,
-        waypoints: List[QgsPointXY],
-        waypoint_ids: List[int],
-        source_crs: QgsCoordinateReferenceSystem,
+            self,
+            current_layer_path: str,
+            path_suffix: str,
+            waypoints: List[QgsPointXY],
+            waypoint_ids: List[int],
+            source_crs: QgsCoordinateReferenceSystem,
     ) -> Union[None, Tuple[QgsVectorFileWriter, QgsMapLayer]]:
         """Generates an SHP-File that contains the given waypoints and saves it at the given path"""
         dialog_title = "Save Waypoint Layer As"
@@ -262,11 +262,11 @@ class LayerUtils:
         return writer, layer
 
     def create_vector_file_write(
-        self,
-        file_name: str,
-        fields: QgsFields,
-        geometry_type: Qgis.WkbType,
-        crs: QgsCoordinateReferenceSystem,
+            self,
+            file_name: str,
+            fields: QgsFields,
+            geometry_type: Qgis.WkbType,
+            crs: QgsCoordinateReferenceSystem,
     ) -> QgsVectorFileWriter:
         """Creates a QGSVectorFileWriter with the given attributes"""
         try:
@@ -294,7 +294,8 @@ class LayerUtils:
             )
 
     def get_selected_feature_from_layer(self, layer: QgsMapLayer):
-        """Returns the selected feature of the given layer or the only feature if only one feature is present. If no or multiple features are selected an according warning is thrown."""
+        """Returns the selected feature of the given layer or the only feature if only one feature is present. If no
+        or multiple features are selected an according warning is thrown."""
         features = list(layer.getFeatures())
         if len(features) == 1:
             feature = features[0]
@@ -309,13 +310,15 @@ class LayerUtils:
             selected_features = layer.selectedFeatures()
             if len(selected_features) != 1:
                 settings_txt = "show_multiple_selection_info"
-                txt = 'Multiple Features in Layer! \n\nPlease select exactly one Feature: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select" \n\n'
+                txt = ('Multiple Features in Layer! \n\nPlease select exactly one Feature: \n\nSelection Tools for '
+                       'Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select" \n\n')
 
                 if not show_checkable_info_message_box(
-                    settings_txt, txt, QgsProject.instance()
+                        settings_txt, txt, QgsProject.instance()
                 ):
                     self.iface.messageBar().pushMessage(
-                        "Multiple features in the currently selected layer and no/multiple selected. Select exactly one feature.",
+                        "Multiple features in the currently selected layer and no/multiple selected. Select exactly "
+                        "one feature.",
                         level=Qgis.Info,
                         duration=DEFAULT_PUSH_MESSAGE_DURATION,
                     )
@@ -355,7 +358,7 @@ class LayerUtils:
         return added
 
     def delete_field_from_layer(
-        self, layer: QgsMapLayer, field_name: str, message: str
+            self, layer: QgsMapLayer, field_name: str, message: str
     ) -> bool:
         """Deletes field with specified name from given layer depending on user prompt"""
         fields = layer.fields()
@@ -379,8 +382,10 @@ class LayerUtils:
 
         return deleted
 
+
 def layer_has_field(layer, field_name):
     return layer.fields().indexFromName(field_name) > -1
+
 
 def get_geometry_type_from_string(geom_string: str) -> QgsWkbTypes.GeometryType:
     """Returns Geometry Type for a given string (assumes valid geometry type)"""
@@ -407,7 +412,7 @@ def get_geometry_type_as_string(geom_type: QgsWkbTypes.GeometryType) -> str:
 
 
 def show_checkable_info_message_box(
-    settings_name: str, txt: str, proj: QgsProject
+        settings_name: str, txt: str, proj: QgsProject
 ) -> bool:
     """Opens a MessageBox with option to disable future display of the same information"""
     show_info = proj.readBoolEntry(PLUGIN_NAME, settings_name, True)[0]
@@ -427,7 +432,10 @@ def show_checkable_info_message_box(
             proj.writeEntryBool(PLUGIN_NAME, settings_name, False)
     return show_info
 
+
 """Methods for automatic external library installation"""
+
+
 # Not needed for now as qgis already comes with the geopandas package, but may be useful later
 def install_package(package_name):
     """Tries to install a library"""
@@ -435,6 +443,7 @@ def install_package(package_name):
         subprocess.run([sys.executable, "-m", "pip", "install", package_name], check=True)
     except subprocess.CalledProcessError:
         QMessageBox.critical(None, "Fehler", f"Das Paket '{package_name}' konnte nicht installiert werden.")
+
 
 def ensure_dependencies():
     """Überprüft und installiert fehlende Abhängigkeiten."""

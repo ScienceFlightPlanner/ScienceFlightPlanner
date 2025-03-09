@@ -47,6 +47,7 @@ from .utils import LayerUtils
 
 DEFAULT_MAX_TURN_DISTANCE = 1000
 
+
 @dataclass
 class FlightParameters:
     flight_altitude: float
@@ -271,12 +272,12 @@ class RacetrackModule:
             float(self.settings.value(PLUGIN_SENSOR_SETTINGS_PATH, {})[self.sensor_combobox.currentText()]),
             self.flight_altitude_spinbox.value()
         ) * unit_factor
-        
+
         overlap_factor = 1 - float(self.settings.value(PLUGIN_OVERLAP_SETTINGS_PATH, 0))
-        
+
         # Read max_turn_distance from settings
         max_turn_distance = float(self.settings.value(PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 1000))
-        
+
         return {
             'vec': vec,
             'vec_normalized': vec_normalized,
@@ -286,6 +287,7 @@ class RacetrackModule:
             'overlap_factor': overlap_factor,
             'max_turn_distance': max_turn_distance
         }
+
     @staticmethod
     def _get_save_file_path(base_path: str,
                             sensor_name: str,
@@ -338,7 +340,8 @@ class RacetrackModule:
         # The URI "Point?crs=EPSG:XXXX" is built from the CRS's auth id.
         mem_layer = QgsVectorLayer("Point?crs=" + crs.authid(), "temporary", "memory")
         if not mem_layer.isValid():
-            self.iface.messageBar().pushMessage("Error", "Could not create in‑memory layer", level=Qgis.MessageLevel.Critical)
+            self.iface.messageBar().pushMessage("Error", "Could not create in‑memory layer",
+                                                level=Qgis.MessageLevel.Critical)
             return None
 
         # Add the fields to the in‑memory layer
@@ -471,21 +474,22 @@ class RacetrackModule:
         forward = True
         number_of_lines = math.ceil(params['vec'].length() / (params['coverage_range'] * 2 * params['overlap_factor']))
         j = 1
-        max_flyover = math.floor(params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
+        max_flyover = math.floor(
+            params['max_turn_distance'] / (params['coverage_range'] * 2 * params['overlap_factor']))
         line_from_bottom = 2
 
         for k in range(number_of_lines):
             # Using the same point calculation approach as the racetrack algorithm
             point_line = RacetrackModule._compute_line_points(
-                j, 
-                left_point, 
-                params['point_start'], 
-                params['point_end'], 
-                params['vec_normalized'], 
-                params['coverage_range'], 
+                j,
+                left_point,
+                params['point_start'],
+                params['point_end'],
+                params['vec_normalized'],
+                params['coverage_range'],
                 params['overlap_factor']
             )
-            
+
             points.extend(point_line)
             left_point = not left_point
 
@@ -561,12 +565,12 @@ class RacetrackModule:
 
         # Store max_turn_distance from dialog for use in algorithm
         QgsProject.instance().writeEntryDouble(
-            PLUGIN_NAME, 
-            "max_turn_distance", 
+            PLUGIN_NAME,
+            "max_turn_distance",
             flight_params.max_turn_distance
         )
         self.settings.setValue(
-            PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH, 
+            PLUGIN_MAX_TURN_DISTANCE_SETTINGS_PATH,
             flight_params.max_turn_distance
         )
 
@@ -584,7 +588,7 @@ class RacetrackModule:
         """Compute waypoints based on selected algorithm"""
         # Force update max_turn_distance to ensure it's using the correct value
         params['max_turn_distance'] = params['flight_params'].max_turn_distance
-        
+
         if params['flight_params'].algorithm == SECOND_ALGO_NAME:
             return self._compute_racetrack_algo_points(params)
         elif params['flight_params'].algorithm == FIRST_ALGO_NAME:

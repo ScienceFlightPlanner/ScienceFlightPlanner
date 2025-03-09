@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-ScienceFlightPlanner - A QGIS plugin to create flight plans based on existing waypoints and paths.
-Copyright (C) 2023 Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm <scienceflightplanner@gmail.com>
+"""ScienceFlightPlanner - A QGIS plugin to create flight plans based on existing waypoints and paths. Copyright (C)
+2023 Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm <scienceflightplanner@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -78,6 +77,7 @@ from functools import partial
 from .waypoint_reduction_module import WaypointReductionModule
 from .waypoint_reversal_module import WaypointReversalModule
 
+
 class ScienceFlightPlanner:
     """QGIS Plugin Implementation."""
     popupMenu: QMenu
@@ -142,15 +142,15 @@ class ScienceFlightPlanner:
         )
 
     def add_action(
-        self,
-        icon: str,
-        text: str,
-        callback: Callable[..., None],
-        enabled_flag: bool = True,
-        add_to_menu: bool = True,
-        add_to_toolbar: bool = True,
-        parent: Union[None, QWidget] =None,
-        is_checkable: bool = False
+            self,
+            icon: str,
+            text: str,
+            callback: Callable[..., None],
+            enabled_flag: bool = True,
+            add_to_menu: bool = True,
+            add_to_toolbar: bool = True,
+            parent: Union[None, QWidget] = None,
+            is_checkable: bool = False
     ) -> QAction:
         """Add a toolbar icon to the toolbar.
 
@@ -203,12 +203,12 @@ class ScienceFlightPlanner:
         self.popupMenu = QMenu()
         for tag in TAGS:
             action = self.add_action(
-                        icon="icon_tag.png",
-                        text=tag,
-                        callback=partial(self.waypoint_tag_module.tag, tag),
-                        add_to_toolbar=False,
-                        parent=self.popupMenu
-                    )
+                icon="icon_tag.png",
+                text=tag,
+                callback=partial(self.waypoint_tag_module.tag, tag),
+                add_to_toolbar=False,
+                parent=self.popupMenu
+            )
             action.setToolTip(TAG_ACTION_NAME)
             self.popupMenu.addAction(action)
 
