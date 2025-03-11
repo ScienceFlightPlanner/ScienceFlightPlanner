@@ -1,0 +1,288 @@
+/* manual-style.css - Enhanced styling for ScienceFlightPlanner documentation */
+
+/* Base styling */
+:root {
+  --primary-color: #2a6496;
+  --secondary-color: #4c8dbd;
+  --accent-color: #e8f4ff;
+  --text-color: #333;
+  --light-text: #666;
+  --bg-color: #fff;
+  --light-bg: #f8f9fa;
+  --border-color: #ddd;
+  --code-bg: #f5f5f5;
+  --pre-bg: #f8f8f8;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--primary-color);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 2.25rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  font-size: 1.75rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.2em;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+/* Paragraphs and text */
+p {
+  margin: 1em 0;
+  text-align: justify;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+code {
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  background-color: var(--code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Lists */
+ul, ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+li {
+  margin-bottom: 0.5em;
+}
+
+li > ul, li > ol {
+  margin: 0.5em 0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  table {
+    display: table;
+  }
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em;
+  text-align: left;
+}
+
+th {
+  background-color: var(--light-bg);
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+tr:nth-child(even) {
+  background-color: var(--light-bg);
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+  border-radius: 4px;
+}
+
+figure {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+figcaption {
+  font-size: 0.9em;
+  color: var(--light-text);
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+/* Special sections */
+.note, .warning, .tip {
+  padding: 1em;
+  margin: 1.5em 0;
+  border-left: 4px solid;
+  border-radius: 3px;
+}
+
+.note {
+  background-color: #e8f4fc;
+  border-color: #4c8dbd;
+}
+
+.warning {
+  background-color: #fff8e6;
+  border-color: #f0ad4e;
+}
+
+.tip {
+  background-color: #e6f9e6;
+  border-color: #5cb85c;
+}
+
+/* Feature item styling */
+.feature-item {
+  margin: 2em 0;
+  padding: 1.5em;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--light-bg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.feature-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.feature-title img {
+  margin: 0 0.75em 0 0;
+  width: 32px;
+  height: auto;
+}
+
+.feature-title h3 {
+  margin: 0;
+}
+
+/* Navigation */
+.toc {
+  background-color: var(--light-bg);
+  padding: 1.5em;
+  margin: 2em 0;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.toc h4 {
+  margin-top: 0;
+}
+
+.toc ul {
+  margin-bottom: 0;
+}
+
+/* FAQ styling */
+.faq-item {
+  margin-bottom: 1.5em;
+}
+
+.faq-question {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 0 15px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  table {
+    font-size: 0.9em;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    font-size: 12pt;
+    max-width: 100%;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  p, h2, h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .toc, .note, .warning, .tip {
+    page-break-inside: avoid;
+  }
+}
