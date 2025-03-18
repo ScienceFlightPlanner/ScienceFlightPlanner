@@ -69,8 +69,8 @@ You can choose from the following predefined tags:
 - **FLYBY**  
 - **RH180** – Right Hand 180°  
 - **RH270** – Right Hand 270°  
-- **LH-180** – Left Hand 180°  
-- **LH-270** – Left Hand 270°  
+- **LH180** – Left Hand 180°  
+- **LH270** – Left Hand 270°  
 
 Additionally, you can create a custom tag. **Note**: Custom tags must **not exceed 10 characters** in length.
 
