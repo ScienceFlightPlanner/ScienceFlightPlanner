@@ -1,10 +1,9 @@
 # User-manual
 
-The ScienceFlightPlanner Plugin helps in improving your workflow when planning scientific flight surveys.
+The ScienceFlightPlanner Plugin helps improve your workflow when planning scientific flight surveys.
 
-The plugin consists of 14 core features. 13 of them are represented with according buttons and one feature can be accessed via the selection box in the toolbar.
+In addition to this help manual, you can find <u>tutorial videos</u> for using our plugin on our YouTube channel [ScienceFlightPlanner](https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg).
 
-In addition to this help manual, you can find tutorial videos for using our plugin on our YouTube channel [ScienceFlightPlanner](https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg)
 
 ## Feature Overview
 
@@ -21,7 +20,7 @@ Reverse Waypoints | ![](resources/icons_for_dark_mode/icon_reverse.png)        |
 Show Coverage | Sensor selection box in toolbar                            | When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shapefile.                                                                    | Line 
 Compute Optimal Coverage Lines | ![](resources/icons_for_dark_mode/icon_coverage_lines.png) | Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.                                                                                                | Polygon 
 Cut flowline | ![](resources/icons_for_dark_mode/icon_cut_flowline.png)   | Cut a flowline out of a given flowline at the selected waypoints                                                                                                                                                               | Points
-Racetrack from Polygon | ![](resources/icons_for_dark_mode/icon_racetrack.png)      | Given a polygone, flight alttitude, max turning distance calculates optimal waypoints for a plane based on selected algorithm                                                                                                  | Polygon 
+Create Racetrack Pattern for Polygon | ![](resources/icons_for_dark_mode/icon_racetrack.png)      | Given a polygone, flight alttitude, max turning distance calculates optimal waypoints for a plane based on selected algorithm                                                                                                  | Polygon 
 Create a Topography Profile | ![](resources/icons_for_dark_mode/icon_topography.png)       | Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance. | Waypoint file 
 ## Detailed feature description
 
@@ -72,7 +71,11 @@ You can choose from the following predefined tags:
 - **LH180** – Left Hand 180°  
 - **LH270** – Left Hand 270°  
 
-Additionally, you can create a custom tag. **Note**: Custom tags must **not exceed 10 characters** in length.
+Additionally, you can create a custom tag. Please ensure that the custom tag adheres to the following restrictions; otherwise, it will not be added.
+ 
+**Restrictions for custom tags:**
+- May only consist of <u>capital letters (upper case)</u>, <u>whitespaces</u>, and the <u>backslash (/)</u> character.
+- Must not exceed 10 characters.
 
 After adding a tag, select the corresponding waypoint to see the tag displayed in the **status bar** at the bottom of the screen.  
 
@@ -134,7 +137,7 @@ The amount of overlap which is considered when creating the optimal flight lines
 Additionally, it is possible to use two different settings for the line computations. The default setting, which we strongly suggest to use, is called \"optimal\". In this case the lines are optimal w.r.t. the criteria described above. Choosing \"90° rotated\" means that the lines are 90° rotated from the optimal orientation. Therefore, they are no longer optimal but depending on the flight plan and use case this might still be useful.
 
 In order to use this feature for the first time it is necessary to set the CRS used for coverage computations in the plugin settings. The CRS should be compatible with the region of the QGIS project.
-### Convert Polygon to Racetrack
+### Create Racetrack Pattern for Polygon
 
 ![Topography Profile Icon](resources/icons_for_dark_mode/icon_racetrack.png) 
 
@@ -142,22 +145,29 @@ The Racetrack feature calculates optimal waypoints for a plane when the designat
 
 Key Features of Waypoints
 
-**Fly-over Tag:** Each waypoint is assigned a fly-over tag by default.  
+**FLYOVER Tag:** Each waypoint is assigned a FLYOVER tag by default.  
 **Unique IDs:** Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.  
+
+**Note that:**
+
+- the selected polygon layer must contain only one feature.
+- the projection of the polygon **MUST** be in the same projection as the map.
 
 The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:
 
-**Meander Algorithm**
+**- Meander Algorithm**
 
 The plane flies over `k` waypoints repeatedly until it reaches the end of the grid.  
 It then moves back by 1 waypoint.  
 The plane continues flying `k` waypoints in the opposite direction, repeating the process until the grid is fully covered.
 
-**Racetrack Algorithm**
+**- Racetrack Algorithm**
 
 The plane flies over the first `k` waypoints (determined by the maximum turning distance).  
 It then flies back over `k-1` waypoints, reversing direction.  
 This process repeats until the entire area is covered.
+
+If you prefer not to use any of the algorithms, simply set a very small max-turn-distance. The generated waypoints will then traverse the entire polygon in sequential order.
 
 **Suggested Naming for Output Files**
 
@@ -204,6 +214,11 @@ The plugin setting can be found under: \"Settings ▶ Options\... ▶ ScienceFli
 #### I\'ve activated the flight duration/distance display, how is it updated?
 
 When the flight duration/distance display is activated (indicated by a toggled button of the corresponding feature) the distance/duration is updated in accordance to the current layer/feature selection. This means that when for example changing the layer to a different line layer, the distance/duration is updated to match the new layer. If the layer contains multiple features, it is required to explicitly select one feature for which the distance/duration is to be shown. Similarly, as for a new layer selection, a new feature selection within the current layer results in an update of the distance/duration. When a layer of a geometry other than line is selected, the display is toggled until a layer of type line is selected again.
+
+#### I've created a racetrack for a polygon, but I don't see the way points
+
+If the selected polygon uses a different projection to the map, the generated waypoints will not be visible. 
+Make sure the projection is the same and generate a racetrack again.
 
 ## Acknowledgments
 
