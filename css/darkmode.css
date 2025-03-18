@@ -4,6 +4,7 @@
   --primary-color: #2a6496;
   --secondary-color: #4c8dbd;
   --accent-color: #e8f4ff;
+  --accent-highlight: #c9e2f6;
   --text-color: #333;
   --light-text: #666;
   --bg-color: #fff;
@@ -15,13 +16,18 @@
   --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
   --transition-speed: 0.3s;
   --border-radius: 5px;
+  --footer-bg: #0f233a;
+  --footer-text: rgba(255, 255, 255, 0.9);
+  --footer-link: #81a4cd;
+  --footer-border: rgba(76, 141, 189, 0.3);
 }
 
 /* Dark mode variables */
 body.dark-mode {
   --primary-color: #81a4cd; /* Lighter blue for headings in dark mode */
   --secondary-color: #3498db; /* Brighter blue for better contrast */
-  --accent-color: #e74c3c; /* Brighter red for better visibility */
+  --accent-color: #1a364d; /* Darker blue for highlighting in dark mode */
+  --accent-highlight: #204b6b; /* Darker blue highlight for dark mode */
   --text-color: #e0e0e0;
   --light-text: #aaaaaa;
   --bg-color: #121212;
@@ -31,6 +37,10 @@ body.dark-mode {
   --code-bg: #2d2d2d;
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+  --footer-bg: #0a1622;
+  --footer-text: rgba(255, 255, 255, 0.9);
+  --footer-link: #81a4cd;
+  --footer-border: rgba(76, 141, 189, 0.2);
 }
 
 /* Dark mode toggle styling */
@@ -138,7 +148,8 @@ body.dark-mode table {
 }
 
 body.dark-mode th {
-  background-color: var(--primary-color);
+  background-color: #1a3752;
+  color: white;
 }
 
 body.dark-mode tr:nth-child(even) {
@@ -146,7 +157,7 @@ body.dark-mode tr:nth-child(even) {
 }
 
 body.dark-mode tr:hover {
-  background-color: rgba(76, 141, 189, 0.2);
+  background-color: var(--accent-color);
 }
 
 body.dark-mode td {
@@ -158,11 +169,39 @@ body.dark-mode code {
   color: var(--text-color);
 }
 
-body.dark-mode .note,
-body.dark-mode .warning,
-body.dark-mode .tip {
-  background-color: var(--light-bg);
+/* FAQ questions in dark mode */
+body.dark-mode #faq h4 {
+  background-color: var(--accent-color);
+}
+
+body.dark-mode #faq h4:hover {
+  background-color: var(--accent-highlight);
+}
+
+/* Video container in dark mode */
+body.dark-mode .video-container {
+  border-color: var(--border-color);
+}
+
+body.dark-mode .video-container h4 {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Notes, warnings, tips in dark mode */
+body.dark-mode .note {
+  background-color: rgba(52, 152, 219, 0.1);
   border-left-color: var(--secondary-color);
+}
+
+body.dark-mode .warning {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left-color: #e74c3c;
+}
+
+body.dark-mode .tip {
+  background-color: rgba(46, 204, 113, 0.1);
+  border-left-color: #2ecc71;
 }
 
 /* Enhanced interaction elements for both light and dark mode */
@@ -174,25 +213,52 @@ a:hover, button:hover {
   transform: translateY(-2px);
 }
 
-.feature-item:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--primary-color);
+/* Footer in dark mode */
+body.dark-mode .site-footer {
+  background-color: var(--footer-bg);
 }
 
-.video-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+body.dark-mode .footer-column h3 {
+  color: white;
 }
 
-img:hover {
-  transform: scale(1.02);
-  box-shadow: var(--shadow-md);
+body.dark-mode .footer-column a {
+  color: var(--footer-link);
 }
 
-.note:hover, .warning:hover, .tip:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+body.dark-mode .footer-column a:hover {
+  color: white;
+}
+
+body.dark-mode .footer-bottom {
+  border-top-color: var(--footer-border);
+  color: var(--footer-text);
+}
+
+/* License sections in dark mode */
+body.dark-mode .license-info,
+body.dark-mode .component-license,
+body.dark-mode .copyright-section {
+  background-color: var(--light-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .license-icon {
+  color: var(--secondary-color);
+}
+
+/* Images in dark mode - improve visibility */
+body.dark-mode img {
+  filter: brightness(0.9);
+}
+
+/* Highlight counts in dark mode */
+body.dark-mode .highlight-count {
+  background-color: var(--secondary-color);
+}
+
+body.dark-mode .highlight-count:hover {
+  background-color: #5dade2;
 }
 
 /* Accessibility improvements */
