@@ -23,12 +23,18 @@
 </head>
 
 <body>
-    <h3>Convert Grid to Racetrack</h3>
+    <h3>Create Racetrack Pattern for Polygon</h3>
     <p><img src="{ICON_FOLDER_PATH}/icon_racetrack.png" alt="Racetrack Icon"></p>
     <p>
-        The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude. Note that the selected polygon layer must contain only one feature.
+        The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude.
     </p>
-
+    <p>
+        <strong>Note that:</strong>
+    </p>
+    <ul>
+        <li>the selected polygon layer must contain only one feature.</li>
+        <li>the projection of the polygon <strong>MUST</strong> be in the same projection as the map.</li>
+    </ul>
     <h4>Key Features of Waypoints</h4>
     <ul>
         <li><strong>FLYOVER Tag:</strong> Each waypoint is assigned a FLYOVER tag by default.</li>
@@ -49,6 +55,11 @@
         <li>It then flies back over <code>k-1</code> waypoints, reversing direction.</li>
         <li>This process repeats until the entire area is covered.</li>
     </ul>
+
+    <p>
+        If you prefer not to use any of the algorithms, simply set a very small max-turn-distance.
+        The generated waypoints will then traverse the entire polygon in sequential order.
+    </p>
 
     <h4>Suggested Naming for Output Files</h4>
     <p>
