@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScienceFlightPlanner User Manual</title>
-    <link rel="stylesheet" href="./css/manual-style.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/darkmode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="color-scheme" content="light dark">
 </head>
 
 <body>
@@ -431,11 +434,214 @@
         If the selected polygon uses a different projection to the map, the generated waypoints will not be visible. Make sure the projection is the same and generate a racetrack again.
     </p>
 
-    <footer>
+    <h2 id="license">License Information</h2>
+
+    <h3>Plugin License</h3>
+    <div class="license-info">
+        <div class="license-icon">
+            <i class="fas fa-file-contract"></i>
+        </div>
+        <div class="license-content">
+            <p>
+                The ScienceFlightPlanner QGIS plugin is licensed under the GNU General Public License v3.0 (GPL-3.0).
+            </p>
+        </div>
+    </div>
+
+    <h3>Third-Party Components</h3>
+    <div class="third-party">
         <p>
-            <u>Acknowledgments:</u> This plugin makes use of <a href="https://github.com/awi-response/garmin_fpl" target="_blank">garmin_fpl</a>: Rettelbach, T., Döpper, V., & Nitze, I. (2024). garmin_fpl: Creation and conversion scripts for Garmin flightplans for scientific flight campaigns [Computer software].
+            The plugin includes:
         </p>
+        <div class="component-license">
+            <h4><strong>garmin_fpl</strong> by Rettelbach, Döpper & Nitze:</h4>
+            <ul>
+                <li>Creation and conversion scripts for Garmin flightplans for scientific flight campaigns</li>
+                <li>Licensed under the MIT License</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Copyright</h3>
+    <div class="copyright-section">
+        <p>© 2020-2025</p>
+        <p>Abraham Wondimu, Anna Menshikova, Maxim Poliakov, Simon Povh</p>
+        <p>Leon Krüger, Lars Reining, Jonas Schröter, Moritz Vogel, Hannah Willkomm</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ScienceFlightPlanner</h3>
+                    <p>QGIS plugin for planning scientific flight surveys with precision and ease</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#distance">Flightplan Tools</a></li>
+                        <li><a href="#wp_tag">WPT Labeling Tool</a></li>
+                        <li><a href="#coverage">Coverage Tool</a></li>
+                        <li><a href="#racetrack_polygon">Racetrack Tool</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources & Support</h3>
+                    <ul>
+                        <li><a href="https://plugins.qgis.org/plugins/science_flight_planner/#plugin-details" target="_blank">QGIS Plugin Website</a></li>
+                        <li><a href="https://github.com/ScienceFlightPlanner" target="_blank">GitHub Repository</a></li>
+                        <li><a href="https://github.com/ScienceFlightPlanner/ScienceFlightPlanner/issues" target="_blank">Issue Tracker</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2020-2025 ScienceFlightPlanner Team. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
+
+    <!-- Additional styles for enhanced interactivity -->
+    <style>
+        /* Site footer styling */
+        .site-footer {
+            background-color: #0a1622;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-column h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.25rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-column a::after {
+            background: white;
+            height: 1px;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 1rem 20px 0;
+        }
+
+        /* License section styling */
+        .license-info, .component-license, .copyright-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .license-info:hover, .component-license:hover, .copyright-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .license-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .license-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-right: 1.5rem;
+        }
+
+        .license-content p {
+            margin: 0;
+        }
+
+        .component-license h4 {
+            margin-top: 0;
+        }
+
+        .component-license ul {
+            margin-bottom: 0;
+        }
+
+        .copyright-section {
+            text-align: center;
+        }
+
+        .copyright-section p {
+            text-align: center;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .license-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .license-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+
+    <script src="css/darkmode.js"></script>
 </body>
 
 </html>

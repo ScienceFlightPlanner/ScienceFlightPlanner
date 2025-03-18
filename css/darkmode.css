@@ -1,0 +1,210 @@
+/* Dark mode variables and theme switching */
+:root {
+  /* Light mode (default) */
+  --primary-color: #2a6496;
+  --secondary-color: #4c8dbd;
+  --accent-color: #e8f4ff;
+  --text-color: #333;
+  --light-text: #666;
+  --bg-color: #fff;
+  --light-bg: #f8f9fa;
+  --card-bg: #fcfcfc;
+  --border-color: #ddd;
+  --code-bg: #f5f5f5;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --transition-speed: 0.3s;
+  --border-radius: 5px;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+  --primary-color: #81a4cd; /* Lighter blue for headings in dark mode */
+  --secondary-color: #3498db; /* Brighter blue for better contrast */
+  --accent-color: #e74c3c; /* Brighter red for better visibility */
+  --text-color: #e0e0e0;
+  --light-text: #aaaaaa;
+  --bg-color: #121212;
+  --light-bg: #1e1e1e;
+  --card-bg: #2a2a2a;
+  --border-color: #444;
+  --code-bg: #2d2d2d;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Dark mode toggle styling */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: var(--card-bg);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  border: 1px solid var(--border-color);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.theme-toggle i {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  transition: color var(--transition-speed);
+}
+
+/* Back to top button */
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s, background-color 0.3s, transform 0.3s;
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-5px);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Dark mode specific overrides for better readability */
+body.dark-mode {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: var(--primary-color);
+}
+
+body.dark-mode a {
+  color: #5dade2;
+}
+
+body.dark-mode a:hover {
+  color: #f1948a;
+}
+
+body.dark-mode .plugin-intro {
+  background-color: var(--light-bg);
+  border-left-color: var(--secondary-color);
+}
+
+body.dark-mode table {
+  border-color: var(--border-color);
+}
+
+body.dark-mode th {
+  background-color: var(--primary-color);
+}
+
+body.dark-mode tr:nth-child(even) {
+  background-color: var(--light-bg);
+}
+
+body.dark-mode tr:hover {
+  background-color: rgba(76, 141, 189, 0.2);
+}
+
+body.dark-mode td {
+  border-color: var(--border-color);
+}
+
+body.dark-mode code {
+  background-color: var(--code-bg);
+  color: var(--text-color);
+}
+
+body.dark-mode .note,
+body.dark-mode .warning,
+body.dark-mode .tip {
+  background-color: var(--light-bg);
+  border-left-color: var(--secondary-color);
+}
+
+/* Enhanced interaction elements for both light and dark mode */
+a, button, .feature-item, .video-container, img, .note, .warning, .tip {
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+a:hover, button:hover {
+  transform: translateY(-2px);
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.video-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+img:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+.note:hover, .warning:hover, .tip:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Accessibility improvements */
+a:focus, button:focus, .theme-toggle:focus, .back-to-top:focus {
+  outline: 3px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
