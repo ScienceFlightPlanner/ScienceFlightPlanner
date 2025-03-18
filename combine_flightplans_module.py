@@ -17,7 +17,8 @@ from qgis.gui import QgisInterface
 from .constants import (
     DEFAULT_PUSH_MESSAGE_DURATION,
     QGIS_FIELD_NAME_ID,
-    QGIS_FIELD_NAME_TAG
+    QGIS_FIELD_NAME_TAG,
+    DEFAULT_TAG
 )
 from .utils import LayerUtils, layer_has_field
 
@@ -174,9 +175,14 @@ class CombineFlightplansModule:
         )
 
         for i, merged_waypoint in enumerate(merged_features):
+            tag = (
+                DEFAULT_TAG
+                if merged_waypoint.fields().indexFromName(QGIS_FIELD_NAME_TAG) == -1
+                else merged_waypoint.attribute(QGIS_FIELD_NAME_TAG)
+            )
             feature = QgsFeature()
             feature.setGeometry(merged_waypoint.geometry())
-            feature.setAttributes([i + 1, merged_waypoint.attribute(QGIS_FIELD_NAME_TAG)])
+            feature.setAttributes([i + 1, tag])
             writer.addFeature(feature)
 
         layer = self.iface.addVectorLayer(file_path, "", "ogr")
