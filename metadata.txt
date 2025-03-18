@@ -17,7 +17,7 @@ changelog=
 
 tags=python, flight, planning
 
-homepage=https://github.com/ScienceFlightPlanner/ScienceFlightPlanner
+homepage=https://scienceflightplanner.github.io/ScienceFlightPlanner
 icon=icon.png
 experimental=False
 deprecated=False
