@@ -11,6 +11,7 @@ repository=https://github.com/ScienceFlightPlanner/ScienceFlightPlanner
 
 category=Plugins
 changelog=
+    2.0.1 - Minor fixes in manual and waypoint tag feature
     2.0.0 - Add 6 new features
     1.0.1 - Add support for Python versions down to 3.5
 
