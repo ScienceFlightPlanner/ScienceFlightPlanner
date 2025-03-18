@@ -315,7 +315,6 @@ class HelpManualModule:
                 action.setToolTip(COMPLETE_MANUAL_NAME)
                 # assure that complete manual action is the first action in the help widget
                 self.actions.insert(0, action)
-            print(action.toolTip())
 
 
 def create_text_widget(html_str: str = "") -> QWidget:
