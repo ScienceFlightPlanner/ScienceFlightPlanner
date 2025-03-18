@@ -1,10 +1,19 @@
 import codecs
 import os
-from qgis.core import QgsSettings
 
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QApplication
+
+def is_dark_mode():
+    app = QApplication.instance()
+    if not app:
+        return False  # Default to light mode if no QApplication is running
+    palette = app.palette()
+    return palette.color(QPalette.Window).lightness() < 128  # Dark mode if lightness < 128
 
 def get_icon_directory_path():
-    if QgsSettings().value("UI/UITheme", "default") == "Night Mapping":
+    # I didn't use QgsSettings().value("UI/UITheme", "default") here because there is no way to check for light mode
+    if is_dark_mode():
         return os.path.join(":resources", "icons_for_dark_mode")
     else:
         return os.path.join(":resources", "icons_for_light_mode")
