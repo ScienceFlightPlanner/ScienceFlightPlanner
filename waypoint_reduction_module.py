@@ -4,7 +4,6 @@ from qgis.core import (
     Qgis,
     QgsExpressionContextUtils,
     QgsFeature,
-    QgsField,
     QgsMapLayer,
     QgsPalLayerSettings,
     QgsPointXY,
@@ -16,8 +15,12 @@ from qgis.core import (
 )
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QMessageBox
 
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    QGIS_FIELD_NAME_SIG,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 from .utils import LayerUtils, show_checkable_info_message_box
 
 
@@ -56,7 +59,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "There are no features in the currently selected layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -64,13 +67,16 @@ class WaypointReductionModule:
         # notify user if no changes cannot be made due to missing feature selection
         if len(selected_features) == 0:
             settings_name = "show_selection_info"
-            txt = 'No features were marked significant! \n\nThere are no features selected in the currently selected layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CRTL\" key (on Mac: \"Command\" key) and click on the features you want to select.\n\n'
+            txt = ('No features were marked significant! \n\nThere are no features selected in the currently selected '
+                   'layer: \n\nSelection Tools for Features are available \n\n1) in the QGIS "Selection Toolbar"\n2) '
+                   'via "Edit ▶ Select. \n\n To select multiple points, press and hold the \"CTRL\" key (on Mac: '
+                   '\"Command\" key) and click on the features you want to select.\n\n')
 
             if not show_checkable_info_message_box(settings_name, txt, QgsProject.instance()):
                 self.iface.messageBar().pushMessage(
                     "No features selected in currently selected layer. Please select one/multiple features.",
                     level=Qgis.Info,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
             return
 
@@ -84,7 +90,7 @@ class WaypointReductionModule:
             self.iface.messageBar().pushMessage(
                 "Please select layer where all features are of single geometry type.",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
 
@@ -113,7 +119,7 @@ class WaypointReductionModule:
             self.add_sig_filtering_label(selected_layer)
 
     def generate_significant_waypoints_shp_file_action(self) -> None:
-        """Generates a SHP-file that contains a reduced number waypoints of the selected SHP-File containing the
+        """Generates an SHP-file that contains a reduced number waypoints of the selected SHP-File containing the
         waypoints and a significance highlighting"""
         # retrieve selected Layer and check for validity
         selected_layer = self.layer_utils.get_valid_selected_layer(
@@ -126,12 +132,15 @@ class WaypointReductionModule:
         if not waypoints:
             return
 
-        path_of_line = selected_layer.dataProvider().dataSourceUri()
-
+        current_layer_path = selected_layer.dataProvider().dataSourceUri()
         # generate shp-file
-        layer = self.layer_utils.generate_shp_file(
-            path_of_line, "_reduced", waypoints, waypoint_ids, selected_layer.crs()
+        writer_layer_tuple = self.layer_utils.generate_shp_file(
+            current_layer_path, "_reduced", waypoints, waypoint_ids, selected_layer.crs()
         )
+        if writer_layer_tuple is None:
+            return
+
+        _, layer = writer_layer_tuple
 
         if not layer:
             return
@@ -140,17 +149,15 @@ class WaypointReductionModule:
         )
         layer.reload()
         # create labeling for new layer
-        field_name = self.layer_utils.get_id_field_name()
-        self.label_layer_features(layer, field_name)
+        self.label_layer_features(layer, QGIS_FIELD_NAME_ID)
 
     def _enforce_valid_significance_filtering_field(
         self, layer: QgsMapLayer
     ) -> Tuple[bool, bool]:
         """ensure that layer has a valid significance field; if enforcing validity not possible print message"""
         # get index for field with significance filtering
-        field_name = self.get_field_name_for_significance_filtering()
         fields = layer.fields()
-        index = fields.indexFromName(field_name)
+        index = fields.indexFromName(QGIS_FIELD_NAME_SIG)
         valid = True
 
         # if field exists in layer check for validity
@@ -158,17 +165,21 @@ class WaypointReductionModule:
             valid = self._check_significance_field(layer)
             # prompt user to delete field if not valid
             if not valid:
-                deleted = self._delete_field_from_layer_action(layer, field_name)
+                deleted = self.layer_utils.delete_field_from_layer(
+                    layer,
+                    QGIS_FIELD_NAME_SIG,
+                    f"If '{QGIS_FIELD_NAME_SIG}' is not deleted,\nselected points cannot be highlighted."
+                )
                 if not deleted:
                     self.iface.messageBar().pushMessage(
                         "Features could not be highlighted since field for significance filtering is invalid but could "
                         "not be deleted from layer",
                         level=Qgis.Warning,
-                        duration=4,
+                        duration=DEFAULT_PUSH_MESSAGE_DURATION,
                     )
                     return valid, False
                 fields = layer.fields()
-                index = fields.indexFromName(field_name)
+                index = fields.indexFromName(QGIS_FIELD_NAME_SIG)
                 layer.updateExtents()
                 layer.reload()
 
@@ -176,12 +187,18 @@ class WaypointReductionModule:
         # if user selects 'yes' field is added to currently selected layer
         if index < 0:
             valid = False
-            added = self._add_field_to_layer_action(layer, field_name, QVariant.Bool)
+            added = self.layer_utils.add_field_to_layer(
+                layer,
+                QGIS_FIELD_NAME_SIG,
+                QVariant.Bool,
+                None,
+                f"If '{QGIS_FIELD_NAME_SIG}' is not added ,\nselected Points cannot be highlighted."
+            )
             if not added:
                 self.iface.messageBar().pushMessage(
-                    f"Features could not be highlighted since field {field_name} could not be added to layer",
+                    f"Features could not be highlighted since field {QGIS_FIELD_NAME_SIG} could not be added to layer",
                     level=Qgis.Warning,
-                    duration=4,
+                    duration=DEFAULT_PUSH_MESSAGE_DURATION,
                 )
                 return valid, False
             layer.updateExtents()
@@ -197,15 +214,14 @@ class WaypointReductionModule:
     ) -> Dict[bool, List[int]]:
         """Highlight Features as insignificant/significant. Assumes that field for significance filtering exists in
         selected layer"""
-        field_name = self.get_field_name_for_significance_filtering()
-        index = layer.fields().indexFromName(field_name)
+        index = layer.fields().indexFromName(QGIS_FIELD_NAME_SIG)
         new_significance_dic = {True: [], False: []}
         # set field used for significance filtering to being editable
-        self.set_read_only_config_for_field(layer, field_name, False)
+        self.set_read_only_config_for_field(layer, QGIS_FIELD_NAME_SIG, False)
         layer.startEditing()
         layer.beginEditCommand("Highlight Waypoints")
         for feature in features:
-            attr = feature[field_name]
+            attr = feature[QGIS_FIELD_NAME_SIG]
             # check if attribute value has not been set if so set to False
             if type(attr) is QVariant and attr.isNull():
                 attr = False
@@ -213,65 +229,17 @@ class WaypointReductionModule:
             if feature in selected_features:
                 attr = not attr
                 new_significance_dic[attr].append(
-                    feature[self.layer_utils.get_id_field_name()]
+                    feature[QGIS_FIELD_NAME_ID]
                 )
             layer.changeAttributeValue(feature.id(), index, attr)
         # set field used for significance filtering to not being editable
-        self.set_read_only_config_for_field(layer, field_name, True)
+        self.set_read_only_config_for_field(layer, QGIS_FIELD_NAME_SIG, True)
         # update layer and commit changes
         layer.endEditCommand()
         layer.updateExtents()
         layer.commitChanges()
         layer.reload()
         return new_significance_dic
-
-    def _delete_field_from_layer_action(
-        self, layer: QgsMapLayer, field_name: str
-    ) -> bool:
-        """Deletes field of specified type from given layer depending on user prompt"""
-        fields = layer.fields()
-        index = fields.indexFromName(field_name)
-        if index < 0:
-            return False
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Delete field {field_name} from layer {layer.name()}?",
-            f"Delete field '{field_name}' from layer {layer.name()}?\n\n"
-            f"If '{field_name}' is not deleted,\nselected points cannot be "
-            f"highlighted.",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply:
-            deleted = layer.dataProvider().deleteAttributes([index])
-            if deleted:
-                layer.updateFields()
-            return deleted
-        else:
-            return False
-
-    def _add_field_to_layer_action(
-        self, layer: QgsMapLayer, field_name: str, field_type: QVariant
-    ) -> bool:
-        """Adds field of specified type to given layer depending on user prompt"""
-        # prompt user
-        reply = QMessageBox.question(
-            self.iface.mainWindow(),
-            f"Add Field {field_name} to Layer {layer.name()}?",
-            f"Add Field '{field_name}' to Layer {layer.name()}?\n\n"
-            f"If '{field_name}' is not added ,\nselected Points cannot be highlighted.",
-            QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.Yes:
-            # add field to layer
-            new_field = QgsField(field_name, field_type)
-            added = layer.dataProvider().addAttributes([new_field])
-            if added:
-                layer.updateFields()
-            return added
-        else:
-            return False
 
     def set_read_only_config_for_field(
         self, layer: QgsMapLayer, field_name: str, read_only: bool
@@ -289,36 +257,30 @@ class WaypointReductionModule:
         """Retrieves the Reduced Waypoints of a PointGeometry as marked by the corresponding field, if currently
         selected layer does not contain the field used for significance filtering a warning is printed and an empty
         list returned"""
-        field_name_sig = self.get_field_name_for_significance_filtering()
-        field_name_id = self.layer_utils.get_id_field_name()
         fields = layer.fields()
         # selected layer does not have attribute used for significance filtering
-        if fields.indexFromName(field_name_sig) < 0:
+        if fields.indexFromName(QGIS_FIELD_NAME_SIG) < 0:
             self.iface.messageBar().pushMessage(
                 "Please select a vector layer compatible for significance filtering",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return [], []
         # reduce waypoints
         features = list(layer.getFeatures())
-        reduced_features = [feature for feature in features if feature[field_name_sig]]
+        reduced_features = [feature for feature in features if feature[QGIS_FIELD_NAME_SIG]]
         waypoints = [feature.geometry().asPoint() for feature in reduced_features]
-        waypoint_ids = [feature[field_name_id] for feature in reduced_features]
+        waypoint_ids = [feature[QGIS_FIELD_NAME_ID] for feature in reduced_features]
 
         if len(waypoints) == 0:
             self.iface.messageBar().pushMessage(
                 "Layer does not have any waypoints marked as significant",
                 level=Qgis.Warning,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return [], []
 
         return waypoints, waypoint_ids
-
-    def get_field_name_for_significance_filtering(self) -> str:
-        """Getter for field name used for significance filtering"""
-        return "sig"
 
     def add_sig_filtering_label(self, layer: QgsMapLayer) -> None:
         """add labeling expression from layer used for significance filtering"""
@@ -337,9 +299,7 @@ class WaypointReductionModule:
             if expr not in field_name and layer.labelsEnabled():
                 expr = f"{expr}||{field_name}"
 
-        field_name = self.get_field_name_for_significance_filtering()
-
-        self.label_layer_features(layer, field_name, expr)
+        self.label_layer_features(layer, QGIS_FIELD_NAME_SIG, expr)
 
     def label_layer_features(
         self,
@@ -347,7 +307,7 @@ class WaypointReductionModule:
         field_name: str,
         expression: Union[str, None] = None,
     ) -> None:
-        "label layer according to a new specified labeling expression"
+        """label layer according to a new specified labeling expression"""
 
         is_expression = expression is not None
         label_expression = expression if is_expression else f"{field_name}"
@@ -365,8 +325,11 @@ class WaypointReductionModule:
             try:
                 layer_settings.placement = 1
             except (NameError, TypeError):
-                layer_settings.placement = QgsPalLayerSettings.OverPoint
-                layer_settings.offsetType = QgsPalLayerSettings.FromPoint
+                try:
+                    layer_settings.placement = QgsPalLayerSettings.OverPoint
+                    layer_settings.offsetType = QgsPalLayerSettings.FromPoint
+                except (NameError, TypeError):
+                    layer_settings.placement = Qgis.LabelPlacement.OverPoint # for QGIS v >= 3.26
 
             # buffer
             buffer_settings = QgsTextBufferSettings()
@@ -407,8 +370,7 @@ class WaypointReductionModule:
 
         layer_fields = layer.fields()
         layer_field_names = list(map(lambda field: field.name(), layer_fields))
-        sig_field_name = self.get_field_name_for_significance_filtering()
-        if sig_field_name not in layer_field_names:
+        if QGIS_FIELD_NAME_SIG not in layer_field_names:
             return False
         return self._check_significance_field(layer)
 
@@ -476,13 +438,12 @@ class WaypointReductionModule:
 
     def _check_significance_field(self, layer: QgsMapLayer) -> bool:
         """check whether field for significance filtering is valid"""
-        field_name = self.get_field_name_for_significance_filtering()
         fields = layer.fields()
-        index = fields.indexFromName(field_name)
+        index = fields.indexFromName(QGIS_FIELD_NAME_SIG)
         field = fields.at(index)
         if field.type() != QVariant.Int:
             return False
-        attrs = [feature[field_name] for feature in layer.getFeatures()]
+        attrs = [feature[QGIS_FIELD_NAME_SIG] for feature in layer.getFeatures()]
         invalid_attrs = [
             attr for attr in attrs if attr not in [None, 0, 1, True, False]
         ]

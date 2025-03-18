@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Show Coverage</title>
+    <style>
+        p {
+            line-height: 1.4;
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        h3 {
+            text-align: justify;
+            margin: 20px 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Show Coverage</h3>
+    <p>
+        When a line layer is selected (see FAQ) and a sensor in the sensor selection box of the plugin toolbar is
+        selected, a new shp-file will be created containing the area which is covered by the flight plan in the layer
+        for a specific flight altitude and the selected sensor.
+    </p>
+    <p>
+        Given a coverage shp-file has been created for the current flight plan and sensor, changing the flight altitude
+        or the sensor settings results in an update of the corresponding coverage shp-file.
+        The flight altitude can be changed in the flight altitude SpinBox in the plugin's toolbar.
+        Sensors can be added, deleted or changed in the plugin settings (see FAQ).
+    </p>
+    <p>
+        Before this feature can be used, it is necessary to set the CRS used for coverage computations in the plugin
+        settings. The CRS should be compatible with the region of the QGIS project.
+    </p>
+</body>
+
+</html>

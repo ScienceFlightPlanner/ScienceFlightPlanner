@@ -1,6 +1,7 @@
 from qgis.core import (
     Qgis,
     QgsGeometry,
+    QgsVectorLayer,
     QgsMapLayer,
     QgsProject,
     QgsVectorLayerUtils,
@@ -9,6 +10,10 @@ from qgis.core import (
 from qgis.gui import QgisInterface
 from qgis.PyQt.QtWidgets import QMessageBox
 
+from .constants import (
+    QGIS_FIELD_NAME_ID,
+    DEFAULT_PUSH_MESSAGE_DURATION
+)
 from .utils import LayerUtils
 
 
@@ -35,7 +40,7 @@ class WaypointReversalModule:
         # sort features permanently according to reversal order
         if is_reserved:
             self._sort_layer_by_field_permanently(
-                selected_layer, self.layer_utils.get_id_field_name()
+                selected_layer, QGIS_FIELD_NAME_ID
             )
             QMessageBox.information(
                 self.iface.mainWindow(),
@@ -54,7 +59,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There are no Features in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return False
         if (
@@ -64,7 +69,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There is only one Point Feature in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return False
         (
@@ -100,7 +105,8 @@ class WaypointReversalModule:
         return True
 
     def _reverse_geometry(self, geom: QgsGeometry) -> QgsGeometry:
-        """Reverses the ordering of point of a given geometry assuming given type is either PointGeometry or LineGeometry"""
+        """Reverses the ordering of point of a given geometry assuming given type is either PointGeometry or
+        LineGeometry"""
         single_type = QgsWkbTypes.isSingleType(geom.wkbType())
         # handle single type geometry
         if single_type:
@@ -114,7 +120,7 @@ class WaypointReversalModule:
         # handle multi type geometry
         else:
             if geom.type() == QgsWkbTypes.GeometryType.PointGeometry:
-                # reverse mulit point
+                # reverse multi point
                 reversed_multi_point = geom.asMultiPoint()[::-1]
                 return QgsGeometry.fromMultiPointXY(reversed_multi_point)
             else:
@@ -125,7 +131,7 @@ class WaypointReversalModule:
                 return QgsGeometry.fromMultiPolylineXY(reversed_multi_polyline)
 
     def _sort_layer_by_field_permanently(
-        self, layer: QgsMapLayer, field_name: str
+        self, layer: QgsVectorLayer, field_name: str
     ) -> None:
         """Sort currently selected layer by given field in ascending order permanently"""
         project = QgsProject.instance()
@@ -137,7 +143,7 @@ class WaypointReversalModule:
             self.iface.messageBar().pushMessage(
                 "There are no Features in the currently selected Layer",
                 level=Qgis.Info,
-                duration=4,
+                duration=DEFAULT_PUSH_MESSAGE_DURATION,
             )
             return
         for feature in features:

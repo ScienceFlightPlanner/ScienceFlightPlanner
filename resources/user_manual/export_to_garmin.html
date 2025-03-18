@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Export to Garmin</title>
+    <style>
+        p {
+            line-height: 1.4;
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        h3 {
+            text-align: justify;
+            margin: 20px 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Export to Garmin</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_export.png"></p>
+    <p>
+        When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750Xi.
+    </p>
+    <p>
+        After pressing the button,  the selected .wpt file will be transformed into two files of following format:
+        <ul>
+        <li>example_user.wpt  (MUST be named _user.wpt  for import) </li>
+        <li>example_gfp.gfp</li>
+        </ul>
+    </p>
+    <p>
+        Hint: To avoid the GTN750Xi system assigning a generic ID to the waypoint coordinates, import the user.wpt file first and then import the .gfp file.
+    </p>
+</body>
+
+</html>

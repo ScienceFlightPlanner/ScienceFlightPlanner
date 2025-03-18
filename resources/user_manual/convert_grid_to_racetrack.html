@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Convert Grid to Racetrack</title>
+    <style>
+        p {
+            line-height: 1.4;
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        h3, h4 {
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        ul {
+            margin: 20px 70px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Convert Grid to Racetrack</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_racetrack.png" alt="Racetrack Icon"></p>
+    <p>
+        The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude. Note that the selected polygon layer must contain only one feature.
+    </p>
+
+    <h4>Key Features of Waypoints</h4>
+    <ul>
+        <li><strong>FLYOVER Tag:</strong> Each waypoint is assigned a FLYOVER tag by default.</li>
+        <li><strong>Unique IDs:</strong> Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.</li>
+    </ul>
+    <p>The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:</p>
+
+    <h4>Meander</h4>
+    <ul>
+        <li>The plane flies over <code>k</code> waypoints repeatedly until it reaches the end of the grid.</li>
+        <li>It then moves back by 1 waypoint.</li>
+        <li>The plane continues flying <code>k</code> waypoints in the opposite direction, repeating the process until the grid is fully covered.</li>
+    </ul>
+
+    <h4>Racetrack</h4>
+    <ul>
+        <li>The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).</li>
+        <li>It then flies back over <code>k-1</code> waypoints, reversing direction.</li>
+        <li>This process repeats until the entire area is covered.</li>
+    </ul>
+
+    <h4>Suggested Naming for Output Files</h4>
+    <p>
+        The generated output files include the maximum turning distance in their filenames to make them easily identifiable.
+    </p>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create Topography Profile</title>
+    <style>
+        p {
+            line-height: 1.4;
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        h3 {
+            text-align: justify;
+            margin: 20px 50px;
+        }
+
+        ul {
+            margin: 20px 70px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Create Topography Profile</h3>
+    <p><img src="{ICON_FOLDER_PATH}/icon_topography.png" alt="Topography Profile Icon"></p>
+    <p>
+        Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance.
+    </p>
+    <p>
+        <strong>Graph Generation</strong><br>
+        When a waypoint layer is selected and the topography button is pressed, select a DEM file. The feature will then generate a graph in a dock window. The top of this window shows the waypoint numbers, which correspond directly to the points on the selected flight path.
+    </p>
+    <p>
+        <strong>Graph Interaction and Navigation</strong><br>
+        The dock window provides several interactive actions with the graph:
+    </p>
+    <ul>
+        <li><strong>Zoom In:</strong> Increase the magnification to view a detailed section of the graph.</li>
+        <li><strong>Zoom Out:</strong> Decrease the magnification to obtain a broader overview.</li>
+        <li><strong>Full Zoom Out:</strong> Use the button located in the bottom left corner to reset the view and display the complete topography profile.</li>
+        <li><strong>Drag Graph:</strong> Click and hold to drag the graph, enabling you to navigate to different sections of the elevation profile.</li>
+        <li><strong>Show Waypoints:</strong> Use the button in the bottom left corner to display vertical lines that indicate each waypoint on the graph.</li>
+
+    </ul>
+    <p>
+        <strong>Critical Zones Indicator</strong><br>
+        The profile graph visually highlights critical zones in red - areas where the climb rate needed to maintain the current altitude above the terrain exceeds the aircraft's available climb rate. The critical zones can be seen ob both the graph and the layer. An aircraft's <strong>climb rate</strong> can be entered in the 'Maximum climb rate in feet/min' field in the toolbar.
+    </p>
+</body>
+
+</html>
