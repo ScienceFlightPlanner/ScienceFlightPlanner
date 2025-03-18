@@ -45,49 +45,49 @@
             <th>Applicable to layer geometry</th>
         </tr>
         <tr>
-            <td><a href=#distance> Display Flight Distance</a></td>
+            <td><a href=#distance>Display Flight Distance</a></td>
             <td><img src="./images/icon_distance.png"></td>
             <td>Shows the length (km) of the current flight plan.</td>
             <td>Line</td>
         </tr>
         <tr>
-            <td> <a href=#duration> Display Flight Duration</a></td>
+            <td><a href=#duration>Display Flight Duration</a></td>
             <td><img src="./images/icon_duration.png"></td>
             <td>Shows the expected flight duration (h) of the current flight plan.</td>
             <td>Line</td>
         </tr>
         <tr>
-            <td><a href=#wp_gen> Generate Waypoints for Flight Plan</a></td>
+            <td><a href=#wp_gen>Generate Waypoints for Flight Plan</a></td>
             <td><img src="./images/icon_file.png"></td>
             <td>Generates a new shp-file which contains all waypoints (numbered from 1 to n) of the current flight plan.</td>
             <td>Line</td>
         </tr>
         <tr>
-            <td><a href=#combine> Combine Flightplans</a></td>
+            <td><a href=#combine>Combine Flightplans</a></td>
             <td><img src="./images/icon_combine.png"></td>
             <td>Combines 2 flight plans based on the selected way point in each flight plan.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#wp_gen>Export in Garmin GTN750Xi Format</a></td>
+            <td><a href=#export>Export in Garmin GTN750Xi Format</a></td>
             <td><img src="./images/icon_export.png"></td>
             <td>Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#export>Add tag to selected waypoints</a></td>
+            <td><a href=#wp_tag>Add Tag to Selected Waypoints</a></td>
             <td><img src="./images/icon_tag.png"></td>
             <td>Adds a tag to the selected waypoints of the current flight plan.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#mark_sig>Mark selected Waypoints as Significant</a></td>
+            <td><a href=#mark_sig>Mark Selected Waypoints as Significant</a></td>
             <td><img src="./images/icon_highlight.png"></td>
             <td>Marks the selected waypoints of the current flight plan as significant.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#sig_wp_gen>Generate reduced Flight Plan from significant Waypoints</a></td>
+            <td><a href=#sig_wp_gen>Generate Reduced Flight Plan from Significant Waypoints</a></td>
             <td><img src="./images/icon_labels.png"></td>
             <td>Extracts waypoints of currently selected waypoints that were previously marked as significant to a new shapefile.</td>
             <td>Points</td>
@@ -99,25 +99,25 @@
             <td>Line, Points</td>
         </tr>
         <tr>
-            <td><a href=#coverage> Show Coverage </a></td>
+            <td><a href=#coverage>Show Coverage</a></td>
             <td>Sensor selection box in toolbar</td>
             <td>When a specific sensor is chosen, the current flight plan's coverage for this specific sensor and flight altitude is computed and saved to a new shp-file.</td>
             <td>Line</td>
         </tr>
         <tr>
-            <td><a href=#coverage_lines> Compute optimal Coverage Lines </a></td>
+            <td><a href=#coverage_lines>Compute Optimal Coverage Lines</a></td>
             <td><img src="./images/icon_coverage_lines.png"></td>
             <td>Given a sensor and an area of interest are selected, optimal flight lines are computed which coverage covers the selected area.</td>
             <td>Polygon</td>
         </tr>
         <tr>
-            <td><a href="#cut_flowline">Cut flowline</a></td>
+            <td><a href="#cut_flowline">Cut Flowline</a></td>
             <td><img src="./images/icon_cut_flowline.png"></td>
             <td>Given flowline a new flowline will be cut off at the selected waypoints and saved in a new layer.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href="#racetrack_polygon">Racetrack from Polygon</a></td>
+            <td><a href="#racetrack_polygon">Create Racetrack Pattern for Polygon</a></td>
             <td><img src="./images/icon_racetrack.png"></td>
             <td>Given a polygon, flight altitude, and max turning distance, calculates optimal waypoints for a plane based on the selected algorithm.</td>
             <td>Polygon</td>
@@ -125,7 +125,7 @@
         <tr>
             <td><a href="#create_topography_profile">Create Topography Profile</a></td>
             <td><img src="./images/icon_topography.png"></td>
-            <td>Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance. </td>
+            <td>Given a wpt layer, a digital elevation model (.tif), and a maximum climb rate of a plane, it generates a topography profile that highlights zones where the required climb rate exceeds the aircraft's performance.</td>
             <td>Points</td>
         </tr>
     </table>
@@ -133,7 +133,7 @@
     <h2>Detailed Feature Description</h2>
 
     <h3 id="distance">Display Flight Distance</h3>
-    <p> <img src="./images/icon_distance.png"> </p>
+    <p><img src="./images/icon_distance.png"></p>
     <p>
         When the above button is pressed and a line layer is selected <a href=#faq>(FAQ)</a>, then the length (km) of
         the flight plan in this layer is shown. While activated, the display of the flight distance updates in
@@ -172,25 +172,21 @@
         This feature allows you to combine two separate flight plans into one continuous flight plan.
         To use this feature:
     </p>
-    <p>
-        <ol>
-            <li>Select exactly two coordinate points from two different point layers</li>
-            <li>Press the Combine Flightplans button</li>
-            <li>Choose which flight plan should be the starting point (waypoint 1)</li>
-            <li>A new layer will be created containing the combined flightplan</li>
-        </ol>
-    </p>
+    <ol>
+        <li>Select exactly two coordinate points from two different point layers</li>
+        <li>Press the Combine Flightplans button</li>
+        <li>Choose which flight plan should be the starting point (waypoint 1)</li>
+        <li>A new layer will be created containing the combined flightplan</li>
+    </ol>
     <p>
         <strong>Important Requirements:</strong>
     </p>
-    <p>
-        <ul>
-            <li>Both layers must have the same Coordinate Reference System (CRS)</li>
-            <li>Both layers must be point geometry layers</li>
-            <li>Both layers must have an "id" field with all features having a unique ID value</li>
-            <li>You must select exactly one point from each layer to serve as the connection points</li>
-        </ul>
-    </p>
+    <ul>
+        <li>Both layers must have the same Coordinate Reference System (CRS)</li>
+        <li>Both layers must be point geometry layers</li>
+        <li>Both layers must have an "id" field with all features having a unique ID value</li>
+        <li>You must select exactly one point from each layer to serve as the connection points</li>
+    </ul>
     <p>
         The resulting combined flight plan preserves all waypoints from both original plans,
         with sequential IDs starting from the selected point in the first flight plan,
@@ -201,23 +197,23 @@
         Any tags associated with the original waypoints will be preserved in the combined flight plan.
     </p>
 
-    <h3 id="export">Export to Garmin</h3>
+    <h3 id="export">Export in Garmin GTN750Xi Format</h3>
     <p><img src="./images/icon_export.png"></p>
     <p>
         When the above button is pressed, the selected flight plan file will be transformed into flight plans files compatible with the Garmin GTN750Xi.
     </p>
     <p>
-        After pressing the button,  the selected .wpt file will be transformed into two files of following format:
-        <ul>
-        <li>example_user.wpt  (MUST be named _user.wpt  for import) </li>
-        <li>example_gfp.gfp</li>
-        </ul>
+        After pressing the button, the selected .wpt file will be transformed into two files of following format:
     </p>
+    <ul>
+        <li>example_user.wpt (MUST be named _user.wpt for import)</li>
+        <li>example_gfp.gfp</li>
+    </ul>
     <p>
         Hint: To avoid the GTN750 system assigning a generic ID to the waypoint coordinates, import the user.wpt file first and then import the .gfp file.
     </p>
 
-    <h3 id="wp_tag">Add tag to selected waypoints</h3>
+    <h3 id="wp_tag">Add Tag to Selected Waypoints</h3>
     <p><img src="./images/icon_tag.png"></p>
     <p>
         After selecting a waypoint or multiple waypoints <a href=#faq>(FAQ)</a>
@@ -234,7 +230,7 @@
         <li>LH270 – Left Hand 270°</li>
     </ul>
     <p>
-        Additionally,  you can create a custom tag. Note that custom tags must
+        Additionally, you can create a custom tag. Note that custom tags must
         not exceed <strong>10 characters</strong> in length.
     </p>
     <p>Viewing Tags:</p>
@@ -248,8 +244,8 @@
         <li>Open the <strong>Attribute Table</strong> (right-click → "Open Attribute Table").</li>
     </ol>
 
-    <h3 id="mark_sig">Mark selected Waypoints as Significant</h3>
-    <p> <img src="./images/icon_highlight.png"></p>
+    <h3 id="mark_sig">Mark Selected Waypoints as Significant</h3>
+    <p><img src="./images/icon_highlight.png"></p>
     <p>
         When the above button is pressed and some waypoints are selected <a href=#faq>(FAQ)</a> they are marked as
         significant. This means a field "sig" is added to the attribute table of the points which you have to confirm.
@@ -258,24 +254,24 @@
         Afterwards each significant point is marked with a little star.
     </p>
 
-    <h3 id="sig_wp_gen">Generate reduced Flightplan from significant Waypoints</h3>
-    <p> <img src="./images/icon_labels.png"> </p>
+    <h3 id="sig_wp_gen">Generate Reduced Flight Plan from Significant Waypoints</h3>
+    <p><img src="./images/icon_labels.png"></p>
     <p>
         When the above button is pressed and waypoints in the current layer were previously marked as significant, i.e.
-        the flight plan layer has the field "sig", as generated by <a href=#mark_sig>"Mark selected Waypoints as
+        the flight plan layer has the field "sig", as generated by <a href=#mark_sig>"Mark Selected Waypoints as
             Significant"</a>, the waypoints chosen to be significant will be saved in a new shp-file. The points in the
         new shp-file have ids according to their position in the original flight plan.
     </p>
     <p>In the following pop-up you can then select location and name of the new file.</p>
 
-    <h3 id="reverse">Reverse Waypoints </h3>
+    <h3 id="reverse">Reverse Waypoints</h3>
     <p><img src="./images/icon_reverse.png"></p>
     <p>
         When the above button is pressed and a line layer or a layer containing waypoints is selected <a
             href=#faq>(FAQ)</a> and the features have the field id, the order of the waypoints or the layer's flight
         plan is reversed.
     </p>
-    <p><u>Example:</u> If the starting point had number 1 and the end point number 30 and the waypoints are reversed,
+    <p><strong>Example:</strong> If the starting point had number 1 and the end point number 30 and the waypoints are reversed,
         the original starting point will then be number 30 and the original end point number 1.
     </p>
 
@@ -297,7 +293,7 @@
     </p>
 
     <h3 id="coverage_lines">Compute Optimal Coverage Lines</h3>
-    <p> <img src="./images/icon_coverage_lines.png"></p>
+    <p><img src="./images/icon_coverage_lines.png"></p>
     <p>
         When the above button is pressed, optimal flight lines are computed given a sensor and a polygon, representing
         an area of interest, are selected.
@@ -311,15 +307,14 @@
     <p>
         The amount of overlap which is considered when creating the optimal flight lines can also be changed in the
         plugin settings. Overlap means how much adjacent coverage segments overlap each other (see example below).
-
-    <p><u>0% overlap</u></p>
+    </p>
+    <p><strong>0% overlap</strong></p>
     <p>
         <img src="./images/overlap_0_percent.png" width=auto height="150">
     </p>
-    <p><u>50% overlap</u></p>
+    <p><strong>50% overlap</strong></p>
     <p>
         <img src="./images/overlap_50_percent.png" width=auto height="150">
-    </p>
     </p>
     <p>
         Additionally, it is possible to use two different settings for the line computations. The default setting, which
@@ -331,14 +326,17 @@
         In order to use this feature for the first time it is necessary to set the CRS used for coverage computations in
         the plugin settings. The CRS should be compatible with the region of the QGIS project.
     </p>
-   <h3 id="cut_flowline">Cut Flowline</h3>
+
+    <h3 id="cut_flowline">Cut Flowline</h3>
     <p><img src="./images/icon_cut_flowline.png"></p>
-    <p>
-        <strong>Select Points on the Flowline:</strong> Use the selection tool to mark two points along the flowline where the cut should occur.<br>
-        <strong>Execute the Cut:</strong> Click the cut button to create a new line from the existing flowline.<br>
-        <strong>View the Output:</strong> A new layer is automatically created containing the resulting cut segment of the flowline.
-    </p>
-    <h3 id="convert_grid_to_racetrack">Convert Grid to Racetrack</h3>
+    <p>To use this feature:</p>
+    <ol>
+        <li><strong>Select Points on the Flowline:</strong> Use the selection tool to mark two points along the flowline where the cut should occur.</li>
+        <li><strong>Execute the Cut:</strong> Click the cut button to create a new line from the existing flowline.</li>
+        <li><strong>View the Output:</strong> A new layer is automatically created containing the resulting cut segment of the flowline.</li>
+    </ol>
+
+    <h3 id="racetrack_polygon">Create Racetrack Pattern for Polygon</h3>
     <p><img src="./images/icon_racetrack.png"></p>
     <p>
         The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude. Note that the selected polygon layer must contain only one feature.
@@ -346,26 +344,39 @@
     <h4>Key Features of Waypoints</h4>
     <p>
         <strong>Fly-over Tag:</strong> Each waypoint is assigned a fly-over tag by default.<br>
-        <strong>Unique IDs:</strong> Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.<br><br>
-
-    The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:</p>
+        <strong>Unique IDs:</strong> Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.
+    </p>
+    <p>
+        The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:
+    </p>
+    <p>
+        <strong>Please note:</strong>
+    </p>
+    <ul>
+        <li>The selected polygon layer <strong>must</strong> contain only one feature!</li>
+        <li>The polygon's projection <strong>must</strong> match the map's projection exactly!</li>
+    </ul>
 
     <h4>Meander Algorithm</h4>
     <p>
         The plane flies over <code>k</code> waypoints repeatedly until it reaches the end of the grid.<br>
         It then moves back by 1 waypoint.<br>
-        The plane continues flying <code>k</code> waypoints in the opposite direction, repeating the process until the grid is fully covered.<br>
+        The plane continues flying <code>k</code> waypoints in the opposite direction, repeating the process until the grid is fully covered.
     </p>
     <h4>Racetrack Algorithm</h4>
     <p>
         The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).<br>
         It then flies back over <code>k-1</code> waypoints, reversing direction.<br>
-        This process repeats until the entire area is covered.<br>
+        This process repeats until the entire area is covered.
+    </p>
+    <p>
+        If you prefer not to use any of the algorithms, simply set a very small max-turn-distance. The generated waypoints will then traverse the entire polygon in sequential order.
     </p>
     <h4>Suggested Naming for Output Files</h4>
     <p>
         The generated output files include the maximum turning distance in their filenames to make them easily identifiable.
     </p>
+
     <h3 id="create_topography_profile">Create Topography Profile</h3>
     <p><img src="./images/icon_topography.png"></p>
     <p>
@@ -384,7 +395,7 @@
         <strong>Critical Zones Indicator</strong><br>
         The profile graph visually highlights critical zones in red - areas where the climb rate needed to maintain the current altitude above the terrain exceeds the aircraft's available climb rate. The critical zones can be seen ob both the graph and the layer. An aircraft's <strong>climb rate</strong> can be entered in the 'Maximum climb rate in feet/min' field in the toolbar.
     </p>
-    <br>
+
     <h3 id="faq">FAQ</h3>
     <h4>What does it mean that some feature has to be selected?</h4>
     <p>
@@ -415,6 +426,16 @@
         When a layer of a geometry other than line is selected, the display is toggled until a layer of type line is
         selected again.
     </p>
+    <h4>I've created a racetrack for a polygon, but I don't see the way points</h4>
+    <p>
+        If the selected polygon uses a different projection to the map, the generated waypoints will not be visible. Make sure the projection is the same and generate a racetrack again.
+    </p>
+
+    <footer>
+        <p>
+            <u>Acknowledgments:</u> This plugin makes use of <a href="https://github.com/awi-response/garmin_fpl" target="_blank">garmin_fpl</a>: Rettelbach, T., Döpper, V., & Nitze, I. (2024). garmin_fpl: Creation and conversion scripts for Garmin flightplans for scientific flight campaigns [Computer software].
+        </p>
+    </footer>
 </body>
 
 </html>
