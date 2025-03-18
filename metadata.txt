@@ -5,12 +5,13 @@ author=Abraham Wondimu, Anna Menshikova, Maxim Poliakov, Simon Povh, Leon Krüge
 qgisMinimumVersion=3.4
 description=This plugin helps to create scientific flight plans.
 about=ScienceFlightPlanner helps to create flight plans for scientific purposes by adding useful functionality.
-version=2.0.0
+version=2.0.1
 tracker=https://github.com/ScienceFlightPlanner/ScienceFlightPlanner/issues
 repository=https://github.com/ScienceFlightPlanner/ScienceFlightPlanner
 
 category=Plugins
 changelog=
+    2.0.1 - Minor fixes in manual and waypoint tag feature
     2.0.0 - Add 6 new features
     1.0.1 - Add support for Python versions down to 3.5
 

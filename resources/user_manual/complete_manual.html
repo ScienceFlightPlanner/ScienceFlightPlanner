@@ -38,14 +38,11 @@
     <p>
         The ScienceFlightPlanner Plugin helps in improving your workflow when planning scientific flight surveys.
     </p>
-    <p>
-        The plugin consists of eight core features. Seven of them are represented with according buttons and one feature
-        can be accessed via the selection box in the toolbar.
-    </p>
 
     <p>
-        In addition to this help manual, you can find tutorial videos for using our plugin on our Youtube channel <a href="https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg"> ScienceFlightPlanner</a>
+    In addition to this help manual,&nbsp;you can find <u>tutorial videos</u> for using our plugin on our YouTube channel <a href="https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg">ScienceFlightPlanner</a>.
     </p>
+
     <h2>Feature Overview</h2>
     <table>
         <tr>
@@ -79,13 +76,13 @@
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#wp_gen>Export in Garmin GTN750Xi Format</a></td>
+            <td><a href=#export>Export in Garmin GTN750Xi Format</a></td>
             <td><img src="{ICON_FOLDER_PATH}/icon_export.png"></td>
             <td>Generates a wpt- and a gfp-file for the Garmin GTN™ 750Xi based on the current flight plan.</td>
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href=#export>Add tag to selected waypoints</a></td>
+            <td><a href=#wp_tag>Add tag to selected waypoints</a></td>
             <td><img src="{ICON_FOLDER_PATH}/icon_tag.png"></td>
             <td>Adds a tag to the selected waypoints of the current flight plan.</td>
             <td>Points</td>
@@ -127,7 +124,7 @@
             <td>Points</td>
         </tr>
         <tr>
-            <td><a href="#racetrack_polygon">Racetrack from Polygon</a></td>
+            <td><a href="#racetrack_polygon">Create Racetrack Pattern for Polygon</a></td>
             <td><img src="{ICON_FOLDER_PATH}/icon_racetrack.png"></td>
             <td>Given a polygon, flight altitude, and max turning distance, calculates optimal waypoints for a plane based on the selected algorithm.</td>
             <td>Polygon</td>
@@ -346,12 +343,15 @@
     </p>
    <h3 id="cut_flowline">Cut Flowline</h3>
     <p><img src="{ICON_FOLDER_PATH}/icon_cut_flowline.png"></p>
+    <p>To use this feature:</p>
     <p>
-        <strong>Select Points on the Flowline:</strong> Use the selection tool to mark two points along the flowline where the cut should occur.<br>
-        <strong>Execute the Cut:</strong> Click the cut button to create a new line from the existing flowline.<br>
-        <strong>View the Output:</strong> A new layer is automatically created containing the resulting cut segment of the flowline.
+        <ol>
+            <li><strong>Select Points on the Flowline:</strong> Use the selection tool to mark two points along the flowline where the cut should occur.</li>
+            <li><strong>Execute the Cut:</strong> Click the cut button to create a new line from the existing flowline.</li>
+            <li><strong>View the Output:</strong> A new layer is automatically created containing the resulting cut segment of the flowline.</li>
+        </ol>
     </p>
-    <h3 id="convert_grid_to_racetrack">Convert Grid to Racetrack</h3>
+    <h3 id="racetrack_polygon">Create Racetrack Pattern for Polygon</h3>
     <p><img src="{ICON_FOLDER_PATH}/icon_racetrack.png"></p>
     <p>
         The Racetrack feature calculates optimal waypoints for a plane when the designated button is pressed. These waypoints are determined based on the selected sensor, polygon-layer representing the area of interest, and flight altitude. Note that the selected polygon layer must contain only one feature.
@@ -362,6 +362,14 @@
         <strong>Unique IDs:</strong> Waypoints are assigned unique IDs based on the selected algorithm, indicating the order in which they need to be flown over.<br><br>
 
     The algorithms are designed to optimize the flight path when flying over a grid. You can choose between two algorithms:</p>
+    <p>
+        <strong>Note that:</strong>
+    </p>
+    <p>
+    <ul>
+        <li>the selected polygon layer must contain only one feature.</li>
+        <li>the projection of the polygon <strong>MUST</strong> be in the same projection as the map.</li>
+    </ul></p>
 
     <h4>Meander Algorithm</h4>
     <p>
@@ -374,6 +382,10 @@
         The plane flies over the first <code>k</code> waypoints (determined by the maximum turning distance).<br>
         It then flies back over <code>k-1</code> waypoints, reversing direction.<br>
         This process repeats until the entire area is covered.<br>
+    </p>
+    <p>
+        If you prefer not to use any of the algorithms, simply set a very small max-turn-distance.
+        The generated waypoints will then traverse the entire polygon in sequential order.
     </p>
     <h4>Suggested Naming for Output Files</h4>
     <p>
@@ -427,6 +439,11 @@
         current layer results in an update of the distance/duration.
         When a layer of a geometry other than line is selected, the display is toggled until a layer of type line is
         selected again.
+    </p>
+    <h4>I've created a racetrack for a polygon, but I don't see the way points</h4>
+    <p>
+        If the selected polygon uses a different projection to the map, the generated waypoints will not be visible.
+        Make sure the projection is the same and generate a racetrack again.
     </p>
 </body>
 

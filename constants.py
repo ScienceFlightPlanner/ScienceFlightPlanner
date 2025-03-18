@@ -1,10 +1,19 @@
 import codecs
 import os
-from qgis.core import QgsSettings
 
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QApplication
+
+def is_dark_mode():
+    app = QApplication.instance()
+    if not app:
+        return False
+    palette = app.palette()
+    return palette.color(QPalette.Window).lightness() < 128
 
 def get_icon_directory_path():
-    if QgsSettings().value("UI/UITheme", "default") == "Night Mapping":
+    # I didn't use QgsSettings().value("UI/UITheme", "default") here because there is no way to check for light mode
+    if is_dark_mode():
         return os.path.join(":resources", "icons_for_dark_mode")
     else:
         return os.path.join(":resources", "icons_for_light_mode")
@@ -72,7 +81,7 @@ REVERSAL_ACTION_NAME = "Reverse Waypoints"
 COVERAGE_LINES_ACTION_NAME = "Compute Optimal Coverage Lines"
 FLOWLINE_ACTION_NAME = "Get flowline from file"
 CUT_FLOWLINE_ACTION_NAME = "Cut flowline"
-RACETRACK_ACTION_NAME = "Convert grid to racetrack"
+RACETRACK_ACTION_NAME = "Create racetrack for polygon"
 TOPOGRAPHY_ACTION_NAME = "Create topography profile"
 HELP_MANUAL_ACTION_NAME = "Help"
 FLIGHT_ALTITUDE_ACTION_NAME = "Set Flight Altitude"
