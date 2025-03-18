@@ -2,9 +2,9 @@
 
 The ScienceFlightPlanner Plugin helps in improving your workflow when planning scientific flight surveys.
 
-The plugin consists of eight core features. Seven of them are represented with according buttons and one feature can be accessed via the selection box in the toolbar.
+The plugin consists of 14 core features. 13 of them are represented with according buttons and one feature can be accessed via the selection box in the toolbar.
 
-In addition to this help manual, you can find tutorial videos for using our plugin on our Youtube channel [ScienceFlightPlanner](https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg)
+In addition to this help manual, you can find tutorial videos for using our plugin on our YouTube channel [ScienceFlightPlanner](https://www.youtube.com/channel/UCkSBaCW_Sohcqlh8Pu6tufg)
 
 ## Feature Overview
 
